@@ -1,0 +1,32 @@
+# Never modify prompt files - they are for auditing only
+prompts/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment
+venv/
+env/
+
+# Ignore build artifacts
+dist/
+build/
+*.egg-info/
+
+# Ignore Cursor's own files except rules
+.cursor/*
+!.cursor/rules/
+
+# Ignore sensitive files
+.env
+secrets.json
+config.json
+
+# Ignore database files
+*.db
+*.sqlite3
+
+# Ignore logs
+logs/
+*.log 

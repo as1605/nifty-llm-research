@@ -1,146 +1,88 @@
-# 📊 LLM-Based Stock Research & Forecasting Agent
+# Nifty Stock Research and Analysis System
 
-A modular stock research system has been designed to automate deep financial analysis and price forecasting of the NSE Top 100 stocks using LLM agents, web search, and financial document parsing. Forecasts are generated daily and saved to a PostgreSQL database, followed by the creation and mailing of an optimized weekly stock basket.
+An AI-powered system for analyzing Indian stocks (NSE Top 100) using market news, financial data, and investor reports to generate price forecasts and portfolio recommendations.
 
----
+## Features
 
-## 📚 Table of Contents
+- Deep research analysis of NSE Top 100 stocks
+- Price forecasting for multiple time horizons (1w, 1m, 3m, 6m, 1y)
+- Automated portfolio recommendation system
+- Data persistence in Amazon Aurora PostgreSQL
+- Automated email reporting via Amazon SES
+- Interactive visualization of price predictions
 
-* [📊 LLM-Based Stock Research & Forecasting Agent](#-llm-based-stock-research--forecasting-agent)
-* [🧭 Overview of the Workflow](#-overview-of-the-workflow)
-* [🧠 Deep Research Agent](#-deep-research-agent)
-* [🗃️ Result Storage to Aurora PostgreSQL](#️-result-storage-to-aurora-postgresql)
-* [📈 Weekly Stock Basket Selector](#-weekly-stock-basket-selector)
-* [🔁 Daily Scheduling](#-daily-scheduling)
-* [📬 Email Integration (Amazon SES)](#-email-integration-amazon-ses)
-* [🛠️ Tools and Technologies](#️-tools-and-technologies)
+## Project Structure
 
----
+```
+nifty-llm-research/
+├── src/
+│   ├── agents/             # AI agent implementations
+│   ├── data/              # Data handling and processing
+│   ├── db/                # Database operations
+│   ├── visualization/     # Plotting and charting
+│   └── utils/             # Helper functions and utilities
+├── tests/                 # Test cases
+├── docs/                  # Documentation
+├── scripts/              # Automation scripts
+└── config/              # Configuration files
+```
 
-## 🧭 Overview of the Workflow
+## Setup
 
-1. **Deep Research Agent** is invoked for each of the NSE Top 100 stocks daily.
-2. **Market data**, **financial news**, and **investor reports** are gathered and analyzed using an LLM agent.
-3. **Forecasted prices** are generated for the next:
+1. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-   * 1 week
-   * 1 month
-   * 3 months
-   * 6 months
-   * 12 months
-4. The results are saved to an **Amazon Aurora PostgreSQL** database.
-5. After processing all stocks, a **portfolio optimization script** is run:
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-   * Top 5 stocks for the week are selected based on predicted returns.
-   * The basket is saved to the database and emailed using **Amazon SES**.
+3. Copy env.template to .env and fill in your credentials:
+   ```bash
+   cp env.template .env
+   ```
 
----
+4. Set up the database:
+   ```bash
+   python scripts/setup_db.py
+   ```
 
-## 🧠 Deep Research Agent
+## Usage
 
-* Implemented in **Python** using **OpenAI API**, **agents**, and **tools**.
-* Accepts a stock symbol and company name as input.
-* Performs the following steps:
+1. Run the stock analysis:
+   ```bash
+   python scripts/analyze_stocks.py
+   ```
 
-  * Conducts **web searches** to gather latest news and investor sentiment.
-  * Fetches **financial quote and chart data** using APIs (e.g., Yahoo Finance, Alpha Vantage).
-  * Parses **PDF reports** of investor briefings and market analysis (using tools like `PyMuPDF` or `pdfplumber`).
-  * Uses the context to **forecast future stock prices** for the specified timeframes.
-* Returns:
+2. Generate portfolio recommendations:
+   ```bash
+   python scripts/generate_portfolio.py
+   ```
 
-  ```json
-  {
-    "stock": "RELIANCE",
-    "current_price": 2750.50,
-    "forecast_1w": 2805.75,
-    "forecast_1m": 2880.10,
-    "forecast_3m": 2970.25,
-    "forecast_6m": 3100.50,
-    "forecast_12m": 3350.00
-  }
-  ```
+3. View visualizations:
+   ```bash
+   python scripts/visualize_predictions.py
+   ```
 
----
+## Development
 
-## 🗃️ Result Storage to Aurora PostgreSQL
+- Code formatting: `black .`
+- Import sorting: `isort .`
+- Type checking: `mypy .`
+- Linting: `flake8`
+- Run tests: `pytest`
 
-* A database-saving function is provided.
-* Accepts the LLM output and saves it into a relational format with a timestamp and symbol key.
-* Ensures **daily inserts** and supports **historical querying** for trend analysis.
-* Example schema:
+## Documentation
 
-  ```sql
-  CREATE TABLE stock_forecasts (
-    id SERIAL PRIMARY KEY,
-    stock_symbol VARCHAR(10),
-    current_price NUMERIC,
-    forecast_1w NUMERIC,
-    forecast_1m NUMERIC,
-    forecast_3m NUMERIC,
-    forecast_6m NUMERIC,
-    forecast_12m NUMERIC,
-    forecast_date DATE DEFAULT CURRENT_DATE
-  );
-  ```
+Detailed documentation is available in the `docs/` directory. To view the documentation locally:
 
----
+```bash
+mkdocs serve
+```
 
-## 📈 Weekly Stock Basket Selector
+## License
 
-* Invoked once daily after all 100 stocks have been processed.
-* Reads all forecast entries for the current date from the database.
-* Passes the data to an LLM with a prompt to select the **top 5 most promising stocks** based on short- to mid-term returns.
-* Generates a structured basket output:
-
-  ```json
-  {
-    "basket_date": "2025-05-27",
-    "selected_stocks": ["INFY", "RELIANCE", "HDFCBANK", "LT", "TCS"],
-    "reasoning_summary": "...",
-    "expected_1m_return": "12.5%"
-  }
-  ```
-* Sends the output as an **email via Amazon SES**.
-* Saves the basket to a new `weekly_baskets` table in the DB:
-
-  ```sql
-  CREATE TABLE weekly_baskets (
-    id SERIAL PRIMARY KEY,
-    basket_date DATE,
-    selected_stocks TEXT[],
-    summary TEXT
-  );
-  ```
-
----
-
-## 🔁 Daily Scheduling
-
-* To be executed as part of a **cron job or scheduler**:
-
-  1. Loop through NSE Top 100 stocks → run deep research agent → store forecasts.
-  2. After all stocks → generate and email weekly basket → save to DB.
-
----
-
-## 📬 Email Integration (Amazon SES)
-
-* Email reports are composed in plain text or HTML.
-* Sent via **Amazon SES** using SMTP credentials or the AWS SDK.
-* Includes:
-
-  * Selected stock symbols
-  * Summary of LLM rationale
-  * Links to database or dashboards (if available)
-
----
-
-## 🛠️ Tools and Technologies
-
-* **Python**
-* **OpenAI GPT APIs**
-* **Amazon Aurora PostgreSQL**
-* **Amazon SES**
-* **Web scraping & search tools**
-* **PDF parsing tools**
-* **Financial data APIs (e.g., Yahoo Finance)**
+MIT License

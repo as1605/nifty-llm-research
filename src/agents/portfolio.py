@@ -1,0 +1,82 @@
+"""
+Portfolio optimization agent for selecting the best stocks.
+"""
+from typing import Dict, List
+
+import pandas as pd
+
+from .base import BaseAgent
+
+class PortfolioAgent(BaseAgent):
+    """Agent for optimizing stock portfolios."""
+    
+    def __init__(self):
+        """Initialize the portfolio agent."""
+        super().__init__(
+            model="gpt-4-turbo-preview",
+            temperature=0.5  # Lower temperature for more consistent recommendations
+        )
+    
+    async def optimize_portfolio(self, stock_data: List[Dict]) -> Dict:
+        """Generate optimized portfolio recommendations.
+        
+        Args:
+            stock_data: List of stock forecast dictionaries
+            
+        Returns:
+            Dictionary containing selected stocks and analysis
+        """
+        # Convert to DataFrame for easier analysis
+        df = pd.DataFrame(stock_data)
+        
+        # Create analysis prompt
+        system_prompt = """You are an expert portfolio manager specializing in Indian stocks.
+        Analyze the provided stock forecasts and select the 5 best stocks for a weekly portfolio.
+        Consider both potential returns and risk factors in your selection."""
+        
+        user_message = f"""Analyze the following stock forecasts and select the best 5 stocks:
+
+        Stock Data:
+        {df.to_string()}
+        
+        Provide:
+        - List of 5 selected stocks (symbols only)
+        - Expected 1-month portfolio return
+        - Brief explanation of selection rationale
+        
+        Format your response as a JSON object with keys:
+        - selected_stocks (list)
+        - expected_return (float)
+        - summary (string)"""
+        
+        # Get completion
+        response = await self.get_completion(system_prompt, user_message)
+        
+        # Parse and return results
+        try:
+            result = eval(response.choices[0].message.content)
+            return result
+        except Exception as e:
+            raise ValueError(f"Failed to parse agent response: {e}")
+    
+    def _calculate_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Calculate additional metrics for portfolio selection.
+        
+        Args:
+            df: DataFrame of stock forecasts
+            
+        Returns:
+            DataFrame with additional metrics
+        """
+        # Calculate potential returns
+        df["1m_return"] = (df["forecast_1m"] - df["current_price"]) / df["current_price"]
+        df["3m_return"] = (df["forecast_3m"] - df["current_price"]) / df["current_price"]
+        df["6m_return"] = (df["forecast_6m"] - df["current_price"]) / df["current_price"]
+        
+        # Calculate volatility score (difference between highest and lowest forecasts)
+        df["volatility"] = (
+            df[["forecast_1w", "forecast_1m", "forecast_3m", "forecast_6m", "forecast_12m"]]
+            .apply(lambda x: (max(x) - min(x)) / x.mean(), axis=1)
+        )
+        
+        return df 

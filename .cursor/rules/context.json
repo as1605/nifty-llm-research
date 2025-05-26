@@ -1,0 +1,32 @@
+{
+    "project": {
+        "name": "Nifty Stock Research",
+        "description": "AI-powered stock analysis and portfolio recommendation system for NSE Top 100 stocks",
+        "objectives": [
+            "Analyze market news and financial data for Indian stocks",
+            "Generate price forecasts for multiple time horizons",
+            "Create optimized weekly portfolio recommendations",
+            "Visualize predictions and portfolio performance",
+            "Automate email notifications with insights"
+        ],
+        "constraints": [
+            "Use OpenAI APIs directly (no LangChain)",
+            "Store data in Amazon Aurora PostgreSQL",
+            "Send emails via Amazon SES",
+            "Never modify files in prompts/ directory",
+            "Follow strict type checking and code quality standards"
+        ],
+        "key_components": {
+            "agents": ["StockResearchAgent", "PortfolioAgent"],
+            "data_storage": ["StockForecast", "WeeklyBasket"],
+            "visualization": ["StockPlotter"],
+            "automation": ["analyze_stocks.py", "generate_portfolio.py"]
+        },
+        "code_standards": {
+            "formatting": "ruff format",
+            "linting": "ruff check",
+            "type_checking": "mypy",
+            "package_manager": "uv"
+        }
+    }
+} 
