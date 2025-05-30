@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 """
-Script for setting up the database tables.
+Script for setting up the MongoDB database indexes.
 """
 import logging
 
-from src.db.database import engine
-from src.db.models import Base
+from src.db.database import setup_indexes
 from config.settings import settings
 
 # Configure logging
@@ -16,14 +15,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def setup_database():
-    """Create all database tables."""
+    """Create all database indexes."""
     try:
-        logger.info("Creating database tables...")
-        Base.metadata.create_all(engine)
-        logger.info("Database tables created successfully")
+        logger.info("Creating database indexes...")
+        setup_indexes()
+        logger.info("Database indexes created successfully")
         
     except Exception as e:
-        logger.error(f"Error creating database tables: {e}")
+        logger.error(f"Error creating database indexes: {e}")
         raise
 
 if __name__ == "__main__":

@@ -1,11 +1,14 @@
 """
 Email notification module using Amazon SES.
 """
+from datetime import datetime
 from typing import List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
 
+from src.db.database import async_db, COLLECTIONS
+from src.db.models import Email
 from config.settings import settings
 
 class EmailSender:
@@ -20,7 +23,7 @@ class EmailSender:
             region_name=settings.aws_region
         )
     
-    def send_portfolio_update(
+    async def send_portfolio_update(
         self,
         selected_stocks: List[str],
         expected_return: float,
@@ -81,7 +84,18 @@ class EmailSender:
         This is an automated message from the Nifty Stock Research System.
         """
         
+        # Create email record
+        email = Email(
+            type="basket update",
+            status="pending",
+            subject=subject,
+            content_html=body_html,
+            from_=settings.sender_email,
+            to=[settings.recipient_email]
+        )
+        
         try:
+            # Send email
             response = self.ses.send_email(
                 Source=settings.sender_email,
                 Destination={
@@ -104,8 +118,18 @@ class EmailSender:
                     }
                 }
             )
+            
+            # Update email record with sent status
+            email.status = "sent"
+            email.sent_time = datetime.utcnow()
+            await async_db[COLLECTIONS['emails']].insert_one(email.dict())
+            
             return True
             
         except ClientError as e:
+            # Update email record with error status
+            email.status = "failed"
+            await async_db[COLLECTIONS['emails']].insert_one(email.dict())
+            
             print(f"Error sending email: {e.response['Error']['Message']}")
             return False 

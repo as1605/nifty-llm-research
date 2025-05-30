@@ -1,32 +1,60 @@
 """
-Database connection and session management.
+Database connection and session management for MongoDB.
 """
-from contextlib import contextmanager
-from typing import Generator
+from typing import AsyncGenerator
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from pymongo import MongoClient
 
 from config.settings import settings
 
-# Create database URL
-DATABASE_URL = f"postgresql://{settings.db_user}:{settings.db_password}@{settings.db_host}:{settings.db_port}/{settings.db_name}"
+# Create MongoDB client
+client = MongoClient(settings.mongodb_uri)
+db = client[settings.mongodb_db_name]
 
-# Create engine
-engine = create_engine(DATABASE_URL)
+# Create async MongoDB client
+async_client = AsyncIOMotorClient(settings.mongodb_uri)
+async_db = async_client[settings.mongodb_db_name]
 
-# Create session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Collection names
+COLLECTIONS = {
+    'prompt_configs': 'prompt_configs',
+    'invocations': 'invocations',
+    'stocks': 'stocks',
+    'forecasts': 'forecasts',
+    'baskets': 'baskets',
+    'emails': 'emails',
+    'orders': 'orders'
+}
 
-@contextmanager
-def get_db() -> Generator[Session, None, None]:
-    """Get database session."""
-    db = SessionLocal()
+# Create indexes
+def setup_indexes():
+    """Create necessary indexes for collections."""
+    # PromptConfig indexes
+    db[COLLECTIONS['prompt_configs']].create_index('name', unique=True)
+    
+    # Stock indexes
+    db[COLLECTIONS['stocks']].create_index('ticker', unique=True)
+    db[COLLECTIONS['stocks']].create_index('modified_time')
+    
+    # Forecast indexes
+    db[COLLECTIONS['forecasts']].create_index([('stock_ticker', 1), ('forecast_date', 1)])
+    db[COLLECTIONS['forecasts']].create_index('created_time')
+    
+    # Basket indexes
+    db[COLLECTIONS['baskets']].create_index('creation_date')
+    
+    # Email indexes
+    db[COLLECTIONS['emails']].create_index('created_time')
+    db[COLLECTIONS['emails']].create_index('status')
+    
+    # Order indexes
+    db[COLLECTIONS['orders']].create_index([('stock_ticker', 1), ('placed_time', 1)])
+    db[COLLECTIONS['orders']].create_index('demat_account')
+
+async def get_database() -> AsyncGenerator[AsyncIOMotorDatabase, None]:
+    """Get async database instance."""
     try:
-        yield db
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise
+        yield async_db
     finally:
-        db.close() 
+        pass  # Connection is managed by the client 

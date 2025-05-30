@@ -16,12 +16,9 @@ class Settings(BaseSettings):
     # OpenAI
     openai_api_key: str = Field(..., env='OPENAI_API_KEY')
     
-    # Database
-    db_host: str = Field(..., env='DB_HOST')
-    db_port: int = Field(5432, env='DB_PORT')
-    db_name: str = Field(..., env='DB_NAME')
-    db_user: str = Field(..., env='DB_USER')
-    db_password: str = Field(..., env='DB_PASSWORD')
+    # MongoDB
+    mongodb_uri: str = Field(..., env='MONGODB_URI')
+    mongodb_db_name: str = Field(..., env='MONGODB_DB_NAME')
     
     # AWS
     aws_access_key_id: str = Field(..., env='AWS_ACCESS_KEY_ID')

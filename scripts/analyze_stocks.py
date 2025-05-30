@@ -4,16 +4,14 @@ Main script for analyzing NSE stocks and generating forecasts.
 """
 import asyncio
 import logging
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 from typing import List
 
 import pandas as pd
-from sqlalchemy.orm import Session
 
 from src.agents.stock_research import StockResearchAgent
-from src.db.database import get_db
-from src.db.models import StockForecast
+from src.db.database import async_db, COLLECTIONS
 from src.visualization.plotter import StockPlotter
 from config.settings import settings
 
@@ -30,47 +28,25 @@ NSE_TOP_100 = [
     # Add more symbols...
 ]
 
-async def analyze_stock(symbol: str, agent: StockResearchAgent, db: Session) -> None:
+async def analyze_stock(symbol: str, agent: StockResearchAgent) -> None:
     """Analyze a single stock and save results.
     
     Args:
         symbol: Stock symbol
         agent: Stock research agent instance
-        db: Database session
     """
     try:
         # Get analysis from agent
         logger.info(f"Analyzing {symbol}...")
         result = await agent.analyze_stock(symbol)
         
-        # Create forecast object
-        forecast = StockForecast(
-            stock_symbol=symbol,
-            current_price=result["current_price"],
-            forecast_1w=result["forecast_1w"],
-            forecast_1m=result["forecast_1m"],
-            forecast_3m=result["forecast_3m"],
-            forecast_6m=result["forecast_6m"],
-            forecast_12m=result["forecast_12m"],
-            forecast_date=date.today(),
-            analysis_summary=result.get("summary"),
-            confidence_score=result.get("confidence")
-        )
-        
-        # Save to database
-        db.add(forecast)
-        db.commit()
-        
         # Generate visualization
         plotter = StockPlotter()
         
         # Get historical forecasts
-        historical_forecasts = (
-            db.query(StockForecast)
-            .filter(StockForecast.stock_symbol == symbol)
-            .order_by(StockForecast.forecast_date)
-            .all()
-        )
+        historical_forecasts = await async_db[COLLECTIONS['forecasts']].find(
+            {"stock_ticker": symbol}
+        ).sort("created_time", 1).to_list(length=None)
         
         # Create visualization
         save_path = Path(settings.data_dir) / "visualizations" / f"{symbol}_forecast.png"
@@ -78,7 +54,7 @@ async def analyze_stock(symbol: str, agent: StockResearchAgent, db: Session) -> 
         
         plotter.plot_predictions(
             symbol,
-            [forecast.__dict__ for forecast in historical_forecasts],
+            historical_forecasts,
             str(save_path)
         )
         
@@ -93,9 +69,8 @@ async def main():
     agent = StockResearchAgent()
     
     async with asyncio.TaskGroup() as tg:
-        with get_db() as db:
-            for symbol in NSE_TOP_100:
-                tg.create_task(analyze_stock(symbol, agent, db))
+        for symbol in NSE_TOP_100:
+            tg.create_task(analyze_stock(symbol, agent))
 
 if __name__ == "__main__":
     asyncio.run(main()) 

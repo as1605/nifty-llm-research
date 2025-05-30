@@ -1,13 +1,17 @@
 """
 Stock research agent for analyzing and forecasting stock prices.
 """
+from datetime import datetime
 from typing import Dict, List, Optional
 
 import yfinance as yf
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+from bson import ObjectId
 
+from src.db.database import async_db, COLLECTIONS
+from src.db.models import Stock, Forecast, Invocation, PromptConfig
 from .base import BaseAgent
 
 class StockResearchAgent(BaseAgent):
@@ -33,41 +37,110 @@ class StockResearchAgent(BaseAgent):
         stock_data = self._get_stock_data(f"{symbol}.NS")
         news_data = self._get_news_data(symbol)
         
-        # Create analysis prompt
-        system_prompt = """You are an expert financial analyst specializing in Indian stocks.
-        Analyze the provided stock data and news to generate price forecasts.
-        Your analysis should be data-driven and consider both technical and fundamental factors."""
+        # Get or create prompt config
+        prompt_config = await self._get_prompt_config()
         
-        user_message = f"""Analyze {symbol} based on the following data:
-        
-        Stock Data:
-        {stock_data}
-        
-        Recent News:
-        {news_data}
-        
-        Generate price forecasts for:
-        - 1 week
-        - 1 month
-        - 3 months
-        - 6 months
-        - 12 months
-        
-        Also provide:
-        - Brief analysis summary
-        - Confidence score (0-1)
-        
-        Format your response as a JSON object."""
+        # Create parameter mapping
+        params = {
+            "STOCK_TICKER": symbol,
+            "STOCK_DATA": str(stock_data),
+            "NEWS_DATA": str(news_data)
+        }
         
         # Get completion
-        response = await self.get_completion(system_prompt, user_message)
+        response = await self.get_completion(
+            prompt_config.system_prompt,
+            prompt_config.user_prompt.format(**params)
+        )
         
-        # Parse and return results
+        # Parse results
         try:
             result = eval(response.choices[0].message.content)
+            
+            # Store stock data
+            stock = Stock(
+                ticker=symbol,
+                price=stock_data["current_price"],
+                market_cap=stock_data["market_cap"],
+                industry=stock_data.get("industry", "Unknown")
+            )
+            await async_db[COLLECTIONS['stocks']].update_one(
+                {"ticker": symbol},
+                {"$set": stock.dict()},
+                upsert=True
+            )
+            
+            # Store invocation
+            invocation = Invocation(
+                prompt_config_id=prompt_config.id,
+                params=params,
+                response=response.choices[0].message.content,
+                metadata=response.usage.dict() if hasattr(response, 'usage') else {}
+            )
+            invocation_result = await async_db[COLLECTIONS['invocations']].insert_one(invocation.dict())
+            
+            # Store forecast
+            forecast = Forecast(
+                stock_ticker=symbol,
+                invocation_id=invocation_result.inserted_id,
+                forecast_date=datetime.utcnow(),
+                target_price=result["forecast_1m"],  # Using 1-month forecast as target
+                gain=((result["forecast_1m"] - stock_data["current_price"]) / stock_data["current_price"]) * 100,
+                days=30,  # 1 month
+                reason_summary=result["analysis_summary"],
+                sources=[news["url"] for news in news_data]
+            )
+            await async_db[COLLECTIONS['forecasts']].insert_one(forecast.dict())
+            
             return result
+            
         except Exception as e:
             raise ValueError(f"Failed to parse agent response: {e}")
+    
+    async def _get_prompt_config(self) -> PromptConfig:
+        """Get or create the stock analysis prompt configuration."""
+        # Try to get existing config
+        config = await async_db[COLLECTIONS['prompt_configs']].find_one(
+            {"name": "stock_analysis"}
+        )
+        
+        if config:
+            return PromptConfig(**config)
+        
+        # Create new config if not exists
+        config = PromptConfig(
+            name="stock_analysis",
+            system_prompt="""You are an expert financial analyst specializing in Indian stocks.
+            Analyze the provided stock data and news to generate price forecasts.
+            Your analysis should be data-driven and consider both technical and fundamental factors.""",
+            user_prompt="""Analyze {STOCK_TICKER} based on the following data:
+            
+            Stock Data:
+            {STOCK_DATA}
+            
+            Recent News:
+            {NEWS_DATA}
+            
+            Generate price forecasts for:
+            - 1 week
+            - 1 month
+            - 3 months
+            - 6 months
+            - 12 months
+            
+            Also provide:
+            - Brief analysis summary
+            - Confidence score (0-1)
+            
+            Format your response as a JSON object.""",
+            params=["STOCK_TICKER", "STOCK_DATA", "NEWS_DATA"],
+            model="gpt-4-turbo-preview",
+            default=True
+        )
+        
+        result = await async_db[COLLECTIONS['prompt_configs']].insert_one(config.dict())
+        config.id = result.inserted_id
+        return config
     
     def _get_stock_data(self, symbol: str) -> Dict:
         """Get stock data from Yahoo Finance.
@@ -94,6 +167,7 @@ class StockResearchAgent(BaseAgent):
             "pe_ratio": info.get("trailingPE"),
             "volume": info.get("volume"),
             "avg_volume": info.get("averageVolume"),
+            "industry": info.get("industry"),
             "price_history": hist[["Close", "Volume"]].to_dict()
         }
     
