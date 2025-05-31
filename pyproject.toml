@@ -11,6 +11,9 @@ authors = [
     { name = "Your Name", email = "your.email@example.com" }
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
 [tool.ruff]
 target-version = "py310"
 line-length = 88

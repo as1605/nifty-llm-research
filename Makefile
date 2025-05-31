@@ -2,10 +2,10 @@
 
 # Install dependencies and set up development environment
 setup:
-	curl -LsSf https://astral.sh/uv/install.sh | sh
-	uv venv
-	uv pip install -r requirements.txt
-	uv pip install -r requirements-dev.txt
+	python3 -m venv env
+	source env/bin/activate
+	pip install -U pip
+	pip install -r requirements.txt
 
 # Format code using ruff
 format:
