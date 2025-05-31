@@ -52,29 +52,35 @@ async def test_analyze_stock(mock_stock_data, mock_news_data):
         # Create agent
         agent = StockResearchAgent()
 
-        # Mock OpenAI response
-        mock_response = Mock()
-        mock_response.choices = [
-            Mock(
-                message=Mock(
-                    content=str(
-                        {
-                            "current_price": 1000.0,
-                            "forecast_1w": 1020.0,
-                            "forecast_1m": 1050.0,
-                            "forecast_3m": 1100.0,
-                            "forecast_6m": 1150.0,
-                            "forecast_12m": 1200.0,
-                            "summary": "Test analysis",
-                            "confidence": 0.8,
-                        }
-                    )
-                )
-            )
-        ]
+        # Mock Perplexity response
+        mock_response = {
+            'choices': [{
+                'message': {
+                    'content': str({
+                        "current_price": 1000.0,
+                        "forecast_1w": 1020.0,
+                        "forecast_1m": 1050.0,
+                        "forecast_3m": 1100.0,
+                        "forecast_6m": 1150.0,
+                        "forecast_12m": 1200.0,
+                        "summary": "Test analysis",
+                        "confidence": 0.8,
+                    })
+                }
+            }]
+        }
 
-        with patch("openai.chat.completions.create") as mock_openai:
-            mock_openai.return_value = mock_response
+        with patch("requests.post") as mock_post, patch("requests.get") as mock_get:
+            # Mock initial request
+            mock_post.return_value.json.return_value = {"request_id": "test_request_id"}
+            mock_post.return_value.raise_for_status = lambda: None
+
+            # Mock polling response
+            mock_get.return_value.json.return_value = {
+                "status": "COMPLETED",
+                "response": mock_response
+            }
+            mock_get.return_value.raise_for_status = lambda: None
 
             # Test analysis
             result = await agent.analyze_stock("RELIANCE")

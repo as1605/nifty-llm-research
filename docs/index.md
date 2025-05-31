@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Nifty Stock Research system is an AI-powered tool for analyzing Indian stocks (NSE Top 100) and generating price forecasts and portfolio recommendations. The system uses OpenAI's GPT models to analyze market news, financial data, and generate predictions.
+The Nifty Stock Research system is an AI-powered tool for analyzing Indian stocks (NSE Top 100) and generating price forecasts and portfolio recommendations. The system uses Perplexity's models to analyze market news, financial data, and generate predictions.
 
 ## Components
 
@@ -10,9 +10,8 @@ The Nifty Stock Research system is an AI-powered tool for analyzing Indian stock
 
 The stock research agent (`src/agents/stock_research.py`) is responsible for:
 
-- Fetching stock data from Yahoo Finance
-- Gathering recent news articles
-- Analyzing the data using OpenAI's GPT models
+- Gathering comprehensive stock data and news using Perplexity's sonar-deep-research model
+- Analyzing the data using Perplexity's models
 - Generating price forecasts for multiple time horizons
 
 ### Portfolio Optimization
@@ -20,7 +19,7 @@ The stock research agent (`src/agents/stock_research.py`) is responsible for:
 The portfolio agent (`src/agents/portfolio.py`):
 
 - Analyzes daily stock forecasts
-- Selects the best 5 stocks for the portfolio
+- Selects the best 5 stocks for the portfolio using Perplexity's sonar-reasoning-pro model
 - Generates expected return estimates
 - Provides a summary of the selection rationale
 

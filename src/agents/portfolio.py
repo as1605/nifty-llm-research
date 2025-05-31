@@ -9,8 +9,6 @@ import pandas as pd
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
 from src.db.models import Basket
-from src.db.models import Invocation
-from src.db.models import PromptConfig
 
 from .base import BaseAgent
 
@@ -21,7 +19,7 @@ class PortfolioAgent(BaseAgent):
     def __init__(self):
         """Initialize the portfolio agent."""
         super().__init__(
-            model="gpt-4-turbo-preview",
+            model="sonar-reasoning-pro",
             temperature=0.5,  # Lower temperature for more consistent recommendations
         )
 
@@ -38,30 +36,42 @@ class PortfolioAgent(BaseAgent):
         df = pd.DataFrame(stock_data)
 
         # Get or create prompt config
-        prompt_config = await self._get_prompt_config()
+        prompt_config = await self.get_prompt_config(
+            name="portfolio_optimization",
+            system_prompt="""You are an expert portfolio manager specializing in Indian stocks.
+            Analyze the provided stock forecasts and select the 5 best stocks for a weekly portfolio.
+            Consider both potential returns and risk factors in your selection.""",
+            user_prompt="""Analyze the following stock forecasts and select the best 5 stocks:
+
+            Stock Data:
+            {STOCK_DATA}
+
+            Provide:
+            - List of 5 selected stocks (symbols only)
+            - Expected 1-month portfolio return
+            - Brief explanation of selection rationale
+
+            Format your response as a JSON object with keys:
+            - selected_stocks (list)
+            - expected_return (float)
+            - summary (string)""",
+            params=["STOCK_DATA"],
+        )
 
         # Create parameter mapping
         params = {"STOCK_DATA": df.to_string()}
 
         # Get completion
-        response = await self.get_completion(
-            prompt_config.system_prompt, prompt_config.user_prompt.format(**params)
+        response, invocation_id = await self.get_completion(
+            prompt_config.system_prompt,
+            prompt_config.user_prompt.format(**params),
+            prompt_config=prompt_config,
+            params=params
         )
 
         # Parse results
         try:
-            result = eval(response.choices[0].message.content)
-
-            # Store invocation
-            invocation = Invocation(
-                prompt_config_id=prompt_config.id,
-                params=params,
-                response=response.choices[0].message.content,
-                metadata=response.usage.dict() if hasattr(response, "usage") else {},
-            )
-            await async_db[COLLECTIONS["invocations"]].insert_one(
-                invocation.dict()
-            )
+            result = eval(response['choices'][0]['message']['content'])
 
             # Calculate equal weights for selected stocks
             weights = {
@@ -84,45 +94,6 @@ class PortfolioAgent(BaseAgent):
 
         except Exception as e:
             raise ValueError(f"Failed to parse agent response: {e}")
-
-    async def _get_prompt_config(self) -> PromptConfig:
-        """Get or create the portfolio optimization prompt configuration."""
-        # Try to get existing config
-        config = await async_db[COLLECTIONS["prompt_configs"]].find_one(
-            {"name": "portfolio_optimization"}
-        )
-
-        if config:
-            return PromptConfig(**config)
-
-        # Create new config if not exists
-        config = PromptConfig(
-            name="portfolio_optimization",
-            system_prompt="""You are an expert portfolio manager specializing in Indian stocks.
-            Analyze the provided stock forecasts and select the 5 best stocks for a weekly portfolio.
-            Consider both potential returns and risk factors in your selection.""",
-            user_prompt="""Analyze the following stock forecasts and select the best 5 stocks:
-
-            Stock Data:
-            {STOCK_DATA}
-
-            Provide:
-            - List of 5 selected stocks (symbols only)
-            - Expected 1-month portfolio return
-            - Brief explanation of selection rationale
-
-            Format your response as a JSON object with keys:
-            - selected_stocks (list)
-            - expected_return (float)
-            - summary (string)""",
-            params=["STOCK_DATA"],
-            model="gpt-4-turbo-preview",
-            default=True,
-        )
-
-        result = await async_db[COLLECTIONS["prompt_configs"]].insert_one(config.dict())
-        config.id = result.inserted_id
-        return config
 
     def _calculate_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calculate additional metrics for portfolio selection.

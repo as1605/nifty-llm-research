@@ -1,29 +1,23 @@
 """
-Stock research agent for analyzing and forecasting stock prices.
+Stock research agent for analyzing and forecasting stock prices using Perplexity models.
 """
 
 from datetime import datetime
 
-import requests
-import yfinance as yf
-from bs4 import BeautifulSoup
-
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
 from src.db.models import Forecast
-from src.db.models import Invocation
-from src.db.models import PromptConfig
 from src.db.models import Stock
 
 from .base import BaseAgent
 
 
 class StockResearchAgent(BaseAgent):
-    """Agent for analyzing stocks and generating price forecasts."""
+    """Agent for analyzing stocks and generating price forecasts using Perplexity models."""
 
     def __init__(self):
         """Initialize the stock research agent."""
-        super().__init__(model="gpt-4-turbo-preview", temperature=0.7)
+        super().__init__(model="sonar-deep-research", temperature=0.7)
 
     async def analyze_stock(self, symbol: str) -> dict:
         """Analyze a stock and generate price forecasts.
@@ -34,28 +28,124 @@ class StockResearchAgent(BaseAgent):
         Returns:
             Dictionary containing forecasts and analysis
         """
-        # Gather data
-        stock_data = self._get_stock_data(f"{symbol}.NS")
-        news_data = self._get_news_data(symbol)
+        # Get or create prompt config for deep research
+        research_config = await self.get_prompt_config(
+            name="stock_research",
+            system_prompt="""You are an expert financial analyst specializing in Indian stocks.
+            Use your deep research capabilities to gather and analyze comprehensive information about the given stock.
+            Focus on factual data, market trends, and reliable sources.
+            Include specific numbers, dates, and sources in your analysis.
+            Ensure all numerical data is accurate and properly sourced.""",
+            user_prompt="{query}",
+            params=["query"],
+        )
 
-        # Get or create prompt config
-        prompt_config = await self._get_prompt_config()
+        # Create research query
+        research_query = f"""Analyze {symbol} stock on NSE. Provide comprehensive information including:
+        1. Current stock price and recent price movements
+        2. Market capitalization
+        3. P/E ratio and other key financial metrics
+        4. Recent financial performance and quarterly results
+        5. Market position and competitive advantages
+        6. Industry trends and challenges
+        7. Management quality and strategy
+        8. Growth prospects and risks
+        9. Technical analysis indicators
+        10. Market sentiment and news
+        
+        Format your response as a JSON object with the following structure:
+        {{
+            "current_price": float,
+            "market_cap": float,
+            "pe_ratio": float,
+            "volume": float,
+            "industry": str,
+            "financial_metrics": {{
+                "revenue_growth": float,
+                "profit_margin": float,
+                "debt_to_equity": float
+            }},
+            "analysis": {{
+                "strengths": list[str],
+                "weaknesses": list[str],
+                "opportunities": list[str],
+                "threats": list[str]
+            }},
+            "sources": list[str]
+        }}
+        
+        Ensure all numerical values are accurate and include sources for your data."""
 
-        # Create parameter mapping
-        params = {
-            "STOCK_TICKER": symbol,
-            "STOCK_DATA": str(stock_data),
-            "NEWS_DATA": str(news_data),
-        }
+        # Get deep research completion
+        research_response, research_invocation_id = await self.get_completion(
+            research_config.system_prompt,
+            research_query,
+            prompt_config=research_config,
+            params={"symbol": symbol}
+        )
 
-        # Get completion
-        response = await self.get_completion(
-            prompt_config.system_prompt, prompt_config.user_prompt.format(**params)
+        # Parse research data
+        try:
+            stock_data = eval(research_response['choices'][0]['message']['content'])
+        except Exception as e:
+            raise ValueError(f"Failed to parse research data: {e}")
+
+        # Switch to reasoning model for final analysis
+        self.model = "sonar-reasoning-pro"
+        analysis_config = await self.get_prompt_config(
+            name="stock_analysis",
+            system_prompt="""You are an expert financial analyst specializing in Indian stocks.
+            Based on the provided research and data, generate precise price forecasts and analysis.
+            Your analysis should be data-driven and consider both technical and fundamental factors.
+            Provide specific numbers and clear reasoning for your forecasts.
+            Ensure your forecasts are realistic and well-justified by the available data.""",
+            user_prompt="{query}",
+            params=["query"],
+        )
+
+        # Create analysis query
+        analysis_query = f"""Based on the following research about {symbol}, provide:
+        1. Price forecasts for:
+           - 1 week
+           - 1 month
+           - 3 months
+           - 6 months
+           - 12 months
+        2. Confidence score (0-1)
+        3. Key factors influencing the forecast
+        4. Risk factors to consider
+
+        Research findings:
+        {research_response['choices'][0]['message']['content']}
+
+        Format your response as a JSON object with the following structure:
+        {{
+            "forecast_1w": float,
+            "forecast_1m": float,
+            "forecast_3m": float,
+            "forecast_6m": float,
+            "forecast_12m": float,
+            "confidence_score": float,
+            "key_factors": list[str],
+            "risk_factors": list[str],
+            "analysis_summary": str,
+            "sources": list[str]
+        }}"""
+
+        # Get final analysis
+        analysis_response, analysis_invocation_id = await self.get_completion(
+            analysis_config.system_prompt,
+            analysis_query,
+            prompt_config=analysis_config,
+            params={
+                "symbol": symbol,
+                "research": research_response['choices'][0]['message']['content']
+            }
         )
 
         # Parse results
         try:
-            result = eval(response.choices[0].message.content)
+            result = eval(analysis_response['choices'][0]['message']['content'])
 
             # Store stock data
             stock = Stock(
@@ -68,21 +158,10 @@ class StockResearchAgent(BaseAgent):
                 {"ticker": symbol}, {"$set": stock.dict()}, upsert=True
             )
 
-            # Store invocation
-            invocation = Invocation(
-                prompt_config_id=prompt_config.id,
-                params=params,
-                response=response.choices[0].message.content,
-                metadata=response.usage.dict() if hasattr(response, "usage") else {},
-            )
-            invocation_result = await async_db[COLLECTIONS["invocations"]].insert_one(
-                invocation.dict()
-            )
-
             # Store forecast
             forecast = Forecast(
                 stock_ticker=symbol,
-                invocation_id=invocation_result.inserted_id,
+                invocation_id=analysis_invocation_id,
                 forecast_date=datetime.utcnow(),
                 target_price=result["forecast_1m"],  # Using 1-month forecast as target
                 gain=(
@@ -92,7 +171,7 @@ class StockResearchAgent(BaseAgent):
                 * 100,
                 days=30,  # 1 month
                 reason_summary=result["analysis_summary"],
-                sources=[news["url"] for news in news_data],
+                sources=result.get("sources", []),
             )
             await async_db[COLLECTIONS["forecasts"]].insert_one(forecast.dict())
 
@@ -100,110 +179,3 @@ class StockResearchAgent(BaseAgent):
 
         except Exception as e:
             raise ValueError(f"Failed to parse agent response: {e}")
-
-    async def _get_prompt_config(self) -> PromptConfig:
-        """Get or create the stock analysis prompt configuration."""
-        # Try to get existing config
-        config = await async_db[COLLECTIONS["prompt_configs"]].find_one(
-            {"name": "stock_analysis"}
-        )
-
-        if config:
-            return PromptConfig(**config)
-
-        # Create new config if not exists
-        config = PromptConfig(
-            name="stock_analysis",
-            system_prompt="""You are an expert financial analyst specializing in Indian stocks.
-            Analyze the provided stock data and news to generate price forecasts.
-            Your analysis should be data-driven and consider both technical and fundamental factors.""",
-            user_prompt="""Analyze {STOCK_TICKER} based on the following data:
-
-            Stock Data:
-            {STOCK_DATA}
-
-            Recent News:
-            {NEWS_DATA}
-
-            Generate price forecasts for:
-            - 1 week
-            - 1 month
-            - 3 months
-            - 6 months
-            - 12 months
-
-            Also provide:
-            - Brief analysis summary
-            - Confidence score (0-1)
-
-            Format your response as a JSON object.""",
-            params=["STOCK_TICKER", "STOCK_DATA", "NEWS_DATA"],
-            model="gpt-4-turbo-preview",
-            default=True,
-        )
-
-        result = await async_db[COLLECTIONS["prompt_configs"]].insert_one(config.dict())
-        config.id = result.inserted_id
-        return config
-
-    def _get_stock_data(self, symbol: str) -> dict:
-        """Get stock data from Yahoo Finance.
-
-        Args:
-            symbol: The stock symbol with .NS suffix
-
-        Returns:
-            Dictionary of stock data
-        """
-        stock = yf.Ticker(symbol)
-
-        # Get historical data
-        hist = stock.history(period="1y")
-
-        # Get info
-        info = stock.info
-
-        return {
-            "current_price": info.get("currentPrice"),
-            "52_week_high": info.get("fiftyTwoWeekHigh"),
-            "52_week_low": info.get("fiftyTwoWeekLow"),
-            "market_cap": info.get("marketCap"),
-            "pe_ratio": info.get("trailingPE"),
-            "volume": info.get("volume"),
-            "avg_volume": info.get("averageVolume"),
-            "industry": info.get("industry"),
-            "price_history": hist[["Close", "Volume"]].to_dict(),
-        }
-
-    def _get_news_data(self, symbol: str) -> list[dict]:
-        """Get recent news articles about the stock.
-
-        Args:
-            symbol: The stock symbol
-
-        Returns:
-            List of news article dictionaries
-        """
-        # Use a search query to find news
-        query = f"{symbol} stock NSE news"
-
-        # Get Google News results
-        url = f"https://www.google.com/search?q={query}&tbm=nws"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        }
-
-        try:
-            response = requests.get(url, headers=headers)
-            soup = BeautifulSoup(response.text, "html.parser")
-
-            news_items = []
-            for g in soup.find_all("div", class_="g"):
-                title = g.find("h3", class_="r")
-                if title:
-                    news_items.append({"title": title.text, "url": g.find("a")["href"]})
-
-            return news_items[:5]  # Return top 5 news items
-
-        except Exception:
-            return []
