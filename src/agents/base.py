@@ -142,7 +142,7 @@ class BaseAgent:
         response = requests.post(self.base_url, json=payload, headers=self.headers)
         response.raise_for_status()
         request_data = response.json()
-        request_id = request_data.get('request_id')
+        request_id = request_data.get('id')
 
         if not request_id:
             raise ValueError("No request ID received from Perplexity API")

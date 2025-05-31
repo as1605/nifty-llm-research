@@ -4,7 +4,8 @@ Configuration settings for the Nifty Stock Research project.
 
 from pathlib import Path
 
-from pydantic import BaseSettings
+# from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from pydantic import Field
 
 # Base project directory
@@ -37,7 +38,8 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-        case_sensitive = True
+        case_sensitive = False  # Allow case-insensitive environment variables
+        env_file_encoding = 'utf-8'
 
 
 # Global settings instance

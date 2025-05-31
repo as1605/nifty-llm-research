@@ -4,10 +4,44 @@ Database models for the Nifty Stock Research project using MongoDB.
 
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 from bson import ObjectId
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field, GetJsonSchemaHandler
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import CoreSchema, core_schema
+
+
+class PyObjectId(ObjectId):
+    """Custom type for handling MongoDB ObjectId fields."""
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls,
+        _source_type: Any,
+        _handler: GetJsonSchemaHandler,
+    ) -> CoreSchema:
+        return core_schema.json_or_python_schema(
+            json_schema=core_schema.str_schema(),
+            python_schema=core_schema.union_schema([
+                core_schema.is_instance_schema(ObjectId),
+                core_schema.chain_schema([
+                    core_schema.str_schema(),
+                    core_schema.no_info_plain_validator_function(cls.validate),
+                ])
+            ]),
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                lambda x: str(x),
+                return_schema=core_schema.str_schema(),
+                when_used='json',
+            ),
+        )
+
+    @classmethod
+    def validate(cls, v: str) -> ObjectId:
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid ObjectId")
+        return ObjectId(v)
 
 
 class OrderType(str, Enum):
@@ -15,9 +49,22 @@ class OrderType(str, Enum):
     SELL = "sell"
 
 
-class PromptConfig(BaseModel):
+class BaseMongoModel(BaseModel):
+    """Base model with MongoDB configuration."""
+    
+    model_config = {
+        "arbitrary_types_allowed": True,
+        "json_encoders": {
+            ObjectId: str,
+            datetime: lambda dt: dt.isoformat(),
+        },
+    }
+
+
+class PromptConfig(BaseMongoModel):
     """Model for storing prompt configurations."""
 
+    id: PyObjectId | None = Field(None, alias="_id")
     name: str = Field(..., description="Short code to identify the prompt")
     system_prompt: str = Field(..., description="The system prompt text")
     user_prompt: str = Field(..., description="The user prompt template")
@@ -32,12 +79,12 @@ class PromptConfig(BaseModel):
     modified_time: datetime = Field(default_factory=datetime.utcnow)
 
 
-class Invocation(BaseModel):
+class Invocation(BaseMongoModel):
     """Model for storing LLM invocations."""
 
     invocation_time: datetime = Field(default_factory=datetime.utcnow)
     result_time: datetime | None = None
-    prompt_config_id: ObjectId
+    prompt_config_id: PyObjectId
     params: dict[str, str] = Field(
         default_factory=dict, description="Mapping of parameter keys to their values"
     )
@@ -45,7 +92,7 @@ class Invocation(BaseModel):
     metadata: dict = Field(default_factory=dict)
 
 
-class Stock(BaseModel):
+class Stock(BaseMongoModel):
     """Model for storing stock information."""
 
     ticker: str = Field(..., description="Stock ticker symbol")
@@ -55,12 +102,12 @@ class Stock(BaseModel):
     industry: str = Field(..., description="Industry sector")
 
 
-class Forecast(BaseModel):
+class Forecast(BaseMongoModel):
     """Model for storing stock price forecasts."""
 
     stock_ticker: str = Field(..., description="Stock ticker symbol")
     created_time: datetime = Field(default_factory=datetime.utcnow)
-    invocation_id: ObjectId
+    invocation_id: PyObjectId
     forecast_date: datetime
     target_price: float
     gain: float = Field(..., description="Percentage gain")
@@ -69,7 +116,7 @@ class Forecast(BaseModel):
     sources: list[str] = Field(default_factory=list)
 
 
-class Basket(BaseModel):
+class Basket(BaseMongoModel):
     """Model for storing stock basket recommendations."""
 
     creation_date: datetime = Field(default_factory=datetime.utcnow)
@@ -82,7 +129,7 @@ class Basket(BaseModel):
     expected_gain_1w: float
 
 
-class Email(BaseModel):
+class Email(BaseMongoModel):
     """Model for storing email records."""
 
     created_time: datetime = Field(default_factory=datetime.utcnow)
@@ -98,7 +145,7 @@ class Email(BaseModel):
     bcc: list[str] = Field(default_factory=list)
 
 
-class Order(BaseModel):
+class Order(BaseMongoModel):
     """Model for storing trade orders."""
 
     stock_ticker: str
