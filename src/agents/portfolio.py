@@ -43,7 +43,7 @@ class PortfolioAgent(BaseAgent):
 
         # Parse results
         try:
-            result = eval(response['choices'][0]['message']['content'])
+            result = self._parse_json_response(response['choices'][0]['message']['content'])
 
             # Calculate equal weights for selected stocks
             weights = {
@@ -60,7 +60,7 @@ class PortfolioAgent(BaseAgent):
                 reason_summary=result["summary"],
                 expected_gain_1w=result["expected_return"],
             )
-            await async_db[COLLECTIONS["baskets"]].insert_one(basket.dict())
+            await async_db[COLLECTIONS["baskets"]].insert_one(basket.model_dump())
 
             return result
 

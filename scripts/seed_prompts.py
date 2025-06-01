@@ -53,7 +53,9 @@ DEFAULT_PROMPTS = [
         Focus on factual data, market trends, and reliable sources.
         Include specific numbers, dates, and sources in your analysis.
         Ensure all numerical data is accurate and properly sourced.
-        IMPORTANT: Output ONLY a valid JSON object with no additional text or explanation.""",
+        Provide detailed price forecasts with clear reasoning for each timeframe.
+        IMPORTANT: Output ONLY a valid JSON object with no additional text or explanation.
+        If you need to explain anything, include it within the JSON structure.""",
         user_prompt="""Analyze {symbol} stock on NSE. Provide comprehensive information including:
         1. Current stock price and recent price movements
         2. Market capitalization
@@ -65,6 +67,7 @@ DEFAULT_PROMPTS = [
         8. Growth prospects and risks
         9. Technical analysis indicators
         10. Market sentiment and news
+        11. Price forecasts for multiple timeframes with detailed reasoning
         
         Format your response as a JSON object with the following structure:
         {{
@@ -84,10 +87,24 @@ DEFAULT_PROMPTS = [
                 "opportunities": list[str],
                 "threats": list[str]
             }},
-            "sources": list[str]
+            "forecasts": [
+                {{
+                    "timeframe": str,    // "1w", "1m", "3m", "6m", "1y"
+                    "target_price": float,
+                    "confidence_score": float,  // 0-1
+                    "reasoning": str,
+                    "key_factors": list[str],
+                    "risk_factors": list[str],
+                    "sources": list[str]  // List of https URLs as sources
+                }}
+            ],
+            "sources": list[str]  // List of https URLs as sources
         }}
         
-        Ensure all numerical values are accurate and include sources for your data.""",
+        Ensure all numerical values are accurate and include sources for your data.
+        All sources must be valid https URLs.
+        All reasoning should be in a single text field.
+        Use only the following timeframes: "1w", "1m", "3m", "6m", "1y".""",
         params=["symbol"],
         model="sonar-deep-research",
         temperature=0.7,
@@ -146,12 +163,14 @@ async def seed_prompts():
     try:
         logger.info("Seeding default prompt configurations...")
         
-        # Clear existing default prompts
-        await async_db[COLLECTIONS["prompt_configs"]].delete_many({"default": True})
-        
-        # Insert new default prompts
+        # Upsert each default prompt
         for prompt in DEFAULT_PROMPTS:
-            await async_db[COLLECTIONS["prompt_configs"]].insert_one(prompt.dict())
+            await async_db[COLLECTIONS["prompt_configs"]].update_one(
+                {"name": prompt.name, "default": True},
+                {"$set": prompt.model_dump()},
+                upsert=True
+            )
+            logger.info(f"Upserted default prompt: {prompt.name}")
         
         logger.info("Successfully seeded default prompt configurations")
         

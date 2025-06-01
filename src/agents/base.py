@@ -3,6 +3,9 @@ Base agent class for Perplexity model interactions.
 """
 
 import asyncio
+import json
+import logging
+import re
 import requests
 from typing import Optional, List, Dict, Any, Tuple
 from datetime import datetime
@@ -13,6 +16,9 @@ from src.db.models import Invocation
 from src.db.models import PromptConfig
 
 from config.settings import settings
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 
 class BaseAgent:
@@ -40,6 +46,40 @@ class BaseAgent:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
+
+    def _parse_json_response(self, response_text: str) -> dict:
+        """Parse JSON response with fallback mechanisms.
+        
+        Args:
+            response_text: The response text from the LLM
+            
+        Returns:
+            Parsed JSON data
+            
+        Raises:
+            ValueError: If JSON parsing fails after all attempts
+        """
+        try:
+            return json.loads(response_text)
+        except json.JSONDecodeError:
+            logger.warning("Initial JSON parsing failed, attempting fallback methods...")
+            # Try to extract JSON from markdown code blocks
+            json_match = re.search(r'```(?:json)?\s*({[\s\S]*?})\s*```', response_text)
+            if json_match:
+                try:
+                    return json.loads(json_match.group(1))
+                except json.JSONDecodeError:
+                    logger.warning("Failed to parse JSON from markdown code block")
+            
+            # Try to find the first valid JSON object
+            json_match = re.search(r'({[\s\S]*})', response_text)
+            if json_match:
+                try:
+                    return json.loads(json_match.group(1))
+                except json.JSONDecodeError:
+                    logger.warning("Failed to parse JSON from text content")
+            
+            raise ValueError("Failed to parse JSON response from LLM")
 
     def _create_messages(
         self,
@@ -82,7 +122,9 @@ class BaseAgent:
         """
         start_time = asyncio.get_event_loop().time()
         poll_url = f"{self.base_url}/{request_id}"
+        poll_count = 0
 
+        logger.info(f"Starting to poll for completion of request {request_id}")
         while True:
             if asyncio.get_event_loop().time() - start_time > self.max_poll_time:
                 raise TimeoutError(f"Polling exceeded maximum time of {self.max_poll_time} seconds")
@@ -90,11 +132,18 @@ class BaseAgent:
             response = requests.get(poll_url, headers=self.headers)
             response.raise_for_status()
             data = response.json()
+            poll_count += 1
 
             if data.get('status') == 'COMPLETED':
+                logger.info(f"Request {request_id} completed after {poll_count} polls")
                 return data.get('response', {})
             elif data.get('status') == 'FAILED':
-                raise ValueError(f"Request failed: {data.get('error', 'Unknown error')}")
+                error_msg = data.get('error', 'Unknown error')
+                logger.error(f"Request {request_id} failed: {error_msg}")
+                raise ValueError(f"Request failed: {error_msg}")
+
+            if poll_count % 10 == 0:  # Log every 10th poll
+                logger.info(f"Still polling request {request_id}... (attempt {poll_count})")
 
             await asyncio.sleep(self.poll_interval)
 
@@ -140,6 +189,7 @@ class BaseAgent:
             }
         }
 
+        logger.info(f"Submitting request to Perplexity API using model: {prompt_config.model}")
         response = requests.post(self.base_url, json=payload, headers=self.headers)
         response.raise_for_status()
         request_data = response.json()
@@ -147,6 +197,8 @@ class BaseAgent:
 
         if not request_id:
             raise ValueError("No request ID received from Perplexity API")
+
+        logger.info(f"Request submitted successfully with ID: {request_id}")
 
         # Poll for completion
         response_data = await self._poll_completion(request_id)
@@ -158,9 +210,10 @@ class BaseAgent:
             response=response_data['choices'][0]['message']['content'],
             metadata=response_data.get('usage', {}),
         )
-        result = await async_db[COLLECTIONS["invocations"]].insert_one(invocation.dict())
+        result = await async_db[COLLECTIONS["invocations"]].insert_one(invocation.model_dump())
         invocation_id = str(result.inserted_id)
 
+        logger.info(f"Stored invocation with ID: {invocation_id}")
         return response_data, invocation_id
 
     async def get_prompt_config(
