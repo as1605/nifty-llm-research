@@ -10,10 +10,10 @@
             "Automate email notifications with insights"
         ],
         "constraints": [
-            "Use OpenAI APIs directly (no LangChain)",
-            "Store data in Amazon Aurora PostgreSQL",
+            "Use Perplexity AI for deep research",
+            "Store data in MongoDB",
             "Send emails via Amazon SES",
-            "Never modify files in prompts/ directory",
+            "Never modify files in prompts/ directory - only add new files",
             "Follow strict type checking and code quality standards"
         ],
         "key_components": {
@@ -23,10 +23,18 @@
             "automation": ["analyze_stocks.py", "generate_portfolio.py"]
         },
         "code_standards": {
-            "formatting": "ruff format",
+            "formatting": "black",
             "linting": "ruff check",
             "type_checking": "mypy",
-            "package_manager": "uv"
+            "package_manager": "pip",
+            "virtual_env": "venv"
+        },
+        "restricted_directories": {
+            "prompts/": {
+                "action": "read_only",
+                "reason": "Historical record of AI prompts used to generate the repository",
+                "modification_policy": "Only new files can be added, existing files must not be modified"
+            }
         }
     }
 } 

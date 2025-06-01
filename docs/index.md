@@ -1,124 +1,97 @@
-# Nifty Stock Research Documentation
+# Nifty Stock Research System Documentation
 
 ## Overview
 
-The Nifty Stock Research system is an AI-powered tool for analyzing Indian stocks (NSE Top 100) and generating price forecasts and portfolio recommendations. The system uses Perplexity's models to analyze market news, financial data, and generate predictions.
+The Nifty Stock Research System is an AI-powered platform for analyzing Indian stocks, specifically focusing on the NSE Top 100 companies. The system leverages advanced AI models and data analysis techniques to provide comprehensive stock research and portfolio recommendations.
 
-## Components
+## Architecture
 
-### Stock Research Agent
+The system is built with a modular architecture consisting of several key components:
 
-The stock research agent (`src/agents/stock_research.py`) is responsible for:
+1. **AI Agents**
+   - Stock Research Agent: Performs deep research using Perplexity AI
+   - Portfolio Agent: Generates optimized portfolio recommendations
 
-- Gathering comprehensive stock data and news using Perplexity's sonar-deep-research model
-- Analyzing the data using Perplexity's models
-- Generating price forecasts for multiple time horizons
+2. **Data Storage**
+   - MongoDB database for storing:
+     - Stock forecasts and predictions
+     - Historical price data
+     - Research reports
+     - Portfolio recommendations
 
-### Portfolio Optimization
+3. **Visualization**
+   - Interactive charts and graphs
+   - Performance metrics
+   - Portfolio analytics
 
-The portfolio agent (`src/agents/portfolio.py`):
+4. **Automation**
+   - Scheduled stock analysis
+   - Automated email reports
+   - Portfolio rebalancing
 
-- Analyzes daily stock forecasts
-- Selects the best 5 stocks for the portfolio using Perplexity's sonar-reasoning-pro model
-- Generates expected return estimates
-- Provides a summary of the selection rationale
+## Setup and Configuration
 
-### Database
+1. **Environment Setup**
+   - Create and activate virtual environment
+   - Install dependencies
+   - Configure environment variables
 
-The system uses Amazon Aurora PostgreSQL to store:
+2. **Database Setup**
+   - Install MongoDB
+   - Configure connection string
+   - Initialize collections
 
-- Daily stock forecasts
-- Weekly portfolio recommendations
-- Historical performance data
+3. **API Configuration**
+   - Set up Perplexity API key
+   - Configure AWS credentials
+   - Set up email notifications
 
-### Visualization
+## Usage Guide
 
-The visualization module (`src/visualization/plotter.py`) creates:
-
-- Stock price prediction graphs
-- Portfolio performance charts
-- Interactive visualizations for analysis
-
-### Email Notifications
-
-The email module (`src/utils/email.py`) sends:
-
-- Weekly portfolio recommendations
-- Performance summaries
-- Analysis reports
-
-## Setup
-
-1. Clone the repository
-2. Create a virtual environment:
+1. **Running Analysis**
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   python scripts/analyze_stocks.py
    ```
 
-3. Install dependencies:
+2. **Generating Portfolio**
    ```bash
-   pip install -r requirements.txt
+   python scripts/generate_portfolio.py
    ```
 
-4. Configure environment variables:
-   - Copy `env.template` to `.env`
-   - Fill in your API keys and credentials
-
-5. Set up the database:
+3. **Viewing Reports**
    ```bash
-   python scripts/setup_db.py
+   python scripts/visualize_predictions.py
    ```
 
-## Usage
+## Development Guidelines
 
-### Running Stock Analysis
+1. **Code Standards**
+   - Use type hints
+   - Follow PEP 8
+   - Write unit tests
+   - Document new features
 
-```bash
-python scripts/analyze_stocks.py
-```
+2. **Prompt Management**
+   - Store prompts in `prompts/` directory
+   - Version control prompt changes
+   - Document prompt modifications
 
-This will:
-- Analyze all NSE Top 100 stocks
-- Generate price forecasts
-- Save results to the database
-- Create visualizations
+3. **Testing**
+   - Run tests before committing
+   - Maintain test coverage
+   - Update tests for new features
 
-### Generating Portfolio Recommendations
+## Contributing
 
-```bash
-python scripts/generate_portfolio.py
-```
+We welcome contributions! Please follow these steps:
 
-This will:
-- Read today's forecasts
-- Select the best 5 stocks
-- Send email recommendations
-- Update portfolio history
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Update documentation
+6. Submit a pull request
 
-## Development
+## Support
 
-### Running Tests
-
-```bash
-pytest
-```
-
-### Code Style
-
-- Format code: `black .`
-- Sort imports: `isort .`
-- Type checking: `mypy .`
-- Linting: `flake8`
-
-### Documentation
-
-Build documentation:
-```bash
-mkdocs build
-```
-
-Serve documentation locally:
-```bash
-mkdocs serve
-``` 
+For issues and feature requests, please use the GitHub issue tracker. 
