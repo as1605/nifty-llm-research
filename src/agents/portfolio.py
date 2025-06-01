@@ -18,10 +18,7 @@ class PortfolioAgent(BaseAgent):
 
     def __init__(self):
         """Initialize the portfolio agent."""
-        super().__init__(
-            model="sonar-reasoning-pro",
-            temperature=0.5,  # Lower temperature for more consistent recommendations
-        )
+        super().__init__()
 
     async def optimize_portfolio(self, stock_data: list[dict]) -> dict:
         """Generate optimized portfolio recommendations.
@@ -35,38 +32,13 @@ class PortfolioAgent(BaseAgent):
         # Convert to DataFrame for easier analysis
         df = pd.DataFrame(stock_data)
 
-        # Get or create prompt config
-        prompt_config = await self.get_prompt_config(
-            name="portfolio_optimization",
-            system_prompt="""You are an expert portfolio manager specializing in Indian stocks.
-            Analyze the provided stock forecasts and select the 5 best stocks for a weekly portfolio.
-            Consider both potential returns and risk factors in your selection.""",
-            user_prompt="""Analyze the following stock forecasts and select the best 5 stocks:
-
-            Stock Data:
-            {STOCK_DATA}
-
-            Provide:
-            - List of 5 selected stocks (symbols only)
-            - Expected 1-month portfolio return
-            - Brief explanation of selection rationale
-
-            Format your response as a JSON object with keys:
-            - selected_stocks (list)
-            - expected_return (float)
-            - summary (string)""",
-            params=["STOCK_DATA"],
-        )
-
-        # Create parameter mapping
-        params = {"STOCK_DATA": df.to_string()}
+        # Get prompt config
+        prompt_config = await self.get_prompt_config("portfolio_optimization")
 
         # Get completion
         response, invocation_id = await self.get_completion(
-            prompt_config.system_prompt,
-            prompt_config.user_prompt.format(**params),
             prompt_config=prompt_config,
-            params=params
+            params={"STOCK_DATA": df.to_string()}
         )
 
         # Parse results

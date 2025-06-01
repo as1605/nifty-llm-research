@@ -5,6 +5,7 @@ Base agent class for Perplexity model interactions.
 import asyncio
 import requests
 from typing import Optional, List, Dict, Any, Tuple
+from datetime import datetime
 
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
@@ -19,8 +20,6 @@ class BaseAgent:
 
     def __init__(
         self,
-        model: str = "sonar-deep-research",
-        temperature: float = 0.7,
         max_tokens: Optional[int] = None,
         poll_interval: float = 1.0,
         max_poll_time: float = 300.0,  # 5 minutes timeout
@@ -28,14 +27,10 @@ class BaseAgent:
         """Initialize the agent.
 
         Args:
-            model: The Perplexity model to use
-            temperature: Controls randomness in responses
             max_tokens: Maximum tokens in response
             poll_interval: Time between polling attempts in seconds
             max_poll_time: Maximum time to poll for completion in seconds
         """
-        self.model = model
-        self.temperature = temperature
         self.max_tokens = max_tokens
         self.api_key = settings.perplexity_api_key
         self.base_url = "https://api.perplexity.ai/async/chat/completions"
@@ -105,36 +100,42 @@ class BaseAgent:
 
     async def get_completion(
         self,
-        system_prompt: str,
-        user_message: str,
-        context: Optional[List[Dict[str, str]]] = None,
-        prompt_config: Optional[PromptConfig] = None,
-        params: Optional[Dict[str, Any]] = None,
+        prompt_config: PromptConfig,
+        params: Dict[str, Any],
     ) -> Tuple[Dict[str, Any], str]:
         """Get a chat completion from Perplexity and store the invocation.
 
         Args:
-            system_prompt: The system behavior definition
-            user_message: The user's input message
-            context: Optional additional context messages
-            prompt_config: Optional prompt configuration for storing invocation
-            params: Optional parameters used in the prompt
+            prompt_config: The prompt configuration to use
+            params: Parameters to be interpolated in the prompt
 
         Returns:
             Tuple of (Perplexity chat completion response, invocation ID)
 
         Raises:
             TimeoutError: If polling exceeds max_poll_time
-            ValueError: If the request fails
+            ValueError: If the request fails or if required parameters are missing
         """
-        messages = self._create_messages(system_prompt, user_message, context)
+        # Validate required parameters
+        missing_params = [param for param in prompt_config.params if param not in params]
+        if missing_params:
+            raise ValueError(f"Missing required parameters: {', '.join(missing_params)}")
+
+        # Interpolate prompts with parameters
+        system_prompt = prompt_config.system_prompt
+        user_prompt = prompt_config.user_prompt.format(**params)
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
 
         # Submit async request
         payload = {
             "request": {
-                "model": self.model,
+                "model": prompt_config.model,
                 "messages": messages,
-                "temperature": self.temperature,
+                "temperature": prompt_config.temperature,
                 "max_tokens": self.max_tokens,
             }
         }
@@ -150,55 +151,55 @@ class BaseAgent:
         # Poll for completion
         response_data = await self._poll_completion(request_id)
 
-        # Store invocation if prompt_config is provided
-        invocation_id = None
-        if prompt_config:
-            invocation = Invocation(
-                prompt_config_id=prompt_config.id,
-                params=params or {},
-                response=response_data['choices'][0]['message']['content'],
-                metadata=response_data.get('usage', {}),
-            )
-            result = await async_db[COLLECTIONS["invocations"]].insert_one(invocation.dict())
-            invocation_id = str(result.inserted_id)
+        # Store invocation
+        invocation = Invocation(
+            prompt_config_id=prompt_config.id,
+            params=params,
+            response=response_data['choices'][0]['message']['content'],
+            metadata=response_data.get('usage', {}),
+        )
+        result = await async_db[COLLECTIONS["invocations"]].insert_one(invocation.dict())
+        invocation_id = str(result.inserted_id)
 
         return response_data, invocation_id
 
     async def get_prompt_config(
         self,
         name: str,
-        system_prompt: str,
-        user_prompt: str,
-        params: List[str],
-        model: Optional[str] = None,
     ) -> PromptConfig:
-        """Get or create a prompt configuration.
+        """Get a prompt configuration by name.
 
         Args:
             name: Name of the prompt configuration
-            system_prompt: The system prompt
-            user_prompt: The user prompt template
-            params: List of parameter names used in the prompt
-            model: Optional model override
 
         Returns:
-            The prompt configuration
+            PromptConfig object
+
+        Raises:
+            ValueError: If no prompt configuration is found with the given name
         """
-        config = await async_db[COLLECTIONS["prompt_configs"]].find_one({"name": name})
-
-        if config:
-            return PromptConfig(**config)
-
-        config = PromptConfig(
-            name=name,
-            system_prompt=system_prompt,
-            user_prompt=user_prompt,
-            params=params,
-            model=model or self.model,
-            default=True,
-        )
-
-        result = await async_db[COLLECTIONS["prompt_configs"]].insert_one(config.dict())
-        config.id = result.inserted_id
-        return config
+        # Try to find existing default prompt
+        prompt = await async_db[COLLECTIONS["prompt_configs"]].find_one({
+            "name": name,
+            "default": True
+        })
+        
+        if prompt is None:
+            # If no default prompt found, run the seeder
+            from scripts.seed_prompts import seed_prompts
+            await seed_prompts()
+            
+            # Try to find the prompt again after seeding
+            prompt = await async_db[COLLECTIONS["prompt_configs"]].find_one({
+                "name": name,
+                "default": True
+            })
+            
+            if prompt is None:
+                raise ValueError(
+                    f"No prompt configuration found for '{name}' even after seeding. "
+                    "Please ensure the prompt is defined in scripts/seed_prompts.py"
+                )
+        
+        return PromptConfig(**prompt)
 

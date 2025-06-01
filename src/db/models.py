@@ -66,6 +66,7 @@ class PromptConfig(BaseMongoModel):
 
     id: PyObjectId | None = Field(None, alias="_id")
     name: str = Field(..., description="Short code to identify the prompt")
+    description: str = Field(..., description="Detailed description of what this prompt is used for")
     system_prompt: str = Field(..., description="The system prompt text")
     user_prompt: str = Field(..., description="The user prompt template")
     params: list[str] = Field(
@@ -73,6 +74,12 @@ class PromptConfig(BaseMongoModel):
         description="List of parameter keys to be replaced in the prompt",
     )
     model: str = Field(..., description="The OpenAI model name")
+    temperature: float = Field(
+        default=0.7,
+        description="Controls randomness in responses (0.0 to 1.0)",
+        ge=0.0,
+        le=1.0
+    )
     tools: list[str] = Field(default_factory=list, description="Tools allowed to use")
     default: bool = Field(default=False, description="If this will be used by default")
     created_time: datetime = Field(default_factory=datetime.utcnow)
