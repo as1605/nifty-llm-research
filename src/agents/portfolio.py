@@ -33,7 +33,7 @@ class PortfolioAgent(BaseAgent):
         df = pd.DataFrame(stock_data)
 
         # Get prompt config
-        prompt_config = await self.get_prompt_config("portfolio_optimization")
+        prompt_config = await self.get_prompt_config("portfolio_basket")
 
         # Get completion
         response, invocation_id = await self.get_completion(
@@ -45,20 +45,14 @@ class PortfolioAgent(BaseAgent):
         try:
             result = self._parse_json_response(response['choices'][0]['message']['content'])
 
-            # Calculate equal weights for selected stocks
-            weights = {
-                stock: 1.0 / len(result["selected_stocks"])
-                for stock in result["selected_stocks"]
-            }
-
             # Store basket
             basket = Basket(
                 creation_date=datetime.utcnow(),
-                stocks_ticker_candidates=[stock["symbol"] for stock in stock_data],
-                stocks_picked=result["selected_stocks"],
-                weights=weights,
-                reason_summary=result["summary"],
-                expected_gain_1w=result["expected_return"],
+                stocks_ticker_candidates=[stock["stock_ticker"] for stock in stock_data],
+                stocks_picked=result["stocks_picked"],
+                weights=result["weights"],
+                reason_summary=result["reason_summary"],
+                expected_gain_1m=result["expected_gain_1m"],
             )
             await async_db[COLLECTIONS["baskets"]].insert_one(basket.model_dump())
 

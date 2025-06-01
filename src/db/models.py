@@ -133,7 +133,7 @@ class Basket(BaseMongoModel):
         ..., description="Stock ticker vs their ratio, all summing to 1"
     )
     reason_summary: str
-    expected_gain_1w: float
+    expected_gain_1m: float
 
 
 class Email(BaseMongoModel):

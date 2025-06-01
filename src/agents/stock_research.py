@@ -91,7 +91,6 @@ class StockResearchAgent(BaseAgent):
                             {
                                 "timeframe": f"{f['days']}d",
                                 "target_price": f["target_price"],
-                                "confidence_score": f.get("confidence_score", 0.5),
                                 "reasoning": f["reason_summary"],
                                 "sources": f.get("sources", [])
                             }
@@ -102,14 +101,14 @@ class StockResearchAgent(BaseAgent):
                 }
         
         # Get prompt config for deep research
-        research_config = await self.get_prompt_config("stock_research")
+        research_config = await self.get_prompt_config("stock_research_forecast")
         logger.info(f"Using research model: {research_config.model}")
 
         # Get deep research completion
         logger.info(f"Requesting research analysis for {symbol}")
         research_response, research_invocation_id = await self.get_completion(
             prompt_config=research_config,
-            params={"symbol": symbol}
+            params={"TICKER": symbol}
         )
 
         # Parse research data with fallback
@@ -155,7 +154,6 @@ class StockResearchAgent(BaseAgent):
                 f"Forecast for {symbol} ({forecast_data['timeframe']}): "
                 f"Target Price={forecast_data['target_price']:.2f}, "
                 f"Gain={gain:.2f}%, "
-                f"Confidence={forecast_data['confidence_score']:.2f}"
             )
             
             # Create forecast object
