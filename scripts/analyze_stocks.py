@@ -8,7 +8,7 @@ import logging
 import argparse
 from pathlib import Path
 from datetime import datetime, timezone
-import aiohttp
+import requests
 from urllib.parse import quote
 
 from config.settings import settings
@@ -16,7 +16,6 @@ from src.agents.stock_research import StockResearchAgent
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
 from src.db.models import Stock
-from src.visualization.plotter import StockPlotter
 
 # Configure logging
 logging.basicConfig(
@@ -54,65 +53,86 @@ async def fetch_nse_stocks(index: str = "NIFTY 50", force_nse: bool = False) -> 
     }
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers) as response:
-                if response.status != 200:
-                    logger.error(f"Failed to fetch stocks for {index}: {response.status}")
-                    return []
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            logger.error(f"Failed to fetch stocks for {index}: {response.status_code}")
+            print(f"\nNSE API request failed with status code {response.status_code}.")
+            print("This is likely due to IP filtering. Please:")
+            print(f"1. Open this URL in your browser: {headers['Referer']}")
+            print("2. Complete any CAPTCHA or verification if required")
+            print("3. Wait for the page to load successfully")
+            print("4. Then run this script again\n")
+            return []
 
-                data = await response.json()
-                stocks = data.get("data", [])
-                current_tickers = {stock["symbol"] for stock in stocks}
+        data = response.json()
+        stocks = data.get("data", [])
+        current_tickers = set()
 
-                # Get all stocks that were previously in this index
-                previous_stocks = await async_db[COLLECTIONS["stocks"]].find(
-                    {"indices": index}
-                ).to_list(length=None)
+        # Get all stocks that were previously in this index
+        previous_stocks = await async_db[COLLECTIONS["stocks"]].find(
+            {"indices": index}
+        ).to_list(length=None)
 
-                # Update stocks in database
-                for stock_data in stocks:
-                    # Get existing stock data if any
-                    existing_stock = await async_db[COLLECTIONS["stocks"]].find_one(
-                        {"ticker": stock_data["symbol"]}
-                    )
-                    
-                    # Prepare indices list
-                    indices = [index]
-                    if existing_stock and "indices" in existing_stock:
-                        indices = list(set(existing_stock["indices"] + [index]))
+        # Update stocks in database
+        for stock_data in stocks:
+            meta = stock_data.get("meta", {})
+            company_name = meta.get("companyName")
+            
+            # Skip if company name is missing
+            if not company_name:
+                logger.warning(f"Skipping stock {meta.get('symbol')} due to missing company name")
+                continue
 
-                    stock = Stock(
-                        ticker=stock_data["symbol"],
-                        name=stock_data["companyName"],
-                        price=float(stock_data["lastPrice"]),
-                        market_cap=float(stock_data.get("marketCap", 0)),
-                        industry=stock_data.get("industry", "Unknown"),
-                        indices=indices,
-                        modified_time=datetime.now(timezone.utc)
-                    )
-                    
-                    # Upsert the stock data
-                    await async_db[COLLECTIONS["stocks"]].update_one(
-                        {"ticker": stock.ticker},
-                        {"$set": stock.model_dump()},
-                        upsert=True
-                    )
+            symbol = meta.get("symbol")
+            current_tickers.add(symbol)
 
-                # Remove index from stocks that are no longer in the index
-                for prev_stock in previous_stocks:
-                    if prev_stock["ticker"] not in current_tickers:
-                        # Remove this index from the stock's indices list
-                        indices = [idx for idx in prev_stock.get("indices", []) if idx != index]
-                        await async_db[COLLECTIONS["stocks"]].update_one(
-                            {"ticker": prev_stock["ticker"]},
-                            {"$set": {"indices": indices}}
-                        )
-                        logger.info(f"Removed {index} from {prev_stock['ticker']} as it's no longer in the index")
+            # Get existing stock data if any
+            existing_stock = await async_db[COLLECTIONS["stocks"]].find_one(
+                {"ticker": symbol}
+            )
+            
+            # Prepare indices list
+            indices = [index]
+            if existing_stock and "indices" in existing_stock:
+                indices = list(set(existing_stock["indices"] + [index]))
 
-                return [stock["symbol"] for stock in stocks]
+            stock = Stock(
+                ticker=symbol,
+                name=company_name,
+                price=float(stock_data["lastPrice"]),
+                industry=meta.get("industry", "Unknown"),
+                indices=indices,
+                modified_time=datetime.now(timezone.utc)
+            )
+            
+            # Upsert the stock data
+            await async_db[COLLECTIONS["stocks"]].update_one(
+                {"ticker": stock.ticker},
+                {"$set": stock.model_dump()},
+                upsert=True
+            )
+
+        # Remove index from stocks that are no longer in the index
+        for prev_stock in previous_stocks:
+            if prev_stock["ticker"] not in current_tickers:
+                # Remove this index from the stock's indices list
+                indices = [idx for idx in prev_stock.get("indices", []) if idx != index]
+                await async_db[COLLECTIONS["stocks"]].update_one(
+                    {"ticker": prev_stock["ticker"]},
+                    {"$set": {"indices": indices}}
+                )
+                logger.info(f"Removed {index} from {prev_stock['ticker']} as it's no longer in the index")
+
+        return list(current_tickers)
 
     except Exception as e:
         logger.exception(f"Error fetching stocks for {index}: {e}")
+        print(f"\nError fetching stocks from NSE API: {str(e)}")
+        print("This might be due to IP filtering. Please:")
+        print(f"1. Open this URL in your browser: {headers['Referer']}")
+        print("2. Complete any CAPTCHA or verification if required")
+        print("3. Wait for the page to load successfully")
+        print("4. Then run this script again\n")
         return []
 
 
@@ -130,10 +150,6 @@ async def analyze_stock(symbol: str, agent: StockResearchAgent, force_llm: bool 
         logger.info(f"Starting analysis for {symbol} at {start_time} (force_llm={force_llm})")
         result = await agent.analyze_stock(symbol, force=force_llm)
 
-        # Generate visualization
-        logger.info(f"Generating visualization for {symbol}")
-        plotter = StockPlotter()
-
         # Get historical forecasts
         logger.info(f"Fetching historical forecasts for {symbol}")
         historical_forecasts = (
@@ -144,14 +160,6 @@ async def analyze_stock(symbol: str, agent: StockResearchAgent, force_llm: bool 
         )
         logger.info(f"Found {len(historical_forecasts)} historical forecasts for {symbol}")
 
-        # Create visualization
-        save_path = (
-            Path(settings.data_dir) / "visualizations" / f"{symbol}_forecast.png"
-        )
-        save_path.parent.mkdir(parents=True, exist_ok=True)
-
-        plotter.plot_predictions(symbol, historical_forecasts, str(save_path))
-        logger.info(f"Saved visualization to {save_path}")
 
         end_time = datetime.now(timezone.utc)
         duration = (end_time - start_time).total_seconds()

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Removed
+- Removed visualization and email functionality
+  - Removed `src/visualization/plotter.py` module
+  - Removed `src/utils/email.py` module
+  - Removed email-related models and collections
+  - Removed AWS SES integration
+  - Removed plotting dependencies
+  - Updated documentation and configuration
+
 ### Changed
 - Migrated from Perplexity to Google Gemini API
   - Updated base agent to use Google's Gemini AI

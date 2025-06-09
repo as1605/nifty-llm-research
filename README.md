@@ -7,14 +7,13 @@ A research project using LLMs to analyze and forecast NSE-listed stocks, with a 
 This project uses Google's Gemini AI to:
 1. Analyze NSE-listed stocks and generate price forecasts
 2. Optimize stock portfolios based on these forecasts
-3. Track and visualize portfolio performance
+3. Track portfolio performance
 
 ## Key Features
 
 - **Stock Analysis**: Deep research on individual stocks using Google Search integration
 - **Portfolio Optimization**: Selection of optimal stock combinations based on forecasts
 - **Performance Tracking**: Historical tracking of portfolio performance
-- **Visualization**: Performance charts and analysis reports
 - **Output Generation**: Detailed reports in both JSON and Markdown formats
 
 ## Getting Started

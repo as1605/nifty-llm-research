@@ -5,6 +5,7 @@ Portfolio optimization agent for selecting the best stocks.
 import logging
 from datetime import datetime, timezone
 from typing import List, Dict, Any
+import json
 
 import pandas as pd
 
@@ -115,8 +116,21 @@ class PortfolioAgent(BaseAgent):
         if not stock_data:
             raise ValueError("No stock data available for portfolio optimization")
 
-        # Convert to DataFrame for easier analysis
-        df = pd.DataFrame(stock_data)
+        # Clean forecast data by removing _id and invocation_id fields and converting dates
+        cleaned_stock_data = []
+        for forecast in stock_data:
+            cleaned_forecast = forecast.copy()
+            # Remove MongoDB specific fields
+            cleaned_forecast.pop('_id', None)
+            cleaned_forecast.pop('invocation_id', None)
+            cleaned_forecast.pop('created_time', None)
+            cleaned_forecast.pop('modified_time', None)
+            
+            # Convert forecast_date to simple date string
+            if 'forecast_date' in cleaned_forecast:
+                cleaned_forecast['forecast_date'] = cleaned_forecast['forecast_date'].strftime('%Y-%m-%d')
+                
+            cleaned_stock_data.append(cleaned_forecast)
 
         # Get prompt config
         prompt_config = await self.get_prompt_config("portfolio_basket")
@@ -125,7 +139,7 @@ class PortfolioAgent(BaseAgent):
         response, invocation_id = await self.get_completion(
             prompt_config=prompt_config,
             params={
-                "STOCK_DATA": df.to_string(),
+                "STOCK_DATA": json.dumps(cleaned_stock_data, indent=2),
                 "FILTER_TOP_N": str(filter_top_n),
                 "BASKET_SIZE_K": str(basket_size_k)
             }

@@ -22,7 +22,7 @@ DEFAULT_PROMPTS = [
         description="Optimizes stock portfolio by selecting the best performing stocks based on forecasts",
         system_prompt="""You are a financial reasoning assistant using Google's Gemini AI. Your task is to select a portfolio of {BASKET_SIZE_K} stocks from a given list of {FILTER_TOP_N} NSE-listed stock forecasts. Each forecast is provided as a JSON object with current metrics and target prices for multiple timeframes. You must:  
 1. Analyze the {FILTER_TOP_N} forecast objects, considering expected returns, risk factors, and sector overlap.  
-2. Choose exactly {BASKET_SIZE_K} stocks and assign each a weight between 0.1 and 0.3, ensuring the total weight sums to 1.  
+2. Choose exactly {BASKET_SIZE_K} stocks and assign each a weight, ensuring the total weight sums to 1.  
 3. Provide a concise reason_summary (under 200 words) explaining your selection and weighting, referencing relative risk and diversification.  
 4. Estimate an expected_gain_1m value (percentage gain in 1 month for the portfolio).  
 5. Output only valid UTF-8 JSON in the exact structure specified below. No additional commentary or formatting outside the JSON.  
@@ -35,7 +35,7 @@ Use these settings to optimize token usage:
 {STOCK_DATA}
 
 Select the best {BASKET_SIZE_K} stocks from these {FILTER_TOP_N} forecasts to form a diversified portfolio. 
-For each stock, assign a weight between 0.1 and 0.3 such that all weights sum to 1. 
+For each stock, assign a weight such that all weights sum to 1. 
 Consider relative 1-month target gains, volatility implied by differences between timeframes, and industry overlap to manage risk. 
 Provide a reason_summary under 200 words describing why these {BASKET_SIZE_K} stocks were chosen and how weights were determined. 
 Finally, estimate expected_gain_1m as the weighted average of each stock's 1-month return implied by its current_price and 1-month target_price. 

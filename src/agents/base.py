@@ -6,11 +6,13 @@ import asyncio
 import json
 import logging
 import re
+import random
 from typing import Optional, List, Dict, Any, Tuple
 from datetime import datetime, timezone
 
 from google import genai
 from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
+from google.genai.errors import ServerError
 
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
@@ -21,6 +23,12 @@ from config.settings import settings
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# Retry configuration
+MAX_RETRIES = 10
+INITIAL_RETRY_DELAY = 1  # seconds
+MAX_RETRY_DELAY = 300  # seconds (5 minutes)
+JITTER_FACTOR = 0.1  # 10% jitter
 
 
 class BaseAgent:
@@ -112,9 +120,15 @@ class BaseAgent:
         if missing_params:
             raise ValueError(f"Missing required parameters: {', '.join(missing_params)}")
 
-        # Interpolate prompts with parameters
+        # Interpolate prompts with parameters using string replace
         system_prompt = prompt_config.system_prompt
-        user_prompt = prompt_config.user_prompt.format(**params)
+        user_prompt = prompt_config.user_prompt
+        
+        # Replace parameters in both prompts
+        for key, value in params.items():
+            placeholder = f"{{{key}}}"
+            system_prompt = system_prompt.replace(placeholder, str(value))
+            user_prompt = user_prompt.replace(placeholder, str(value))
 
         # Combine messages
         content = self._create_messages(system_prompt, user_prompt)
@@ -140,24 +154,61 @@ class BaseAgent:
         result = await async_db[COLLECTIONS["invocations"]].insert_one(invocation.model_dump())
         invocation_id = str(result.inserted_id)
 
-        # Generate content
+        # Generate content with retry logic
         logger.info(f"Submitting request to Gemini API using model: {prompt_config.model}")
         
-        response = self.client.models.generate_content(
-            model=prompt_config.model,
-            contents=content,
-            config=GenerateContentConfig(
-                tools=tools,
-                response_modalities=["TEXT"],
-                temperature=prompt_config.temperature,
-                max_output_tokens=prompt_config.max_tokens,
-            )
-        )
+        retry_count = 0
+        while True:
+            try:
+                response = self.client.models.generate_content(
+                    model=prompt_config.model,
+                    contents=content,
+                    config=GenerateContentConfig(
+                        tools=tools,
+                        response_modalities=["TEXT"],
+                        temperature=prompt_config.temperature,
+                        max_output_tokens=prompt_config.max_tokens,
+                    )
+                )
+                break  # Success, exit retry loop
+                
+            except ServerError as e:
+                if not str(e).startswith("503"):
+                    raise  # Re-raise if not a 503 error
+                    
+                retry_count += 1
+                if retry_count > MAX_RETRIES:
+                    logger.error(f"Max retries ({MAX_RETRIES}) exceeded for 503 error")
+                    raise ValueError(f"Service unavailable after {MAX_RETRIES} retries: {str(e)}")
+                
+                # Calculate delay with exponential backoff and jitter
+                delay = min(INITIAL_RETRY_DELAY * (2 ** (retry_count - 1)), MAX_RETRY_DELAY)
+                jitter = random.uniform(-JITTER_FACTOR * delay, JITTER_FACTOR * delay)
+                total_delay = delay + jitter
+                
+                logger.warning(
+                    f"Received 503 error, retrying in {total_delay:.2f} seconds "
+                    f"(attempt {retry_count}/{MAX_RETRIES})"
+                )
+                await asyncio.sleep(total_delay)
+                
+            except Exception as e:
+                logger.error(f"Unexpected error during Gemini API call: {str(e)}")
+                raise ValueError(f"Failed to get completion: {str(e)}")
 
         # Extract response text
         response_text = ""
         for part in response.candidates[0].content.parts:
             response_text += part.text
+
+        # Get grounding metadata if available
+        grounding_metadata = None
+        if (hasattr(response.candidates[0], 'grounding_metadata') and 
+            response.candidates[0].grounding_metadata is not None):
+            try:
+                grounding_metadata = response.candidates[0].grounding_metadata.model_dump()
+            except Exception as e:
+                logger.warning(f"Failed to get grounding metadata: {e}")
 
         # Update invocation with response and end time
         await async_db[COLLECTIONS["invocations"]].update_one(
@@ -166,7 +217,7 @@ class BaseAgent:
                 "$set": {
                     "response": response_text,
                     "result_time": datetime.now(timezone.utc),
-                    "metadata.grounding_metadata": response.candidates[0].grounding_metadata.model_dump() if hasattr(response.candidates[0], 'grounding_metadata') else None
+                    "metadata.grounding_metadata": grounding_metadata
                 }
             }
         )

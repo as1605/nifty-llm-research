@@ -22,15 +22,6 @@ class Settings(BaseSettings):
     mongodb_uri: str = Field(..., env="MONGODB_URI")
     mongodb_db_name: str = Field(..., env="MONGODB_DB_NAME")
 
-    # AWS
-    aws_access_key_id: str = Field(..., env="AWS_ACCESS_KEY_ID")
-    aws_secret_access_key: str = Field(..., env="AWS_SECRET_ACCESS_KEY")
-    aws_region: str = Field("ap-south-1", env="AWS_REGION")
-
-    # Email
-    sender_email: str = Field(..., env="SENDER_EMAIL")
-    recipient_email: str = Field(..., env="RECIPIENT_EMAIL")
-
     # Application
     log_level: str = Field("INFO", env="LOG_LEVEL")
     cache_dir: Path = Field(BASE_DIR / "cache", env="CACHE_DIR")

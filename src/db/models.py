@@ -4,7 +4,7 @@ Database models for the Nifty Stock Research project using MongoDB.
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, List, Optional
 
 from bson import ObjectId
 from pydantic import BaseModel, Field, GetJsonSchemaHandler
@@ -45,127 +45,91 @@ class PyObjectId(ObjectId):
 
 
 class OrderType(str, Enum):
+    """Types of trade orders."""
+
     BUY = "buy"
     SELL = "sell"
 
 
-class BaseMongoModel(BaseModel):
-    """Base model with MongoDB configuration."""
-    
-    model_config = {
-        "arbitrary_types_allowed": True,
-        "json_encoders": {
-            ObjectId: str,
-            datetime: lambda dt: dt.isoformat(),
-        },
-    }
-
-
-class PromptConfig(BaseMongoModel):
+class PromptConfig(BaseModel):
     """Model for storing prompt configurations."""
 
     id: PyObjectId | None = Field(None, alias="_id")
-    name: str = Field(..., description="Short code to identify the prompt")
-    description: str = Field(..., description="Detailed description of what this prompt is used for")
-    system_prompt: str = Field(..., description="The system prompt text")
-    user_prompt: str = Field(..., description="The user prompt template")
-    params: list[str] = Field(
-        default_factory=list,
-        description="List of parameter keys to be replaced in the prompt",
-    )
-    model: str = Field(..., description="The Gemini model name")
-    temperature: float = Field(
-        default=0.7,
-        description="Controls randomness in responses (0.0 to 1.0)",
-        ge=0.0,
-        le=1.0
-    )
-    max_tokens: int = Field(
-        default=2048,
-        description="Maximum number of tokens in the response",
-        gt=0
-    )
-    tools: list[str] = Field(default_factory=list, description="Tools allowed to use")
-    default: bool = Field(default=False, description="If this will be used by default")
+    name: str = Field(..., description="Unique name for the prompt configuration")
+    description: str = Field(..., description="Description of what this prompt does")
+    system_prompt: str = Field(..., description="System prompt for the model")
+    user_prompt: str = Field(..., description="User prompt template")
+    params: List[str] = Field(default_factory=list, description="Required parameters for the prompt")
+    model: str = Field(default="gemini-pro", description="Model to use")
+    temperature: float = Field(default=0.7, description="Temperature for generation")
+    max_tokens: int = Field(default=2048, description="Maximum tokens to generate")
+    tools: List[str] = Field(default_factory=list, description="Tools to enable")
+    default: bool = Field(default=False, description="Whether this is the default config")
     created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     modified_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class Invocation(BaseMongoModel):
+class Invocation(BaseModel):
     """Model for storing LLM invocations."""
 
-    invocation_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    result_time: datetime | None = None
     prompt_config_id: PyObjectId
-    params: dict[str, str] = Field(
-        default_factory=dict, description="Mapping of parameter keys to their values"
-    )
+    params: dict
     response: str
+    invocation_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    result_time: Optional[datetime] = None
     metadata: dict = Field(default_factory=dict)
 
 
-class Stock(BaseMongoModel):
+class Stock(BaseModel):
     """Model for storing stock information."""
 
-    ticker: str = Field(..., description="Stock ticker symbol")
-    name: str = Field(..., description="Company name")
-    price: float = Field(..., description="Current stock price")
-    market_cap: float = Field(..., description="Market capitalization in INR")
-    industry: str = Field(..., description="Industry sector")
-    indices: list[str] = Field(default_factory=list, description="List of indices the stock belongs to")
+    ticker: str
+    name: str
+    price: float
+    industry: str
+    indices: List[str]
     modified_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class Forecast(BaseMongoModel):
+class Forecast(BaseModel):
     """Model for storing stock price forecasts."""
 
-    stock_ticker: str = Field(..., description="Stock ticker symbol")
-    created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    invocation_id: PyObjectId
+    stock_ticker: str
     forecast_date: datetime
     target_price: float
-    gain: float = Field(..., description="Percentage gain")
-    days: int = Field(..., description="Number of days for the forecast")
+    gain: float
+    days: int
     reason_summary: str
-    sources: list[str] = Field(default_factory=list)
+    sources: List[str]
+    created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    modified_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class Basket(BaseMongoModel):
-    """Model for storing stock basket recommendations."""
+class Basket(BaseModel):
+    """Model for storing portfolio baskets."""
 
     creation_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    stocks_ticker_candidates: list[str] = Field(default_factory=list)
-    stocks_picked: list[str] = Field(default_factory=list)
+    stocks_ticker_candidates: List[str] = Field(
+        ..., description="List of stock tickers considered for the basket"
+    )
+    stocks_picked: List[str] = Field(..., description="List of selected stock tickers")
     weights: dict[str, float] = Field(
-        ..., description="Stock ticker vs their ratio, all summing to 1"
+        ..., description="Dictionary mapping stock tickers to their weights (summing to 1)"
     )
     reason_summary: str
     expected_gain_1m: float
 
 
-class Email(BaseMongoModel):
-    """Model for storing email records."""
-
-    created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    sent_time: datetime | None = None
-    service: str = Field(default="amazon-ses")
-    type: str = Field(..., description="account related/generic alert/basket update")
-    status: str
-    subject: str
-    content_html: str
-    from_: str = Field(..., alias="from")
-    to: list[str]
-    cc: list[str] = Field(default_factory=list)
-    bcc: list[str] = Field(default_factory=list)
-
-
-class Order(BaseMongoModel):
+class Order(BaseModel):
     """Model for storing trade orders."""
 
     stock_ticker: str
     type: OrderType
     price: float
-    is_market_order: bool = Field(..., alias="isMarketOrder")
+    is_market_order: bool
     placed_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    executed_time: datetime | None = None
+    executed_time: Optional[datetime] = None
+    status: str = Field(default="pending")
     demat_account: str
+    quantity: int
+    metadata: dict = Field(default_factory=dict)

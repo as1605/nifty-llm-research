@@ -160,29 +160,45 @@ class StockResearchAgent(BaseAgent):
         try:
             result = self._parse_json_response(response['choices'][0]['message']['content'])
             
-            # Store forecast
-            forecast = Forecast(
-                stock_ticker=symbol,
-                invocation_id=invocation_id,
-                forecast_date=datetime.now(timezone.utc),
-                target_price=result["target_price"],
-                gain=result["gain"],
-                days=result["days"],
-                reason_summary=result["reason_summary"],
-                sources=result.get("sources", [])
-            )
-            await async_db[COLLECTIONS["forecasts"]].insert_one(forecast.model_dump())
+            # Process each forecast in the result
+            forecasts = []
+            current_price = float(stock["price"])
+            
+            for forecast_data in result["forecasts"]:
+                # Convert timeframe to days
+                days = self._get_days_from_timeframe(forecast_data["timeframe"])
+                
+                # Process sources to resolve URLs
+                processed_sources = await self._process_sources(forecast_data.get("sources", []))
+                
+                # Calculate gain percentage
+                target_price = float(forecast_data["target_price"])
+                gain = ((target_price - current_price) / current_price) * 100
+                
+                # Create and store forecast
+                forecast = Forecast(
+                    stock_ticker=symbol,
+                    invocation_id=invocation_id,
+                    forecast_date=datetime.now(timezone.utc),
+                    target_price=target_price,
+                    days=days,
+                    reason_summary=forecast_data["reasoning"],
+                    sources=processed_sources,
+                    gain=gain
+                )
+                await async_db[COLLECTIONS["forecasts"]].insert_one(forecast.model_dump())
+                
+                forecasts.append({
+                    "timeframe": forecast_data["timeframe"],
+                    "target_price": target_price,
+                    "reasoning": forecast_data["reasoning"],
+                    "sources": processed_sources,
+                    "gain": gain
+                })
 
             return {
                 "stock_data": {
-                    "forecasts": [
-                        {
-                            "timeframe": f"{result['days']}d",
-                            "target_price": result["target_price"],
-                            "reasoning": result["reason_summary"],
-                            "sources": result.get("sources", [])
-                        }
-                    ]
+                    "forecasts": forecasts
                 }
             }
 

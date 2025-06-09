@@ -25,7 +25,6 @@ COLLECTIONS = {
     "stocks": "stocks",
     "forecasts": "forecasts",
     "baskets": "baskets",
-    "emails": "emails",
     "orders": "orders",
 }
 
@@ -48,10 +47,6 @@ def setup_indexes():
 
     # Basket indexes
     db[COLLECTIONS["baskets"]].create_index("creation_date")
-
-    # Email indexes
-    db[COLLECTIONS["emails"]].create_index("created_time")
-    db[COLLECTIONS["emails"]].create_index("status")
 
     # Order indexes
     db[COLLECTIONS["orders"]].create_index([("stock_ticker", 1), ("placed_time", 1)])
