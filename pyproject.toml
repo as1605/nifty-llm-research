@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "nifty-llm-research"
 version = "0.1.0"
-description = "AI-powered stock analysis and portfolio recommendation system"
+description = "AI-powered stock analysis and portfolio recommendation system using Google Gemini AI"
 requires-python = ">=3.10"
 authors = [
     { name = "Your Name", email = "your.email@example.com" }
@@ -78,7 +78,7 @@ strict_equality = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["yfinance.*", "bs4.*"]
+module = ["google.genai.*", "bs4.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

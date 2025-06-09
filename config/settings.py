@@ -15,8 +15,8 @@ BASE_DIR = Path(__file__).parent.parent
 class Settings(BaseSettings):
     """Main settings class for the application."""
 
-    # Perplexity
-    perplexity_api_key: str = Field(..., env="PERPLEXITY_API_KEY")
+    # Google AI
+    google_api_key: str = Field(..., env="GOOGLE_API_KEY")
 
     # MongoDB
     mongodb_uri: str = Field(..., env="MONGODB_URI")

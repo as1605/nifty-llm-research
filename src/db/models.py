@@ -73,12 +73,17 @@ class PromptConfig(BaseMongoModel):
         default_factory=list,
         description="List of parameter keys to be replaced in the prompt",
     )
-    model: str = Field(..., description="The OpenAI model name")
+    model: str = Field(..., description="The Gemini model name")
     temperature: float = Field(
         default=0.7,
         description="Controls randomness in responses (0.0 to 1.0)",
         ge=0.0,
         le=1.0
+    )
+    max_tokens: int = Field(
+        default=2048,
+        description="Maximum number of tokens in the response",
+        gt=0
     )
     tools: list[str] = Field(default_factory=list, description="Tools allowed to use")
     default: bool = Field(default=False, description="If this will be used by default")

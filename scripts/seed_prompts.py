@@ -20,7 +20,7 @@ DEFAULT_PROMPTS = [
     PromptConfig(
         name="portfolio_basket",
         description="Optimizes stock portfolio by selecting the best performing stocks based on forecasts",
-        system_prompt="""You are a financial reasoning assistant using the Perplexity Sonar Reasoning API. Your task is to select a portfolio of 5 stocks from a given list of 20 NSE-listed stock forecasts. Each forecast is provided as a JSON object with current metrics and target prices for multiple timeframes. You must:  
+        system_prompt="""You are a financial reasoning assistant using Google's Gemini AI. Your task is to select a portfolio of 5 stocks from a given list of 20 NSE-listed stock forecasts. Each forecast is provided as a JSON object with current metrics and target prices for multiple timeframes. You must:  
 1. Analyze the 20 forecast objects, considering expected returns, risk factors, and sector overlap.  
 2. Choose exactly 5 stocks and assign each a weight between 0.1 and 0.3, ensuring the total weight sums to 1.  
 3. Provide a concise reason_summary (under 200 words) explaining your selection and weighting, referencing relative risk and diversification.  
@@ -30,16 +30,16 @@ DEFAULT_PROMPTS = [
 Use these settings to optimize token usage:  
 • Minimize verbosity—focus on essential analysis.  
 """,
-        user_prompt="""Given a list of 20 stock forecast objects formatted as follows:
+        user_prompt="""Given the following stock forecasts:
 
-        {STOCK_DATA}
+{STOCK_DATA}
 
-        Select the best 5 stocks from these 20 forecasts to form a diversified portfolio. 
-        For each stock, assign a weight between 0.1 and 0.3 such that all weights sum to 1. 
-        Consider relative 1-month target gains, volatility implied by differences between timeframes, and industry overlap to manage risk. 
-        Provide a reason_summary under 200 words describing why these 5 stocks were chosen and how weights were determined. 
-        Finally, estimate expected_gain_1m as the weighted average of each stock's 1-month return implied by its current_price and 1-month target_price. 
-        Respond only with a JSON in this format:
+Select the best 5 stocks from these 20 forecasts to form a diversified portfolio. 
+For each stock, assign a weight between 0.1 and 0.3 such that all weights sum to 1. 
+Consider relative 1-month target gains, volatility implied by differences between timeframes, and industry overlap to manage risk. 
+Provide a reason_summary under 200 words describing why these 5 stocks were chosen and how weights were determined. 
+Finally, estimate expected_gain_1m as the weighted average of each stock's 1-month return implied by its current_price and 1-month target_price. 
+Respond only with a JSON in this format:
 {
   "stocks_picked": ["TICKER1", "TICKER2", "TICKER3", "TICKER4", "TICKER5"],
   "weights": {
@@ -54,8 +54,10 @@ Use these settings to optimize token usage:
 }
         """,
         params=["STOCK_DATA"],
-        model="sonar-reasoning",
+        model="gemini-2.0-flash",
         temperature=0.2,
+        max_tokens=32768,  # Set to 32k to ensure sufficient output space
+        tools=[],
         default=True,
         created_time=datetime.utcnow(),
         modified_time=datetime.utcnow()
@@ -63,10 +65,10 @@ Use these settings to optimize token usage:
     PromptConfig(
         name="stock_research_forecast",
         description="Performs deep research on a stock to gather comprehensive information and analysis",
-        system_prompt="""You are a specialized financial research assistant using Perplexity Sonar Deep Research API. Your primary objective is to forecast target prices for a specified NSE-listed stock over multiple time horizons (1 week, 1 month, 3 months, 6 months, 1 year).  
+        system_prompt="""You are a specialized financial research assistant using Google's Gemini AI with Google Search capabilities. Your primary objective is to forecast target prices for a specified NSE-listed stock over multiple time horizons (1 week, 1 month, 3 months, 6 months, 1 year).  
 
 **Model Settings & Token Optimization**  
-• restrict searches to authoritative Indian financial domains.   
+• Use Google Search to find authoritative Indian financial sources.   
 • Restrict unnecessary verbosity: fetch only essential data points and reasoning. Avoid long-form narrative.  
 
 **Research Scope & Order**  
@@ -124,34 +126,19 @@ Important
 • Minimize token usage: choose only the most impactful data and citations.
 • Respond only with valid JSON—no extra commentary.
 """,
-        user_prompt="""Stock Ticker: {TICKER}
+        user_prompt="""Analyze the stock {TICKER} and provide a comprehensive forecast. Use Google Search to gather the latest market data, news, and analysis. Focus on authoritative Indian financial sources and primary data points.
 
-Fetch the latest price and fundamental metrics:
-• current stock quote
-• market capitalization
-• PE ratio
-• latest trading volume
-• industry classification
+For each timeframe (1w, 1m, 3m, 6m, 1y):
+1. Calculate a target price based on technical and fundamental analysis
+2. Provide a concise reasoning (≤ 50 words) for the target
+3. Include relevant source URLs
 
-Gather relevant technical analysis data:
-• recent price trend (last 1 month chart summary)
-• key support/resistance levels
-• momentum indicators (e.g., RSI, MACD) if available
-
-Retrieve all pertinent news, filings, and reports:
-• Quarterly/annual filings (SEBI/NSE disclosures)
-• Major corporate actions (earnings surprises, management changes, share buybacks)
-• Industry-wide and macroeconomic catalysts (RBI policy, budget announcements, competitor results)
-
-For each time horizon ("1w", "1m", "3m", "6m", "1y"):
-• Compute a realistic target price.
-• Provide a one-line reasoning (≤ 50 words) that ties technical, fundamental, and macro/industry factors.
-• List 2-4 HTTPS URLs that directly support that timeframe's forecast.
-
-Return a JSON object exactly in the format specified by the system prompt.""",
+Ensure all numerical values are accurate and properly formatted. Return only the JSON response as specified in the system prompt.""",
         params=["TICKER"],
-        model="sonar-deep-research",
-        temperature=0.3,
+        model="gemini-2.0-flash",
+        temperature=0.2,
+        max_tokens=32768,  # Set to 32k to ensure sufficient output space for search results and analysis
+        tools=["google_search"],
         default=True,
         created_time=datetime.utcnow(),
         modified_time=datetime.utcnow()

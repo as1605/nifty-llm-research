@@ -4,13 +4,14 @@ An AI-powered system for analyzing Indian stocks (NSE Top 100) using market news
 
 ## Features
 
-- Deep research analysis of NSE Top 100 stocks using Perplexity AI
+- Deep research analysis of NSE Top 100 stocks using Google Gemini AI
 - Price forecasting for multiple time horizons (1w, 1m, 3m, 6m, 1y)
 - Automated portfolio recommendation system
 - Data persistence in MongoDB
 - Automated email reporting via Amazon SES
 - Interactive visualization of price predictions
 - Prompt-based configuration system for AI interactions
+- Google Search integration for real-time market data
 
 ## Project Structure
 

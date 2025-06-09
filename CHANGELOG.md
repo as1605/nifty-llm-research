@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Migrated from Perplexity to Google Gemini API
+  - Updated base agent to use Google's Gemini AI
+  - Added Google Search integration for real-time market data
+  - Updated prompt configurations for Gemini model
+  - Enhanced metadata handling for search results
+  - Major changes in:
+    - `src/agents/base.py`
+    - `scripts/seed_prompts.py`
+    - `config/settings.py`
+    - `requirements.txt`
+
 ### Added
 - Improved prompt system using ChatGPT
   - Enhanced prompt templates in `prompts/6-chatgpt-prompt.md`

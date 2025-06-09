@@ -6,6 +6,8 @@ import json
 import logging
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
+import aiohttp
+from urllib.parse import urlparse
 
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
@@ -61,6 +63,51 @@ class StockResearchAgent(BaseAgent):
         }).to_list(length=None)
         
         return forecasts
+
+    async def _resolve_vertex_url(self, url: str) -> str:
+        """Resolve Vertex AI Search redirect URLs to their final destination.
+        
+        Args:
+            url: The URL to resolve
+            
+        Returns:
+            The final URL after following redirects
+        """
+        if not url.startswith("https://vertexaisearch.cloud.google.com/grounding-api-redirect"):
+            return url
+            
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, allow_redirects=False) as response:
+                    if response.status == 302:
+                        location = response.headers.get("Location")
+                        if location:
+                            logger.info(f"Resolved Vertex AI URL: {url} -> {location}")
+                            return location
+                    logger.warning(f"Vertex AI URL did not return 302: {url}")
+                    return url
+        except Exception as e:
+            logger.error(f"Error resolving Vertex AI URL {url}: {e}")
+            return url
+
+    async def _process_sources(self, sources: List[str]) -> List[str]:
+        """Process a list of source URLs, resolving any Vertex AI redirects.
+        
+        Args:
+            sources: List of source URLs
+            
+        Returns:
+            List of processed URLs
+        """
+        if not sources:
+            return []
+            
+        processed_sources = []
+        for url in sources:
+            final_url = await self._resolve_vertex_url(url)
+            processed_sources.append(final_url)
+            
+        return processed_sources
 
     async def analyze_stock(self, symbol: str, force: bool = False) -> dict:
         """Analyze a stock and generate price forecasts.
@@ -149,11 +196,17 @@ class StockResearchAgent(BaseAgent):
             # Calculate percentage gain
             gain = ((forecast_data["target_price"] - current_price) / current_price) * 100
             
+            # Process sources
+            forecast_sources = await self._process_sources(forecast_data.get("sources", []))
+            stock_sources = await self._process_sources(stock_data.get("sources", []))
+            all_sources = list(set(forecast_sources + stock_sources))  # Remove duplicates
+            
             # Log forecast details
             logger.info(
                 f"Forecast for {symbol} ({forecast_data['timeframe']}): "
                 f"Target Price={forecast_data['target_price']:.2f}, "
                 f"Gain={gain:.2f}%, "
+                f"Sources={len(all_sources)}"
             )
             
             # Create forecast object
@@ -165,7 +218,7 @@ class StockResearchAgent(BaseAgent):
                 gain=gain,
                 days=days_ahead,
                 reason_summary=forecast_data["reasoning"],
-                sources=forecast_data.get("sources", []) + stock_data.get("sources", []),
+                sources=all_sources,
             )
             
             # Store forecast in database
