@@ -1,16 +1,39 @@
-# Nifty Stock Research System Documentation
+---
+layout: default
+title: Nifty Stock Research System
+description: AI-powered platform for analyzing Indian stocks using Gemini AI
+---
+
+# Nifty Stock Research System
 
 ## Overview
 
-The Nifty Stock Research System is an AI-powered platform for analyzing Indian stocks, specifically focusing on the NSE Top 100 companies. The system leverages advanced AI models and data analysis techniques to provide comprehensive stock research and portfolio recommendations.
+The Nifty Stock Research System is an AI-powered platform for analyzing Indian stocks, specifically focusing on the NSE Top 100 companies. This project leverages Google's Gemini AI model to perform deep research and analysis of stocks, generating comprehensive reports and portfolio recommendations.
+
+The system uses a unique approach called "vibe-coding" (stored in the [`prompts/`](https://github.com/as1605/nifty-llm-research/tree/main/prompts) directory) to generate human-like, contextually aware analysis of stocks. This methodology combines technical analysis with qualitative insights to provide a holistic view of each stock's potential.
+
+## Key Features
+
+- 🤖 AI-powered stock analysis using Gemini AI
+- 📊 Comprehensive technical and fundamental analysis
+- 💼 Portfolio optimization and recommendations
+- 📈 Historical performance tracking
+- 📱 Modern, responsive web interface
+
+## Latest Research Outputs
+
+Our latest research outputs are available in the following reports:
+
+- [NIFTY 50 Analysis (June 2025)](baskets/NIFTY%2050__Jun_02_2025_21_37__N20_K5.md)
 
 ## Architecture
 
 The system is built with a modular architecture consisting of several key components:
 
-1. **AI Agents**
-   - Stock Research Agent: Performs deep research using Perplexity AI
-   - Portfolio Agent: Generates optimized portfolio recommendations
+1. **AI Analysis Engine**
+   - Powered by Google's Gemini AI
+   - Custom prompt engineering for stock analysis
+   - Context-aware research generation
 
 2. **Data Storage**
    - MongoDB database for storing:
@@ -32,38 +55,18 @@ The system is built with a modular architecture consisting of several key compon
 ## Setup and Configuration
 
 1. **Environment Setup**
-   - Create and activate virtual environment
-   - Install dependencies
-   - Configure environment variables
-
-2. **Database Setup**
-   - Install MongoDB
-   - Configure connection string
-   - Initialize collections
-
-3. **API Configuration**
-   - Set up Perplexity API key
-   - Configure AWS credentials
-   - Set up email notifications
-
-## Usage Guide
-
-1. **Running Analysis**
    ```bash
-   python scripts/analyze_stocks.py
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
    ```
 
-2. **Generating Portfolio**
-   ```bash
-   python scripts/generate_portfolio.py
-   ```
+2. **Configuration**
+   - Set up environment variables
+   - Configure MongoDB connection
+   - Set up Gemini API credentials
 
-3. **Viewing Reports**
-   ```bash
-   python scripts/visualize_predictions.py
-   ```
-
-## Development Guidelines
+## Development
 
 1. **Code Standards**
    - Use type hints
@@ -75,11 +78,6 @@ The system is built with a modular architecture consisting of several key compon
    - Store prompts in `prompts/` directory
    - Version control prompt changes
    - Document prompt modifications
-
-3. **Testing**
-   - Run tests before committing
-   - Maintain test coverage
-   - Update tests for new features
 
 ## Contributing
 

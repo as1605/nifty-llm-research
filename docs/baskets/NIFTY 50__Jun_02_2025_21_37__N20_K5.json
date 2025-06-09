@@ -1,0 +1,18 @@
+{
+  "stocks_picked": [
+    "ONGC",
+    "ETERNAL",
+    "HEROMOTOCO",
+    "ADANIPORTS",
+    "NTPC"
+  ],
+  "weights": {
+    "ONGC": 0.2,
+    "ETERNAL": 0.25,
+    "HEROMOTOCO": 0.15,
+    "ADANIPORTS": 0.2,
+    "NTPC": 0.2
+  },
+  "reason_summary": "This portfolio aims for a balance of growth and stability. ETERNAL is given the highest weight (0.25) due to strong growth forecasts in the quick commerce sector. ONGC, ADANIPORTS, and NTPC are each assigned a weight of 0.2, providing exposure to energy and infrastructure sectors with moderate growth potential. HEROMOTOCO receives a weight of 0.15, offering exposure to the automotive sector. This allocation seeks diversification across sectors while prioritizing stocks with solid near-term growth prospects and analyst confidence. The portfolio avoids over-concentration in any single sector to mitigate risk.",
+  "expected_gain_1m": 5.1
+}
