@@ -7,7 +7,7 @@ import json
 import logging
 import re
 from typing import Optional, List, Dict, Any, Tuple
-from datetime import datetime
+from datetime import datetime, timezone
 
 from google import genai
 from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
@@ -124,6 +124,22 @@ class BaseAgent:
         if "google_search" in prompt_config.tools:
             tools.append(Tool(google_search=GoogleSearch()))
 
+        # Create invocation record with start time
+        invocation = Invocation(
+            prompt_config_id=prompt_config.id,
+            params=params,
+            response="",  # Will be updated after response
+            invocation_time=datetime.now(timezone.utc),
+            metadata={
+                "model": prompt_config.model,
+                "temperature": prompt_config.temperature,
+                "max_tokens": prompt_config.max_tokens,
+                "tools_used": prompt_config.tools,
+            },
+        )
+        result = await async_db[COLLECTIONS["invocations"]].insert_one(invocation.model_dump())
+        invocation_id = str(result.inserted_id)
+
         # Generate content
         logger.info(f"Submitting request to Gemini API using model: {prompt_config.model}")
         
@@ -143,21 +159,17 @@ class BaseAgent:
         for part in response.candidates[0].content.parts:
             response_text += part.text
 
-        # Store invocation
-        invocation = Invocation(
-            prompt_config_id=prompt_config.id,
-            params=params,
-            response=response_text,
-            metadata={
-                "model": prompt_config.model,
-                "temperature": prompt_config.temperature,
-                "max_tokens": prompt_config.max_tokens,
-                "tools_used": prompt_config.tools,
-                "grounding_metadata": response.candidates[0].grounding_metadata.model_dump() if hasattr(response.candidates[0], 'grounding_metadata') else None
-            },
+        # Update invocation with response and end time
+        await async_db[COLLECTIONS["invocations"]].update_one(
+            {"_id": result.inserted_id},
+            {
+                "$set": {
+                    "response": response_text,
+                    "result_time": datetime.now(timezone.utc),
+                    "metadata.grounding_metadata": response.candidates[0].grounding_metadata.model_dump() if hasattr(response.candidates[0], 'grounding_metadata') else None
+                }
+            }
         )
-        result = await async_db[COLLECTIONS["invocations"]].insert_one(invocation.model_dump())
-        invocation_id = str(result.inserted_id)
 
         logger.info(f"Stored invocation with ID: {invocation_id}")
         return {"choices": [{"message": {"content": response_text}}]}, invocation_id

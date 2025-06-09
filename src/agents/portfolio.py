@@ -2,7 +2,9 @@
 Portfolio optimization agent for selecting the best stocks.
 """
 
-from datetime import datetime
+import logging
+from datetime import datetime, timezone
+from typing import List, Dict, Any
 
 import pandas as pd
 
@@ -12,6 +14,8 @@ from src.db.models import Basket
 
 from .base import BaseAgent
 
+# Configure logging
+logger = logging.getLogger(__name__)
 
 class PortfolioAgent(BaseAgent):
     """Agent for optimizing stock portfolios."""
@@ -20,15 +24,97 @@ class PortfolioAgent(BaseAgent):
         """Initialize the portfolio agent."""
         super().__init__()
 
-    async def optimize_portfolio(self, stock_data: list[dict]) -> dict:
+    async def _get_top_stocks(
+        self,
+        index: str,
+        since_time: datetime,
+        filter_top_n: int
+    ) -> List[Dict[str, Any]]:
+        """Get top performing stocks based on forecasts.
+        
+        Args:
+            index: Index to filter stocks by
+            since_time: Only consider forecasts after this time
+            filter_top_n: Number of top stocks to return
+            
+        Returns:
+            List of all forecasts for the top N stocks by average gain
+        """
+        # First get all stocks in the index
+        stocks = await async_db[COLLECTIONS["stocks"]].find(
+            {"indices": index}
+        ).to_list(length=None)
+        
+        if not stocks:
+            raise ValueError(f"No stocks found for index {index}")
+            
+        tickers = [stock["ticker"] for stock in stocks]
+        
+        # Use MongoDB aggregation to get top N stocks by average gain
+        pipeline = [
+            # Match forecasts for stocks in the index after since_time
+            {
+                "$match": {
+                    "stock_ticker": {"$in": tickers},
+                    "created_time": {"$gte": since_time}
+                }
+            },
+            # Group by stock_ticker and calculate average gain
+            {
+                "$group": {
+                    "_id": "$stock_ticker",
+                    "avg_gain": {"$avg": "$gain"},
+                    "forecasts": {"$push": "$$ROOT"}
+                }
+            },
+            # Sort by average gain in descending order
+            {"$sort": {"avg_gain": -1}},
+            # Limit to top N stocks
+            {"$limit": filter_top_n},
+            # Unwind the forecasts array to get all forecasts
+            {"$unwind": "$forecasts"},
+            # Project only the forecast data
+            {
+                "$project": {
+                    "_id": 0,
+                    "forecast": "$forecasts"
+                }
+            }
+        ]
+        
+        # Execute aggregation
+        forecasts = await async_db[COLLECTIONS["forecasts"]].aggregate(pipeline).to_list(length=None)
+        
+        if not forecasts:
+            raise ValueError(f"No forecasts found for stocks in {index} after {since_time}")
+            
+        # Extract just the forecast data from the aggregation result
+        return [forecast["forecast"] for forecast in forecasts]
+
+    async def optimize_portfolio(
+        self,
+        index: str,
+        since_time: datetime,
+        filter_top_n: int,
+        basket_size_k: int
+    ) -> dict:
         """Generate optimized portfolio recommendations.
 
         Args:
-            stock_data: List of stock forecast dictionaries
+            index: Index to filter stocks by
+            since_time: Only consider forecasts after this time
+            filter_top_n: Number of top stocks to consider
+            basket_size_k: Number of stocks to select for portfolio
 
         Returns:
             Dictionary containing selected stocks and analysis
         """
+        # Get top performing stocks
+        stock_data = await self._get_top_stocks(index, since_time, filter_top_n)
+        
+        if not stock_data:
+            raise ValueError("No stock data available for portfolio optimization")
+
         # Convert to DataFrame for easier analysis
         df = pd.DataFrame(stock_data)
 
@@ -38,16 +124,27 @@ class PortfolioAgent(BaseAgent):
         # Get completion
         response, invocation_id = await self.get_completion(
             prompt_config=prompt_config,
-            params={"STOCK_DATA": df.to_string()}
+            params={
+                "STOCK_DATA": df.to_string(),
+                "FILTER_TOP_N": str(filter_top_n),
+                "BASKET_SIZE_K": str(basket_size_k)
+            }
         )
 
         # Parse results
         try:
             result = self._parse_json_response(response['choices'][0]['message']['content'])
+            
+            # Validate number of stocks selected
+            if len(result["stocks_picked"]) != basket_size_k:
+                logger.warning(
+                    f"LLM selected {len(result['stocks_picked'])} stocks instead of "
+                    f"requested {basket_size_k}"
+                )
 
             # Store basket
             basket = Basket(
-                creation_date=datetime.utcnow(),
+                creation_date=datetime.now(timezone.utc),
                 stocks_ticker_candidates=[stock["stock_ticker"] for stock in stock_data],
                 stocks_picked=result["stocks_picked"],
                 weights=result["weights"],

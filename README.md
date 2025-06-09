@@ -1,135 +1,123 @@
-# Nifty Stock Research and Analysis System
+# Nifty LLM Research
 
-An AI-powered system for analyzing Indian stocks (NSE Top 100) using market news, financial data, and investor reports to generate price forecasts and portfolio recommendations.
+A research project using LLMs to analyze and forecast NSE-listed stocks, with a focus on portfolio optimization.
 
-## Features
+## Overview
 
-- Deep research analysis of NSE Top 100 stocks using Google Gemini AI
-- Price forecasting for multiple time horizons (1w, 1m, 3m, 6m, 1y)
-- Automated portfolio recommendation system
-- Data persistence in MongoDB
-- Automated email reporting via Amazon SES
-- Interactive visualization of price predictions
-- Prompt-based configuration system for AI interactions
-- Google Search integration for real-time market data
+This project uses Google's Gemini AI to:
+1. Analyze NSE-listed stocks and generate price forecasts
+2. Optimize stock portfolios based on these forecasts
+3. Track and visualize portfolio performance
+
+## Key Features
+
+- **Stock Analysis**: Deep research on individual stocks using Google Search integration
+- **Portfolio Optimization**: Selection of optimal stock combinations based on forecasts
+- **Performance Tracking**: Historical tracking of portfolio performance
+- **Visualization**: Performance charts and analysis reports
+- **Output Generation**: Detailed reports in both JSON and Markdown formats
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.9+
+- MongoDB
+- Google Cloud API key for Gemini AI
+- Google Search API key
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/nifty-llm-research.git
+cd nifty-llm-research
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your API keys and configuration
+```
+
+### Usage
+
+1. Seed the database with default prompts:
+```bash
+python scripts/seed_prompts.py
+```
+
+2. Generate stock forecasts:
+```bash
+python scripts/analyze_stocks.py --index "NIFTY 50" --force-nse
+```
+
+3. Generate portfolio recommendations:
+```bash
+python scripts/generate_portfolio.py --index "NIFTY 50" --filter-top-n 20 --basket-size-k 5
+```
+
+## Understanding the Code
+
+### Development History
+
+This project was developed using Cursor IDE's AI pair programming capabilities. To see how the code was written:
+
+1. Check the `prompts/` directory to see the actual Cursor prompts used during development
+2. Each prompt file shows the exact conversation that led to the implementation
+3. This serves as a proof of authenticity and helps understand the development process
+
+### Prompts
+
+The core of this project lies in its carefully crafted prompts. To understand how the code works:
+
+1. Check the `scripts/seed_prompts.py` file to see the default prompts
+2. Review the prompt configurations in the database
+3. Understand how each prompt is used in the respective agents
+
+### Outputs
+
+All portfolio recommendations are saved in the `docs/baskets` directory:
+- JSON files containing the full analysis
+- Markdown files with formatted tables and explanations
+- Files are named as: `{index}-{timestamp}-{n}-{k}.{json/md}`
 
 ## Project Structure
 
 ```
 nifty-llm-research/
-├── src/
-│   ├── agents/             # AI agent implementations
-│   ├── data/              # Data handling and processing
-│   ├── db/                # MongoDB operations
-│   ├── visualization/     # Plotting and charting
-│   └── utils/             # Helper functions and utilities
-├── prompts/              # Documentation of prompt history and usage
-├── tests/                # Test cases
-├── docs/                 # Documentation
-├── scripts/              # Automation scripts
-├── config/              # Configuration files
-└── cache/               # Cached data and results
-```
-
-## Setup
-
-1. Create and activate a virtual environment:
-   ```bash
-   python -m venv env
-   source env/bin/activate  # On Windows: env\Scripts\activate
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Copy env.template to .env and fill in your credentials:
-   ```bash
-   cp env.template .env
-   ```
-
-4. Set up MongoDB:
-   - Install MongoDB locally or use MongoDB Atlas
-   - Update the MongoDB connection string in .env
-   - Run the database initialization script:
-     ```bash
-     python scripts/setup_db.py
-     ```
-
-## Usage
-
-1. Run the stock analysis:
-   ```bash
-   python scripts/analyze_stocks.py
-   ```
-
-2. Generate portfolio recommendations:
-   ```bash
-   python scripts/generate_portfolio.py
-   ```
-
-3. View visualizations:
-   ```bash
-   python scripts/visualize_predictions.py
-   ```
-
-## Development
-
-- Code formatting: `black .`
-- Import sorting: `isort .`
-- Type checking: `mypy .`
-- Linting: `ruff check .`
-- Run tests: `pytest`
-
-## Documentation
-
-Detailed documentation is available in the `docs/` directory. To view the documentation locally:
-
-```bash
-mkdocs serve
+├── config/             # Configuration files
+├── docs/              # Documentation and outputs
+│   └── baskets/       # Portfolio recommendations
+├── prompts/           # Development history and Cursor prompts
+├── scripts/           # Command-line scripts
+├── src/              # Source code
+│   ├── agents/       # LLM agents
+│   ├── db/          # Database models and utilities
+│   ├── utils/       # Utility functions
+│   └── visualization/# Plotting and visualization
+└── tests/            # Test files
 ```
 
 ## Contributing
 
-We welcome contributions! Please follow these steps:
-
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Update documentation
-6. Submit a pull request
-
-### Best Practices
-
-- Follow PEP 8 style guide
-- Write meaningful commit messages
-- Document all new features
-- Add type hints to new code
-- Update prompts in the `prompts/` directory
-- Run tests before submitting PRs
-
-### Prompt Management
-
-The `prompts/` directory serves as a historical record of all AI prompts used to generate and modify this repository. This includes:
-- Initial repository setup prompts
-- Code generation and modification prompts
-- Documentation update prompts
-- Any other AI-assisted changes
-
-When making changes using AI assistance:
-1. Create a new file in the `prompts/` directory
-2. Document the prompt used and its purpose
-3. Never modify existing prompt files
-4. Follow the naming convention: `YYYY-MM-DD-description.md`
-
-This helps maintain transparency and allows others to understand how the repository evolved.
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes.
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Google Gemini AI for the LLM capabilities
+- NSE for stock data
+- Contributors and maintainers

@@ -2,7 +2,7 @@
 Database models for the Nifty Stock Research project using MongoDB.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -87,14 +87,14 @@ class PromptConfig(BaseMongoModel):
     )
     tools: list[str] = Field(default_factory=list, description="Tools allowed to use")
     default: bool = Field(default=False, description="If this will be used by default")
-    created_time: datetime = Field(default_factory=datetime.utcnow)
-    modified_time: datetime = Field(default_factory=datetime.utcnow)
+    created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    modified_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class Invocation(BaseMongoModel):
     """Model for storing LLM invocations."""
 
-    invocation_time: datetime = Field(default_factory=datetime.utcnow)
+    invocation_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     result_time: datetime | None = None
     prompt_config_id: PyObjectId
     params: dict[str, str] = Field(
@@ -108,17 +108,19 @@ class Stock(BaseMongoModel):
     """Model for storing stock information."""
 
     ticker: str = Field(..., description="Stock ticker symbol")
+    name: str = Field(..., description="Company name")
     price: float = Field(..., description="Current stock price")
-    modified_time: datetime = Field(default_factory=datetime.utcnow)
-    market_cap: float = Field(..., description="Market capitalization in USD")
+    market_cap: float = Field(..., description="Market capitalization in INR")
     industry: str = Field(..., description="Industry sector")
+    indices: list[str] = Field(default_factory=list, description="List of indices the stock belongs to")
+    modified_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class Forecast(BaseMongoModel):
     """Model for storing stock price forecasts."""
 
     stock_ticker: str = Field(..., description="Stock ticker symbol")
-    created_time: datetime = Field(default_factory=datetime.utcnow)
+    created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     invocation_id: PyObjectId
     forecast_date: datetime
     target_price: float
@@ -131,7 +133,7 @@ class Forecast(BaseMongoModel):
 class Basket(BaseMongoModel):
     """Model for storing stock basket recommendations."""
 
-    creation_date: datetime = Field(default_factory=datetime.utcnow)
+    creation_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     stocks_ticker_candidates: list[str] = Field(default_factory=list)
     stocks_picked: list[str] = Field(default_factory=list)
     weights: dict[str, float] = Field(
@@ -144,7 +146,7 @@ class Basket(BaseMongoModel):
 class Email(BaseMongoModel):
     """Model for storing email records."""
 
-    created_time: datetime = Field(default_factory=datetime.utcnow)
+    created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     sent_time: datetime | None = None
     service: str = Field(default="amazon-ses")
     type: str = Field(..., description="account related/generic alert/basket update")
@@ -164,6 +166,6 @@ class Order(BaseMongoModel):
     type: OrderType
     price: float
     is_market_order: bool = Field(..., alias="isMarketOrder")
-    placed_time: datetime = Field(default_factory=datetime.utcnow)
+    placed_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     executed_time: datetime | None = None
     demat_account: str

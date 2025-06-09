@@ -2,7 +2,7 @@
 Email notification module using Amazon SES.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import boto3
 from botocore.exceptions import ClientError
@@ -112,7 +112,7 @@ class EmailSender:
 
             # Update email record with sent status
             email.status = "sent"
-            email.sent_time = datetime.utcnow()
+            email.sent_time = datetime.now(timezone.utc)
             await async_db[COLLECTIONS["emails"]].insert_one(email.dict())
 
             return True

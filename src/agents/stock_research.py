@@ -2,9 +2,8 @@
 Stock research agent for analyzing and forecasting stock prices using Perplexity models.
 """
 
-import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any
 import aiohttp
 from urllib.parse import urlparse
@@ -55,7 +54,7 @@ class StockResearchAgent(BaseAgent):
         Returns:
             List of recent forecasts
         """
-        cutoff_time = datetime.utcnow() - timedelta(hours=hours_threshold)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours_threshold)
         
         forecasts = await async_db[COLLECTIONS["forecasts"]].find({
             "stock_ticker": symbol,
@@ -131,9 +130,6 @@ class StockResearchAgent(BaseAgent):
                 )
                 return {
                     "stock_data": {
-                        "current_price": recent_forecasts[0].get("target_price", 0),
-                        "market_cap": recent_forecasts[0].get("market_cap", 0),
-                        "industry": recent_forecasts[0].get("industry", "Unknown"),
                         "forecasts": [
                             {
                                 "timeframe": f"{f['days']}d",
@@ -143,91 +139,52 @@ class StockResearchAgent(BaseAgent):
                             }
                             for f in recent_forecasts
                         ]
-                    },
-                    "forecasts": recent_forecasts
+                    }
                 }
-        
-        # Get prompt config for deep research
-        research_config = await self.get_prompt_config("stock_research_forecast")
-        logger.info(f"Using research model: {research_config.model}")
 
-        # Get deep research completion
-        logger.info(f"Requesting research analysis for {symbol}")
-        research_response, research_invocation_id = await self.get_completion(
-            prompt_config=research_config,
+        # Get stock data from database
+        stock = await async_db[COLLECTIONS["stocks"]].find_one({"ticker": symbol})
+        if not stock:
+            raise ValueError(f"Stock {symbol} not found in database")
+
+        # Get prompt config
+        prompt_config = await self.get_prompt_config("stock_research_forecast")
+
+        # Get completion
+        response, invocation_id = await self.get_completion(
+            prompt_config=prompt_config,
             params={"TICKER": symbol}
         )
 
-        # Parse research data with fallback
+        # Parse results
         try:
-            stock_data = self._parse_json_response(research_response['choices'][0]['message']['content'])
-            logger.info(f"Successfully parsed research data for {symbol}")
-        except ValueError as e:
-            logger.error(f"Failed to parse research data for {symbol}: {e}")
-            raise
-
-        # Store stock data
-        stock = Stock(
-            ticker=symbol,
-            price=stock_data["current_price"],
-            market_cap=stock_data["market_cap"],
-            industry=stock_data.get("industry", "Unknown"),
-        )
-        await async_db[COLLECTIONS["stocks"]].update_one(
-            {"ticker": symbol}, {"$set": stock.model_dump()}, upsert=True
-        )
-        logger.info(f"Updated stock data for {symbol}: Price={stock.price}, Market Cap={stock.market_cap}")
-
-        # Process and store each forecast
-        current_price = stock_data["current_price"]
-        forecasts = []
-        
-        logger.info(f"Processing forecasts for {symbol}")
-        for forecast_data in stock_data["forecasts"]:
-            # Get days from timeframe
-            days_ahead = self._get_days_from_timeframe(forecast_data["timeframe"])
-            if days_ahead == 0:
-                logger.warning(f"Skipping invalid timeframe: {forecast_data['timeframe']}")
-                continue
+            result = self._parse_json_response(response['choices'][0]['message']['content'])
             
-            # Calculate target date
-            target_date = datetime.utcnow() + timedelta(days=days_ahead)
-            
-            # Calculate percentage gain
-            gain = ((forecast_data["target_price"] - current_price) / current_price) * 100
-            
-            # Process sources
-            forecast_sources = await self._process_sources(forecast_data.get("sources", []))
-            stock_sources = await self._process_sources(stock_data.get("sources", []))
-            all_sources = list(set(forecast_sources + stock_sources))  # Remove duplicates
-            
-            # Log forecast details
-            logger.info(
-                f"Forecast for {symbol} ({forecast_data['timeframe']}): "
-                f"Target Price={forecast_data['target_price']:.2f}, "
-                f"Gain={gain:.2f}%, "
-                f"Sources={len(all_sources)}"
-            )
-            
-            # Create forecast object
+            # Store forecast
             forecast = Forecast(
                 stock_ticker=symbol,
-                invocation_id=research_invocation_id,
-                forecast_date=target_date,
-                target_price=forecast_data["target_price"],
-                gain=gain,
-                days=days_ahead,
-                reason_summary=forecast_data["reasoning"],
-                sources=all_sources,
+                invocation_id=invocation_id,
+                forecast_date=datetime.now(timezone.utc),
+                target_price=result["target_price"],
+                gain=result["gain"],
+                days=result["days"],
+                reason_summary=result["reason_summary"],
+                sources=result.get("sources", [])
             )
-            
-            # Store forecast in database
             await async_db[COLLECTIONS["forecasts"]].insert_one(forecast.model_dump())
-            forecasts.append(forecast.model_dump())
-            logger.info(f"Stored {forecast_data['timeframe']} forecast for {symbol}")
 
-        logger.info(f"Completed analysis for {symbol} with {len(forecasts)} forecasts")
-        return {
-            "stock_data": stock_data,
-            "forecasts": forecasts
-        }
+            return {
+                "stock_data": {
+                    "forecasts": [
+                        {
+                            "timeframe": f"{result['days']}d",
+                            "target_price": result["target_price"],
+                            "reasoning": result["reason_summary"],
+                            "sources": result.get("sources", [])
+                        }
+                    ]
+                }
+            }
+
+        except Exception as e:
+            raise ValueError(f"Failed to parse agent response: {e}")
