@@ -21,7 +21,7 @@ class ColoredFormatter(logging.Formatter):
         # Add color to the level name
         levelname = record.levelname
         if levelname in COLORS:
-            record.levelname = f"{COLORS[levelname]}{levelname}{COLORS['RESET']}"
+            record.msg = f"{COLORS[levelname]}{record.msg}{COLORS['RESET']}"
         
         # Format the message
         return super().format(record)

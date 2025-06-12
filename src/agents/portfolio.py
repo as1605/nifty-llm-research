@@ -29,7 +29,8 @@ class PortfolioAgent(BaseAgent):
         self,
         index: str,
         since_time: datetime,
-        filter_top_n: int
+        filter_top_n: int,
+        force_llm: bool = False
     ) -> List[Dict[str, Any]]:
         """Get top performing stocks based on forecasts.
         
@@ -37,6 +38,7 @@ class PortfolioAgent(BaseAgent):
             index: Index to filter stocks by
             since_time: Only consider forecasts after this time
             filter_top_n: Number of top stocks to return
+            force_llm: If True, require at least 5 forecasts per stock
             
         Returns:
             List of all forecasts for the top N stocks by average gain
@@ -65,7 +67,14 @@ class PortfolioAgent(BaseAgent):
                 "$group": {
                     "_id": "$stock_ticker",
                     "avg_gain": {"$avg": "$gain"},
+                    "forecast_count": {"$sum": 1},
                     "forecasts": {"$push": "$$ROOT"}
+                }
+            },
+            # Filter stocks with enough forecasts if force_llm is True
+            {
+                "$match": {
+                    "forecast_count": {"$gte": 5 if force_llm else 1}
                 }
             },
             # Sort by average gain in descending order
@@ -97,7 +106,8 @@ class PortfolioAgent(BaseAgent):
         index: str,
         since_time: datetime,
         filter_top_n: int,
-        basket_size_k: int
+        basket_size_k: int,
+        force_llm: bool = False
     ) -> dict:
         """Generate optimized portfolio recommendations.
 
@@ -106,18 +116,21 @@ class PortfolioAgent(BaseAgent):
             since_time: Only consider forecasts after this time
             filter_top_n: Number of top stocks to consider
             basket_size_k: Number of stocks to select for portfolio
+            force_llm: If True, require at least 5 forecasts per stock
 
         Returns:
             Dictionary containing selected stocks and analysis
         """
         # Get top performing stocks
-        stock_data = await self._get_top_stocks(index, since_time, filter_top_n)
+        stock_data = await self._get_top_stocks(index, since_time, filter_top_n, force_llm)
         
         if not stock_data:
             raise ValueError("No stock data available for portfolio optimization")
 
         # Clean forecast data by removing _id and invocation_id fields and converting dates
         cleaned_stock_data = []
+        stock_sources = {}  # Dictionary to store sources for each stock
+        
         for forecast in stock_data:
             cleaned_forecast = forecast.copy()
             # Remove MongoDB specific fields
@@ -129,6 +142,13 @@ class PortfolioAgent(BaseAgent):
             # Convert forecast_date to simple date string
             if 'forecast_date' in cleaned_forecast:
                 cleaned_forecast['forecast_date'] = cleaned_forecast['forecast_date'].strftime('%Y-%m-%d')
+            
+            # Store sources for this stock
+            stock_ticker = cleaned_forecast.get('stock_ticker')
+            if stock_ticker and 'sources' in cleaned_forecast:
+                if stock_ticker not in stock_sources:
+                    stock_sources[stock_ticker] = set()
+                stock_sources[stock_ticker].update(cleaned_forecast['sources'])
                 
             cleaned_stock_data.append(cleaned_forecast)
 
@@ -155,6 +175,12 @@ class PortfolioAgent(BaseAgent):
                     f"LLM selected {len(result['stocks_picked'])} stocks instead of "
                     f"requested {basket_size_k}"
                 )
+
+            # Add sources to the result
+            result["stock_sources"] = {
+                stock: list(stock_sources.get(stock, []))
+                for stock in result["stocks_picked"]
+            }
 
             # Store basket
             basket = Basket(

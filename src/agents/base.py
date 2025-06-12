@@ -209,6 +209,13 @@ class BaseAgent:
                 grounding_metadata = response.candidates[0].grounding_metadata.model_dump()
             except Exception as e:
                 logger.warning(f"Failed to get grounding metadata: {e}")
+        
+        usage_metadata = None
+        if response.usage_metadata is not None:
+            try:
+                usage_metadata = response.usage_metadata.model_dump()
+            except Exception as e:
+                logger.warning(f"Failed to get usage metadata: {e}")
 
         # Update invocation with response and end time
         await async_db[COLLECTIONS["invocations"]].update_one(
@@ -217,7 +224,8 @@ class BaseAgent:
                 "$set": {
                     "response": response_text,
                     "result_time": datetime.now(timezone.utc),
-                    "metadata.grounding_metadata": grounding_metadata
+                    "metadata.grounding_metadata": grounding_metadata,
+                    "metadata.usage_metadata": usage_metadata
                 }
             }
         )

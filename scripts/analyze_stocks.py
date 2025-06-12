@@ -6,7 +6,6 @@ Main script for analyzing NSE stocks and generating forecasts.
 import asyncio
 import logging
 import argparse
-from pathlib import Path
 from datetime import datetime, timezone
 import requests
 from urllib.parse import quote
@@ -16,12 +15,10 @@ from src.agents.stock_research import StockResearchAgent
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
 from src.db.models import Stock
+from src.utils.logging import setup_logging
 
 # Configure logging
-logging.basicConfig(
-    level=settings.log_level,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+setup_logging(level=settings.log_level)
 logger = logging.getLogger(__name__)
 
 
@@ -175,26 +172,35 @@ async def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="Analyze NSE stocks and generate forecasts")
     parser.add_argument(
+        "-fl",
         "--force-llm",
         action="store_true",
         help="Force new LLM analysis even if recent forecasts exist"
     )
     parser.add_argument(
+        "-fn",
         "--force-nse",
         action="store_true",
         help="Force fetch stock list from NSE API even if stocks exist in DB"
     )
     parser.add_argument(
+        "-i",
         "--index",
         default="NIFTY 50",
         help="Index to analyze (default: NIFTY 50)"
+    )
+    parser.add_argument(
+        "-p",
+        "--parallel",
+        action="store_true",
+        help="Process stocks in parallel using TaskGroup (default: False)"
     )
     args = parser.parse_args()
 
     start_time = datetime.now(timezone.utc)
     logger.info(
         f"Starting stock analysis at {start_time} "
-        f"(force_llm={args.force_llm}, force_nse={args.force_nse}, index={args.index})"
+        f"(force_llm={args.force_llm}, force_nse={args.force_nse}, index={args.index}, parallel={args.parallel})"
     )
     
     # Fetch stocks for the specified index
@@ -208,9 +214,17 @@ async def main():
     agent = StockResearchAgent()
     logger.info("Initialized StockResearchAgent")
 
-    async with asyncio.TaskGroup() as tg:
+    if args.parallel:
+        # Process stocks in parallel using TaskGroup
+        logger.info("Processing stocks in parallel using TaskGroup")
+        async with asyncio.TaskGroup() as tg:
+            for symbol in stocks:
+                tg.create_task(analyze_stock(symbol, agent, force_llm=args.force_llm))
+    else:
+        # Process stocks sequentially
+        logger.info("Processing stocks sequentially")
         for symbol in stocks:
-            tg.create_task(analyze_stock(symbol, agent, force_llm=args.force_llm))
+            await analyze_stock(symbol, agent, force_llm=args.force_llm)
 
     end_time = datetime.now(timezone.utc)
     duration = (end_time - start_time).total_seconds()

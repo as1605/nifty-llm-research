@@ -1,0 +1,68 @@
+{
+  "stocks_picked": [
+    "ONGC",
+    "M&M",
+    "GRASIM",
+    "DRREDDY",
+    "ETERNAL"
+  ],
+  "weights": {
+    "ONGC": 0.22,
+    "M&M": 0.22,
+    "GRASIM": 0.2,
+    "DRREDDY": 0.18,
+    "ETERNAL": 0.18
+  },
+  "reason_summary": "The portfolio prioritizes strong short-term (1-month) gain potential while ensuring sector diversification to mitigate risk. ONGC and M&M, showing the highest average 1-month forecast gains, receive the largest weights. Grasim, with its diversified business and solid outlook, is also weighted significantly. Dr. Reddy's provides exposure to the defensive pharmaceutical sector, offering stability. Eternal, representing the consumer tech/services sector, adds a growth component. This selection balances aggressive growth with prudent diversification across energy, automotive, diversified industrials, healthcare, and consumer services, aiming for a robust overall return.",
+  "expected_gain_1m": 7.69,
+  "stock_sources": {
+    "ONGC": [
+      "https://www.alphaspread.com/security/nse/ongc/analyst-estimates",
+      "https://dhan.co/stocks/oil-natural-gas-corporation-ltd-share-price/",
+      "https://www.argusmedia.com/es/news-and-insights/latest-market-news/2484715-india-s-ongc-eyes-11pc-rise-in-oil-gas-output-by-2026",
+      "https://www.screener.in/company/ONGC/consolidated/",
+      "https://economictimes.indiatimes.com/oil-and-natural-gas-corporation-ltd/stocks/companyid-11599.cms",
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn5gOXO0pINHVLUdOWdEOn28et5Zbv7vtoi6c7rwxbWO2luVSGAvjLdeZ92m-85TAAKFiebD_JiUdNv9NlL5MEsjEuIhw8HUOi8WvpCZ6OmueOdo22WJwaC1srZ4Smyge6n7OYPnDI0A==",
+      "https://www.livemint.com/market/stock-market-news/ongc-oil-india-shares-prices-gain-up-to-4-rising-crude-oil-prices-11749700217357.html",
+      "https://www.tradingview.com/symbols/NSE-ONGC/forecast/",
+      "https://www.business-standard.com/markets/oil-natural-gas-corpn-ltd-share-price-6068/news",
+      "https://www.marketscreener.com/quote/stock/OIL-AND-NATURAL-GAS-CORPO-9743117/consensus/",
+      "https://www.tradingview.com/symbols/NSE-ONGC/",
+      "https://www.equitypandit.com/ongc-outlook-for-the-week/",
+      "https://figw.in/ongc-share-price-target/",
+      "https://trendlyne.com/research-reports/stock/974/ONGC/oil-and-natural-gas-corporation-ltd/"
+    ],
+    "M&M": [
+      "https://www.thetaxheaven.com/blog/mahindra-mahindra-share-price-target",
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFUh-EKE66oUG_iXv1rJN8ViuMPJypoW-W5PFsFGtcMt_UstbZmX_C0xgqxV5Y7Y2QqsK4g2047TAcLOfq_vV8EoqKfsg15RYNrvkkmslhTKxwYgoyllFPxL2dTipRfbA-8KOCy72fPBzA-qbg=",
+      "https://m.economictimes.com/markets/stocks/recos/i-sec-downgrades-mahindra-amp-mahindra-to-add-raises-target-price-to-rs-3200/articleshow/120753441.cms",
+      "https://www.indmoney.com/stocks/mahindra-and-mahindra-ltd-share-price"
+    ],
+    "GRASIM": [
+      "https://m.economictimes.com/markets/stocks/news/4-reasons-why-morgan-stanley-made-grasim-its-top-pick-for-2025/articleshow/121748866.cms",
+      "https://economictimes.indiatimes.com/grasim-industries-ltd/stocks/companyid-13696.cms",
+      "https://m.economictimes.com/markets/stocks/news/morgan-stanley-upgrades-grasim-to-overweight-raises-target-price-to-rs-3500/articleshow/121764711.cms",
+      "https://www.investing.com/equities/grasim-industries-technical",
+      "https://www.grasim.com/media/press-releases/grasim-results-q4fy-2024-25",
+      "https://www.livemint.com/market/stock-market-news/grasim-industries-shares-jump-5-as-morgan-stanley-upgrades-stock-sees-34-upside-potential-11749537031063.html",
+      "https://dhan.co/stocks/grasim-industries-ltd-share-price/"
+    ],
+    "DRREDDY": [
+      "https://www.morganstanley.com/ideas/india-election-stock-outlook",
+      "https://economictimes.indiatimes.com/dr-reddys-laboratories-ltd/stocks/companyid-13841.cms",
+      "https://www.business-standard.com/markets/dr-reddys-laboratories-ltd-share-price-815/news",
+      "https://images.assettype.com/bloombergquint/2024-07/858e99fa-093c-4b32-aca6-47241c0950d2/Dolat_Capital_Dr__Reddys_Laboratories_ARA_FY24.pdf",
+      "https://m.economictimes.com/markets/stocks/earnings/dr-reddys-labs-q4-results-cons-pat-jumps-22-to-rs-1594-crore-rs-8-per-share-dividend-announced/articleshow/121030267.cms",
+      "https://in.investing.com/equities/dr-reddys-laboratories",
+      "https://www.equitypandit.com/share-price/drreddy",
+      "https://www.topstockresearch.com/rt/Stock/DRREDDY/TechnicalAnalysis",
+      "https://www.businesswire.com/news/home/20250509262055/en/Dr.-Reddys-Q4-Full-Year-FY25-Financial-Results"
+    ],
+    "ETERNAL": [
+      "https://www.livemint.com/market/stock-market-news/eternal-share-price-rises-1-amid-likely-block-deal-worth-156-crore-check-details-11749613832348.html",
+      "https://m.economictimes.com/markets/stocks/news/eternal-shares-jump-over-8-in-2-days-heres-why/articleshow/121639861.cms",
+      "https://www.indmoney.com/stocks/eternal-ltd-share-price",
+      "https://www.indiatoday.in/business/market/story/eternal-shares-rise-4-percent-morgan-stanley-maintains-rs-320-target-2735974-2025-06-05"
+    ]
+  }
+}

@@ -7,12 +7,10 @@ import logging
 
 from config.settings import settings
 from src.db.database import setup_indexes
+from src.utils.logging import setup_logging
 
 # Configure logging
-logging.basicConfig(
-    level=settings.log_level,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+setup_logging(level=settings.log_level)
 logger = logging.getLogger(__name__)
 
 

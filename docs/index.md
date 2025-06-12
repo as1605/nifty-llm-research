@@ -24,7 +24,7 @@ The system uses a unique approach called "vibe-coding" (stored in the [`prompts/
 
 Our latest research outputs are available in the following reports:
 
-- [NIFTY 50 Analysis (June 2025)](baskets/NIFTY%2050__Jun_02_2025_21_37__N20_K5.md)
+- [NIFTY 50 Analysis (12 June 2025)](baskets/NIFTY%2050__Jun_12_2025_19_14__N20_K5)
 
 ## Architecture
 

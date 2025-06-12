@@ -8,12 +8,10 @@ from datetime import datetime, timezone
 
 from src.db.database import async_db, COLLECTIONS
 from src.db.models import PromptConfig
+from src.utils.logging import setup_logging
 
 # Configure logging
-logging.basicConfig(
-    level="INFO",
-    format="%(asctime)s - %(name)s - %(levelname)s - %(levelname)s - %(message)s",
-)
+setup_logging(level="INFO")
 logger = logging.getLogger(__name__)
 
 DEFAULT_PROMPTS = [
