@@ -9,6 +9,7 @@ import argparse
 from datetime import datetime, timezone
 import requests
 from urllib.parse import quote
+from typing import List, Dict, Any
 
 from config.settings import settings
 from src.agents.stock_research import StockResearchAgent
@@ -133,38 +134,59 @@ async def fetch_nse_stocks(index: str = "NIFTY 50", force_nse: bool = False) -> 
         return []
 
 
-async def analyze_stock(symbol: str, agent: StockResearchAgent, force_llm: bool = False) -> None:
+async def analyze_stock(symbol: str, agent: StockResearchAgent, force_llm: bool = False) -> List[Dict[str, Any]]:
     """Analyze a single stock and save results.
 
     Args:
         symbol: Stock symbol
         agent: Stock research agent instance
         force_llm: If True, force new analysis even if recent forecasts exist
+
+    Returns:
+        List of forecasts for the stock, empty list if analysis fails
     """
     start_time = datetime.now(timezone.utc)
     try:
         # Get analysis from agent
         logger.info(f"Starting analysis for {symbol} at {start_time} (force_llm={force_llm})")
-        result = await agent.analyze_stock(symbol, force=force_llm)
-
-        # Get historical forecasts
-        logger.info(f"Fetching historical forecasts for {symbol}")
-        historical_forecasts = (
-            await async_db[COLLECTIONS["forecasts"]]
-            .find({"stock_ticker": symbol})
-            .sort("created_time", 1)
-            .to_list(length=None)
-        )
-        logger.info(f"Found {len(historical_forecasts)} historical forecasts for {symbol}")
-
+        forecasts = await agent.analyze_stock(symbol, force=force_llm)
 
         end_time = datetime.now(timezone.utc)
         duration = (end_time - start_time).total_seconds()
         logger.info(f"Completed analysis for {symbol} in {duration:.2f} seconds")
+        return forecasts
 
     except Exception as e:
-        logger.exception(f"Error analyzing {symbol}: {e}")
-        raise
+        logger.error(f"Failed to analyze {symbol}: {str(e)}")
+        return []
+
+
+async def process_stocks_with_semaphore(stocks: List[str], force_llm: bool, max_workers: int) -> Dict[str, List[Dict[str, Any]]]:
+    """Process stocks with a semaphore to limit concurrent tasks.
+    
+    Args:
+        stocks: List of stock symbols to process
+        force_llm: If True, force new analysis even if recent forecasts exist
+        max_workers: Maximum number of concurrent tasks
+        
+    Returns:
+        Dictionary mapping stock symbols to their forecasts
+    """
+    semaphore = asyncio.Semaphore(max_workers)
+    results = {}
+    
+    async def process_with_semaphore(symbol: str) -> None:
+        async with semaphore:
+            forecasts = await analyze_stock(symbol, StockResearchAgent(), force_llm=force_llm)
+            results[symbol] = forecasts
+    
+    # Create tasks for all stocks
+    tasks = [asyncio.create_task(process_with_semaphore(symbol)) for symbol in stocks]
+    
+    # Wait for all tasks to complete
+    await asyncio.gather(*tasks)
+    
+    return results
 
 
 async def main():
@@ -195,12 +217,20 @@ async def main():
         action="store_true",
         help="Process stocks in parallel using TaskGroup (default: False)"
     )
+    parser.add_argument(
+        "-w",
+        "--workers",
+        type=int,
+        default=10,
+        help="Maximum number of concurrent tasks when processing in parallel (default: 10)"
+    )
     args = parser.parse_args()
 
     start_time = datetime.now(timezone.utc)
     logger.info(
         f"Starting stock analysis at {start_time} "
-        f"(force_llm={args.force_llm}, force_nse={args.force_nse}, index={args.index}, parallel={args.parallel})"
+        f"(force_llm={args.force_llm}, force_nse={args.force_nse}, index={args.index}, "
+        f"parallel={args.parallel}, workers={args.workers})"
     )
     
     # Fetch stocks for the specified index
@@ -210,21 +240,29 @@ async def main():
         return
 
     logger.info(f"Found {len(stocks)} stocks in {args.index}")
-    
-    agent = StockResearchAgent()
-    logger.info("Initialized StockResearchAgent")
 
     if args.parallel:
-        # Process stocks in parallel using TaskGroup
-        logger.info("Processing stocks in parallel using TaskGroup")
-        async with asyncio.TaskGroup() as tg:
-            for symbol in stocks:
-                tg.create_task(analyze_stock(symbol, agent, force_llm=args.force_llm))
+        # Process stocks in parallel with worker limit
+        logger.info(f"Processing stocks in parallel with {args.workers} workers")
+        results = await process_stocks_with_semaphore(stocks, args.force_llm, args.workers)
     else:
         # Process stocks sequentially
         logger.info("Processing stocks sequentially")
+        results = {}
         for symbol in stocks:
-            await analyze_stock(symbol, agent, force_llm=args.force_llm)
+            forecasts = await analyze_stock(symbol, StockResearchAgent(), force_llm=args.force_llm)
+            results[symbol] = forecasts
+
+    # Log results
+    successful = sum(1 for forecasts in results.values() if forecasts)
+    failed = sum(1 for forecasts in results.values() if not forecasts)
+    
+    logger.info(f"Analysis complete. Successful: {successful}, Failed: {failed}")
+    
+    # Log failed stocks
+    if failed > 0:
+        failed_stocks = [symbol for symbol, forecasts in results.items() if not forecasts]
+        logger.warning(f"Failed stocks: {', '.join(failed_stocks)}")
 
     end_time = datetime.now(timezone.utc)
     duration = (end_time - start_time).total_seconds()

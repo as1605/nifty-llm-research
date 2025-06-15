@@ -7,11 +7,9 @@ from datetime import datetime, timezone
 from typing import List, Dict, Any
 import json
 
-import pandas as pd
-
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
-from src.db.models import Basket
+from src.db.models import Basket, BasketStock
 
 from .base import BaseAgent
 
@@ -108,7 +106,7 @@ class PortfolioAgent(BaseAgent):
         filter_top_n: int,
         basket_size_k: int,
         force_llm: bool = False
-    ) -> dict:
+    ) -> Basket:
         """Generate optimized portfolio recommendations.
 
         Args:
@@ -119,7 +117,7 @@ class PortfolioAgent(BaseAgent):
             force_llm: If True, require at least 5 forecasts per stock
 
         Returns:
-            Dictionary containing selected stocks and analysis
+            Basket object containing selected stocks and analysis
         """
         # Get top performing stocks
         stock_data = await self._get_top_stocks(index, since_time, filter_top_n, force_llm)
@@ -127,9 +125,10 @@ class PortfolioAgent(BaseAgent):
         if not stock_data:
             raise ValueError("No stock data available for portfolio optimization")
 
-        # Clean forecast data by removing _id and invocation_id fields and converting dates
+        # Clean forecast data by removing MongoDB specific fields
         cleaned_stock_data = []
-        stock_sources = {}  # Dictionary to store sources for each stock
+        # Track sources for each stock
+        stock_sources = {}
         
         for forecast in stock_data:
             cleaned_forecast = forecast.copy()
@@ -143,13 +142,12 @@ class PortfolioAgent(BaseAgent):
             if 'forecast_date' in cleaned_forecast:
                 cleaned_forecast['forecast_date'] = cleaned_forecast['forecast_date'].strftime('%Y-%m-%d')
             
-            # Store sources for this stock
-            stock_ticker = cleaned_forecast.get('stock_ticker')
-            if stock_ticker and 'sources' in cleaned_forecast:
-                if stock_ticker not in stock_sources:
-                    stock_sources[stock_ticker] = set()
-                stock_sources[stock_ticker].update(cleaned_forecast['sources'])
-                
+            # Track sources for each stock
+            ticker = cleaned_forecast['stock_ticker']
+            if ticker not in stock_sources:
+                stock_sources[ticker] = []
+            stock_sources[ticker].extend(cleaned_forecast.get('sources', []))
+            
             cleaned_stock_data.append(cleaned_forecast)
 
         # Get prompt config
@@ -167,60 +165,30 @@ class PortfolioAgent(BaseAgent):
 
         # Parse results
         try:
-            result = self._parse_json_response(response['choices'][0]['message']['content'])
+            basket_data = self._parse_json_response(response['choices'][0]['message']['content'])
             
-            # Validate number of stocks selected
-            if len(result["stocks_picked"]) != basket_size_k:
-                logger.warning(
-                    f"LLM selected {len(result['stocks_picked'])} stocks instead of "
-                    f"requested {basket_size_k}"
+            # Create BasketStock objects
+            stocks = []
+            for stock in basket_data["stocks"]:
+                basket_stock = BasketStock(
+                    stock_ticker=stock["stock_ticker"],
+                    weight=stock["weight"],
+                    sources=stock.get("sources", [])
                 )
+                stocks.append(basket_stock)
 
-            # Add sources to the result
-            result["stock_sources"] = {
-                stock: list(stock_sources.get(stock, []))
-                for stock in result["stocks_picked"]
-            }
-
-            # Store basket
+            # Create and store basket
             basket = Basket(
                 creation_date=datetime.now(timezone.utc),
+                invocation_id=invocation_id,
                 stocks_ticker_candidates=[stock["stock_ticker"] for stock in stock_data],
-                stocks_picked=result["stocks_picked"],
-                weights=result["weights"],
-                reason_summary=result["reason_summary"],
-                expected_gain_1m=result["expected_gain_1m"],
+                stocks=stocks,
+                reason_summary=basket_data["reason_summary"],
+                expected_gain_1m=basket_data["expected_gain_1m"]
             )
             await async_db[COLLECTIONS["baskets"]].insert_one(basket.model_dump())
 
-            return result
+            return basket
 
         except Exception as e:
             raise ValueError(f"Failed to parse agent response: {e}")
-
-    def _calculate_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Calculate additional metrics for portfolio selection.
-
-        Args:
-            df: DataFrame of stock forecasts
-
-        Returns:
-            DataFrame with additional metrics
-        """
-        # Calculate potential returns
-        df["1m_return"] = (df["forecast_1m"] - df["current_price"]) / df[
-            "current_price"
-        ]
-        df["3m_return"] = (df["forecast_3m"] - df["current_price"]) / df[
-            "current_price"
-        ]
-        df["6m_return"] = (df["forecast_6m"] - df["current_price"]) / df[
-            "current_price"
-        ]
-
-        # Calculate volatility score (difference between highest and lowest forecasts)
-        df["volatility"] = df[
-            ["forecast_1w", "forecast_1m", "forecast_3m", "forecast_6m", "forecast_12m"]
-        ].apply(lambda x: (max(x) - min(x)) / x.mean(), axis=1)
-
-        return df

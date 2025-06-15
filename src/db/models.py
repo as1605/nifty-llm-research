@@ -44,13 +44,6 @@ class PyObjectId(ObjectId):
         return ObjectId(v)
 
 
-class OrderType(str, Enum):
-    """Types of trade orders."""
-
-    BUY = "buy"
-    SELL = "sell"
-
-
 class PromptConfig(BaseModel):
     """Model for storing prompt configurations."""
 
@@ -61,8 +54,10 @@ class PromptConfig(BaseModel):
     user_prompt: str = Field(..., description="User prompt template")
     params: List[str] = Field(default_factory=list, description="Required parameters for the prompt")
     model: str = Field(default="gemini-pro", description="Model to use")
-    temperature: float = Field(default=0.7, description="Temperature for generation")
-    max_tokens: int = Field(default=2048, description="Maximum tokens to generate")
+    config: dict = Field(
+        ...,
+        description="Configuration settings for the Gemini model"
+    )
     tools: List[str] = Field(default_factory=list, description="Tools to enable")
     default: bool = Field(default=False, description="Whether this is the default config")
     created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -95,6 +90,7 @@ class Forecast(BaseModel):
     """Model for storing stock price forecasts."""
 
     stock_ticker: str
+    invocation_id: PyObjectId = None
     forecast_date: datetime
     target_price: float
     gain: float
@@ -105,31 +101,33 @@ class Forecast(BaseModel):
     modified_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
+class ListForecast(BaseModel):
+    """Model for LLM response containing a list of forecasts."""
+
+    forecasts: List[Forecast] = Field(
+        ...,
+        description="List of forecasts for different time periods"
+    )
+
+
+class BasketStock(BaseModel):
+    """Model for storing stock information in a basket."""
+    
+    stock_ticker: str = Field(..., description="Stock ticker symbol")
+    weight: float = Field(..., description="Weight of this stock in the basket (0-1)")
+    sources: List[str] = Field(default_factory=list, description="List of source URLs for this stock")
+
+
 class Basket(BaseModel):
     """Model for storing portfolio baskets."""
-
+    
     creation_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    invocation_id: PyObjectId = None
     stocks_ticker_candidates: List[str] = Field(
         ..., description="List of stock tickers considered for the basket"
     )
-    stocks_picked: List[str] = Field(..., description="List of selected stock tickers")
-    weights: dict[str, float] = Field(
-        ..., description="Dictionary mapping stock tickers to their weights (summing to 1)"
+    stocks: List[BasketStock] = Field(
+        ..., description="List of selected stocks with their weights and sources"
     )
-    reason_summary: str
-    expected_gain_1m: float
-
-
-class Order(BaseModel):
-    """Model for storing trade orders."""
-
-    stock_ticker: str
-    type: OrderType
-    price: float
-    is_market_order: bool
-    placed_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    executed_time: Optional[datetime] = None
-    status: str = Field(default="pending")
-    demat_account: str
-    quantity: int
-    metadata: dict = Field(default_factory=dict)
+    reason_summary: str = Field(..., description="Summary of why these stocks were picked")
+    expected_gain_1m: float = Field(..., description="Expected gain for the basket in 1 month")

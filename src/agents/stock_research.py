@@ -6,12 +6,10 @@ import logging
 from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any
 import aiohttp
-from urllib.parse import urlparse
 
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
-from src.db.models import Forecast
-from src.db.models import Stock
+from src.db.models import Forecast, ListForecast
 
 from .base import BaseAgent
 
@@ -25,24 +23,6 @@ class StockResearchAgent(BaseAgent):
     def __init__(self):
         """Initialize the stock research agent."""
         super().__init__()
-
-    def _get_days_from_timeframe(self, timeframe: str) -> int:
-        """Convert timeframe string to number of days.
-        
-        Args:
-            timeframe: Timeframe string (1w, 1m, 3m, 6m, 1y)
-            
-        Returns:
-            Number of days
-        """
-        timeframe_map = {
-            "1w": 7,
-            "1m": 30,
-            "3m": 90,
-            "6m": 180,
-            "1y": 365
-        }
-        return timeframe_map.get(timeframe, 0)
 
     async def _get_recent_forecasts(self, symbol: str, hours_threshold: int = 12) -> List[Dict[str, Any]]:
         """Get recent forecasts for a stock.
@@ -90,7 +70,7 @@ class StockResearchAgent(BaseAgent):
             return url
 
     async def _process_sources(self, sources: List[str]) -> List[str]:
-        """Process a list of source URLs, resolving any Vertex AI redirects.
+        """Process a list of source URLs, checking response status and following redirects.
         
         Args:
             sources: List of source URLs
@@ -102,13 +82,62 @@ class StockResearchAgent(BaseAgent):
             return []
             
         processed_sources = []
-        for url in sources:
-            final_url = await self._resolve_vertex_url(url)
-            processed_sources.append(final_url)
-            
+        async with aiohttp.ClientSession() as session:
+            for url in sources:
+                try:
+                    async with session.get(url, allow_redirects=False) as response:
+                        if response.status == 302:
+                            location = response.headers.get("Location")
+                            if location:
+                                logger.info(f"Following redirect: {url} -> {location}")
+                                processed_sources.append(location)
+                            else:
+                                logger.warning(f"Redirect without Location header: {url}")
+                        elif response.status in [400, 404, 500, 501, 502, 503, 504]:
+                            logger.warning(f"Invalid or unavailable source URL: {url} (Status: {response.status})")
+                        else:
+                            processed_sources.append(url)
+                except Exception as e:
+                    logger.error(f"Error processing source URL {url}: {str(e)}")
+                    
         return processed_sources
 
-    async def analyze_stock(self, symbol: str, force: bool = False) -> dict:
+    def _validate_forecast_date(self, forecast_date_str: str | datetime, days: int) -> datetime:
+        """Validate that the forecast date is approximately current date + days.
+        
+        Args:
+            forecast_date_str: The forecast date string in YYYY-MM-DD format or datetime object
+            days: Number of days to add to current date
+            
+        Returns:
+            Parsed datetime object
+            
+        Raises:
+            ValueError: If the date format is invalid or the date differs significantly
+        """
+        try:
+            # If already a datetime object, just ensure it has timezone
+            if isinstance(forecast_date_str, datetime):
+                forecast_date = forecast_date_str.replace(tzinfo=timezone.utc)
+            else:
+                # Parse string date
+                forecast_date = datetime.strptime(forecast_date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                
+            expected_date = datetime.now(timezone.utc) + timedelta(days=days)
+            date_diff = abs((forecast_date - expected_date).days)
+            
+            if date_diff > 2:
+                logger.warning(
+                    f"Forecast date {forecast_date} differs significantly from expected date "
+                    f"{expected_date} (difference: {date_diff} days)"
+                )
+                
+            return forecast_date
+            
+        except ValueError as e:
+            raise ValueError(f"Invalid forecast date format: {forecast_date_str}. Expected YYYY-MM-DD") from e
+
+    async def analyze_stock(self, symbol: str, force: bool = False) -> List[Dict[str, Any]]:
         """Analyze a stock and generate price forecasts.
 
         Args:
@@ -116,7 +145,7 @@ class StockResearchAgent(BaseAgent):
             force: If True, force new analysis even if recent forecasts exist
 
         Returns:
-            Dictionary containing forecasts and analysis
+            List of forecasts for the stock
         """
         logger.info(f"Starting analysis for {symbol} (force={force})")
         
@@ -128,19 +157,7 @@ class StockResearchAgent(BaseAgent):
                     f"Found {len(recent_forecasts)} recent forecasts for {symbol} "
                     f"within last 12 hours. Using cached forecasts."
                 )
-                return {
-                    "stock_data": {
-                        "forecasts": [
-                            {
-                                "timeframe": f"{f['days']}d",
-                                "target_price": f["target_price"],
-                                "reasoning": f["reason_summary"],
-                                "sources": f.get("sources", [])
-                            }
-                            for f in recent_forecasts
-                        ]
-                    }
-                }
+                return recent_forecasts
 
         # Get stock data from database
         stock = await async_db[COLLECTIONS["stocks"]].find_one({"ticker": symbol})
@@ -158,49 +175,48 @@ class StockResearchAgent(BaseAgent):
 
         # Parse results
         try:
-            result = self._parse_json_response(response['choices'][0]['message']['content'])
+            # First parse the JSON response
+            response_data = self._parse_json_response(response['choices'][0]['message']['content'])
+            
+            # Then construct the ListForecast object
+            list_forecast = ListForecast.model_validate(response_data)
             
             # Process each forecast in the result
             forecasts = []
-            current_price = float(stock["price"])
             
-            for forecast_data in result["forecasts"]:
-                # Convert timeframe to days
-                days = self._get_days_from_timeframe(forecast_data["timeframe"])
+            for forecast_data in list_forecast.forecasts:
+                # Validate and parse forecast date
+                forecast_date = self._validate_forecast_date(
+                    forecast_data.forecast_date,
+                    forecast_data.days
+                )
                 
                 # Process sources to resolve URLs
-                processed_sources = await self._process_sources(forecast_data.get("sources", []))
-                
-                # Calculate gain percentage
-                target_price = float(forecast_data["target_price"])
-                gain = ((target_price - current_price) / current_price) * 100
+                processed_sources = await self._process_sources(forecast_data.sources)
                 
                 # Create and store forecast
                 forecast = Forecast(
                     stock_ticker=symbol,
                     invocation_id=invocation_id,
-                    forecast_date=datetime.now(timezone.utc),
-                    target_price=target_price,
-                    days=days,
-                    reason_summary=forecast_data["reasoning"],
+                    forecast_date=forecast_date,
+                    target_price=float(forecast_data.target_price),
+                    days=forecast_data.days,
+                    reason_summary=forecast_data.reason_summary,
                     sources=processed_sources,
-                    gain=gain
+                    gain=float(forecast_data.gain)
                 )
                 await async_db[COLLECTIONS["forecasts"]].insert_one(forecast.model_dump())
                 
                 forecasts.append({
-                    "timeframe": forecast_data["timeframe"],
-                    "target_price": target_price,
-                    "reasoning": forecast_data["reasoning"],
+                    "timeframe": f"{forecast_data.days}d",
+                    "target_price": forecast_data.target_price,
+                    "reasoning": forecast_data.reason_summary,
                     "sources": processed_sources,
-                    "gain": gain
+                    "gain": forecast_data.gain,
+                    "invocation_id": invocation_id
                 })
 
-            return {
-                "stock_data": {
-                    "forecasts": forecasts
-                }
-            }
+            return forecasts
 
         except Exception as e:
             raise ValueError(f"Failed to parse agent response: {e}")

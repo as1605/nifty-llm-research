@@ -12,6 +12,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from config.settings import settings
+from src.db.models import Basket
 from src.agents.portfolio import PortfolioAgent
 from src.utils.logging import setup_logging
 
@@ -19,17 +20,23 @@ from src.utils.logging import setup_logging
 setup_logging(level=settings.log_level)
 logger = logging.getLogger(__name__)
 
+# Define IST timezone (UTC+5:30)
+IST = timezone(timedelta(hours=5, minutes=30))
 
 def format_timestamp_for_filesystem(dt: datetime) -> str:
     """Format datetime for filesystem compatibility.
     
     Example output: 'Jan_15_2024_14_30'
     """
-    return dt.strftime("%b_%d_%Y_%H_%M")
+    # Convert to IST if not already
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    ist_dt = dt.astimezone(IST)
+    return ist_dt.strftime("%b_%d_%Y_%H_%M")
 
 
 def save_basket_outputs(
-    result: dict,
+    result: Basket,
     index: str,
     filter_top_n: int,
     basket_size_k: int
@@ -37,9 +44,8 @@ def save_basket_outputs(
     """Save basket outputs in JSON and Markdown formats.
     
     Args:
-        result: Portfolio optimization result
+        result: Portfolio optimization result (Basket model)
         index: Index name
-        since_time: Analysis start time
         filter_top_n: Number of top stocks considered
         basket_size_k: Number of stocks selected
     """
@@ -47,20 +53,37 @@ def save_basket_outputs(
     baskets_dir = Path("docs/baskets")
     baskets_dir.mkdir(parents=True, exist_ok=True)
     
+    # Get current time in IST once
+    current_time = datetime.now(IST)
+    
     # Format timestamp for filename
-    timestamp = format_timestamp_for_filesystem(datetime.now(timezone.utc))
+    timestamp = format_timestamp_for_filesystem(current_time)
     
     # Base filename with better separation
     base_name = f"{index}__{timestamp}__N{filter_top_n}_K{basket_size_k}"
     
+    # Convert model to dict and handle datetime serialization
+    basket_dict = result.model_dump()
+    
+    # Remove MongoDB _id field
+    basket_dict.pop('_id', None)
+    
+    # Convert invocation_id to string if it exists
+    if basket_dict.get('invocation_id'):
+        basket_dict['invocation_id'] = str(basket_dict['invocation_id'])
+    
+    # Handle datetime serialization
+    if isinstance(basket_dict.get('creation_date'), datetime):
+        basket_dict['creation_date'] = basket_dict['creation_date'].isoformat()
+    
     # Save JSON
     json_path = baskets_dir / f"{base_name}.json"
     with open(json_path, "w") as f:
-        json.dump(result, f, indent=2)
+        json.dump(basket_dict, f, indent=2)
     
     # Generate and save Markdown table
     md_content = f"""# Portfolio Basket Analysis
-Generated on: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")}
+Generated on: {current_time.strftime("%Y-%m-%d %H:%M:%S IST")}
 Index: {index}
 Top N Stocks Considered: {filter_top_n}
 Selected K Stocks: {basket_size_k}
@@ -71,28 +94,24 @@ Selected K Stocks: {basket_size_k}
 |-------|--------|---------|
 """
     
-    # Add rows for each stock using the weights dictionary
-    for stock in result["stocks_picked"]:
-        weight = result["weights"][stock]
-        # Get sources for this stock from the stock data
-        sources = result.get("stock_sources", {}).get(stock, [])
-        
+    # Add rows for each stock
+    for stock in result.stocks:
         # Format sources with domain names
-        if sources:
+        if stock.sources:
             sources_str = "<br>".join([
                 f"[{urlparse(src).netloc}]({src})"
-                for src in sources
+                for src in stock.sources
             ])
         else:
             sources_str = "No sources available"
             
-        md_content += f"| {stock} | {weight:.2%} | {sources_str} |\n"
+        md_content += f"| {stock.stock_ticker} | {stock.weight:.2%} | {sources_str} |\n"
     
-    # Add overall basket gain
-    md_content += f"\n## Overall Basket Gain\n\nExpected 1M Gain: {result['expected_gain_1m']:.2f}%\n"
+    # Add overall gain
+    md_content += f"\n## Overall Basket Gain\n\nExpected 1M Gain: {result.expected_gain_1m:.2f}%\n"
     
-    # Add summary
-    md_content += f"\n## Analysis Summary\n\n{result['reason_summary']}\n"
+    # Add analysis summary
+    md_content += f"\n## Analysis Summary\n\n{result.reason_summary}\n"
     
     # Save Markdown
     md_path = baskets_dir / f"{base_name}.md"
@@ -129,8 +148,8 @@ async def main():
     )
     args = parser.parse_args()
 
-    # Calculate since_time
-    since_time = datetime.now(timezone.utc) - timedelta(days=args.since_days)
+    # Calculate since_time in IST
+    since_time = datetime.now(IST) - timedelta(days=args.since_days)
 
     # Initialize agent
     agent = PortfolioAgent()

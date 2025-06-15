@@ -25,32 +25,33 @@ COLLECTIONS = {
     "stocks": "stocks",
     "forecasts": "forecasts",
     "baskets": "baskets",
-    "orders": "orders",
 }
 
 
 # Create indexes
 def setup_indexes():
     """Create necessary indexes for collections."""
-    # PromptConfig indexes
-    db[COLLECTIONS["prompt_configs"]].create_index("name", unique=True)
+    db[COLLECTIONS["prompt_configs"]].drop_indexes()
 
     # Stock indexes
-    db[COLLECTIONS["stocks"]].create_index("ticker", unique=True)
-    db[COLLECTIONS["stocks"]].create_index("modified_time")
+    db[COLLECTIONS["stocks"]].create_index([("ticker", 1)], unique=True)
+    db[COLLECTIONS["stocks"]].create_index([("indices", 1)])  # For filtering stocks by index
+    db[COLLECTIONS["stocks"]].create_index([("modified_time", -1)])  # For recent updates
 
     # Forecast indexes
-    db[COLLECTIONS["forecasts"]].create_index(
-        [("stock_ticker", 1), ("forecast_date", 1)]
-    )
-    db[COLLECTIONS["forecasts"]].create_index("created_time")
+    db[COLLECTIONS["forecasts"]].create_index([
+        ("stock_ticker", 1),
+        ("created_time", -1)
+    ])  # For recent forecasts
+    db[COLLECTIONS["forecasts"]].create_index([
+        ("stock_ticker", 1),
+        ("forecast_date", 1)
+    ])  # For forecast lookups
+    db[COLLECTIONS["forecasts"]].create_index([("gain", -1)])  # For sorting by gain
 
     # Basket indexes
-    db[COLLECTIONS["baskets"]].create_index("creation_date")
-
-    # Order indexes
-    db[COLLECTIONS["orders"]].create_index([("stock_ticker", 1), ("placed_time", 1)])
-    db[COLLECTIONS["orders"]].create_index("demat_account")
+    db[COLLECTIONS["baskets"]].create_index([("creation_date", -1)])  # For recent baskets
+    db[COLLECTIONS["baskets"]].create_index([("invocation_id", 1)])  # For linking to invocations
 
 
 async def get_database() -> AsyncGenerator[AsyncIOMotorDatabase, None]:

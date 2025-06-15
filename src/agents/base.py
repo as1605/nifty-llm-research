@@ -11,7 +11,7 @@ from typing import Optional, List, Dict, Any, Tuple
 from datetime import datetime, timezone
 
 from google import genai
-from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
+from google.genai.types import Tool, GenerateContentConfig, GoogleSearch, ThinkingConfig
 from google.genai.errors import ServerError
 
 from src.db.database import COLLECTIONS
@@ -75,21 +75,19 @@ class BaseAgent:
 
     def _create_messages(
         self,
-        system_prompt: str,
         user_message: str,
         context: Optional[List[Dict[str, str]]] = None,
     ) -> str:
         """Create message for Gemini completion.
 
         Args:
-            system_prompt: The system behavior definition
             user_message: The user's input message
             context: Optional additional context messages
 
         Returns:
             Combined message string
         """
-        messages = [system_prompt]
+        messages = []
         
         if context:
             for ctx in context:
@@ -131,7 +129,7 @@ class BaseAgent:
             user_prompt = user_prompt.replace(placeholder, str(value))
 
         # Combine messages
-        content = self._create_messages(system_prompt, user_prompt)
+        content = self._create_messages(user_prompt)
 
         # Configure tools if needed
         tools = []
@@ -146,8 +144,7 @@ class BaseAgent:
             invocation_time=datetime.now(timezone.utc),
             metadata={
                 "model": prompt_config.model,
-                "temperature": prompt_config.temperature,
-                "max_tokens": prompt_config.max_tokens,
+                "config": prompt_config.config,
                 "tools_used": prompt_config.tools,
             },
         )
@@ -157,18 +154,50 @@ class BaseAgent:
         # Generate content with retry logic
         logger.info(f"Submitting request to Gemini API using model: {prompt_config.model}")
         
+        # Extract configuration from PromptConfig
+        config = prompt_config.config
+        generation_config = config.get("generation_config", {})
+        
+        # Create GenerateContentConfig with all available parameters
+        generate_config = GenerateContentConfig(
+            tools=tools,
+            response_modalities=["TEXT"],
+            temperature=generation_config.get("temperature", config.get("temperature", 0.2)),
+            max_output_tokens=generation_config.get("max_output_tokens", config.get("max_tokens", 4096)),
+            top_p=generation_config.get("top_p", config.get("top_p", 0.8)),
+            top_k=generation_config.get("top_k", config.get("top_k", 20)),
+            candidate_count=config.get("candidate_count", 1),
+            stop_sequences=config.get("stop_sequences", []),
+            safety_settings=config.get("safety_settings", []),
+            system_instruction=system_prompt
+        )
+
+        # Add response schema if specified
+        if "response_schema" in config and config["response_schema"]:
+            generate_config.response_schema = config["response_schema"]
+
+        # Add response MIME type if specified
+        if "response_mime_type" in config:
+            generate_config.response_mime_type = config["response_mime_type"]
+
+        # Add thinking config if specified
+        thinking_config = None
+        if "thinking_budget" in config or "include_thoughts" in config:
+            thinking_config = ThinkingConfig(
+                thinking_budget=config.get("thinking_budget"),
+                include_thoughts=config.get("include_thoughts", False)
+            )
+        if thinking_config:
+            generate_config.thinking_config = thinking_config
+
+        
         retry_count = 0
         while True:
             try:
                 response = self.client.models.generate_content(
                     model=prompt_config.model,
                     contents=content,
-                    config=GenerateContentConfig(
-                        tools=tools,
-                        response_modalities=["TEXT"],
-                        temperature=prompt_config.temperature,
-                        max_output_tokens=prompt_config.max_tokens,
-                    )
+                    config=generate_config
                 )
                 break  # Success, exit retry loop
                 
