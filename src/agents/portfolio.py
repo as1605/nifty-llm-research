@@ -169,6 +169,7 @@ class PortfolioAgent(BaseAgent):
             
             # Create BasketStock objects
             stocks = []
+            ticker_to_weight = {}
             for stock in basket_data["stocks"]:
                 basket_stock = BasketStock(
                     stock_ticker=stock["stock_ticker"],
@@ -176,15 +177,39 @@ class PortfolioAgent(BaseAgent):
                     sources=stock.get("sources", [])
                 )
                 stocks.append(basket_stock)
+                ticker_to_weight[stock["stock_ticker"]] = stock["weight"]
+
+            # Calculate expected_gain_1m as weighted average of 1m gains
+            # 1. Gather all 1m (days==30) forecasts for each stock in the basket
+            ticker_to_1m_gains = {ticker: [] for ticker in ticker_to_weight}
+            for forecast in stock_data:
+                ticker = forecast["stock_ticker"]
+                if ticker in ticker_to_1m_gains and forecast.get("days") == 30:
+                    ticker_to_1m_gains[ticker].append(forecast["gain"])
+            # 2. Average the 1m gains for each stock
+            ticker_to_avg_1m_gain = {}
+            for ticker, gains in ticker_to_1m_gains.items():
+                if gains:
+                    ticker_to_avg_1m_gain[ticker] = sum(gains) / len(gains)
+                else:
+                    ticker_to_avg_1m_gain[ticker] = 0.0  # or handle missing data as needed
+            # 3. Weighted average
+            expected_gain_1m = sum(
+                ticker_to_avg_1m_gain[ticker] * ticker_to_weight[ticker]
+                for ticker in ticker_to_weight
+            )
+
+            # Ensure stocks_ticker_candidates are unique
+            unique_ticker_candidates = list({stock["stock_ticker"] for stock in stock_data})
 
             # Create and store basket
             basket = Basket(
                 creation_date=datetime.now(timezone.utc),
                 invocation_id=invocation_id,
-                stocks_ticker_candidates=[stock["stock_ticker"] for stock in stock_data],
+                stocks_ticker_candidates=unique_ticker_candidates,
                 stocks=stocks,
                 reason_summary=basket_data["reason_summary"],
-                expected_gain_1m=basket_data["expected_gain_1m"]
+                expected_gain_1m=expected_gain_1m
             )
             await async_db[COLLECTIONS["baskets"]].insert_one(basket.model_dump())
 

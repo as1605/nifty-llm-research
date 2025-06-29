@@ -1,0 +1,160 @@
+{
+  "creation_date": "2025-06-29T19:28:21.250823+00:00",
+  "invocation_id": "686193c3259f18732cf57788",
+  "stocks_ticker_candidates": [
+    "ARE&M",
+    "PVRINOX",
+    "SIGNATURE",
+    "BLS",
+    "ALOKINDS",
+    "HINDCOPPER",
+    "TTML",
+    "NAVA",
+    "ALIVUS",
+    "IOB",
+    "HONASA",
+    "RTNINDIA",
+    "FINCABLES",
+    "GPIL",
+    "SOBHA",
+    "TARIL",
+    "HSCL",
+    "PGEL",
+    "SAMMAANCAP",
+    "JINDALSAW",
+    "BSOFT",
+    "SWANENERGY",
+    "DBREALTY",
+    "JMFINANCIL",
+    "SWSOLAR",
+    "TANLA",
+    "NEWGEN",
+    "KIRLOSENG",
+    "LTFOODS",
+    "RPOWER",
+    "USHAMART",
+    "ITI",
+    "INOXWIND",
+    "AKUMS",
+    "HOMEFIRST",
+    "UCOBANK",
+    "TEJASNET",
+    "COHANCE",
+    "OLECTRA",
+    "PNCINFRA",
+    "JUSTDIAL",
+    "ROUTE",
+    "INDIAMART",
+    "SAREGAMA",
+    "RENUKA",
+    "TITAGARH",
+    "KIRLOSBROS",
+    "RAYMOND",
+    "MANYAVAR",
+    "BBTC"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "TITAGARH",
+      "weight": 0.12,
+      "sources": [
+        "https://www.livemint.com/market/stock-market-news/stock-to-buy-anand-rathi-predicts-titagarh-rail-systems-shares-to-rise-27-in-3-months-heres-why-11750841840718.html",
+        "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=151988&ModuleId=3",
+        "https://www.sovrenn.com/knowledge/titagarh-rail-systems-concall-and-investor-presentation-summary-report-q4-fy-24",
+        "https://m.economictimes.com/news/economy/indicators/rbi-mpc-meeting-gdp-forecast-indias-central-bank-retains-growth-forecast-6-5/articleshow/121664715.cms",
+        "https://www.thehindu.com/business/budget/railways-allocation-remains-unchanged-at-265-lakh-crore-budget-for-customer-amenities-investment-in-psus-slashed/article69168887.ece"
+      ]
+    },
+    {
+      "stock_ticker": "RAYMOND",
+      "weight": 0.11,
+      "sources": [
+        "https://economictimes.indiatimes.com/raymond-ltd/stocks/companyid-13214.cms",
+        "https://www.icicidirect.com/research/equity/rapid-results/raymond-ltd"
+      ]
+    },
+    {
+      "stock_ticker": "FINCABLES",
+      "weight": 0.1,
+      "sources": [
+        "https://www.screener.in/company/FINCABLES/consolidated/",
+        "https://www.livemint.com/market/market-stats/finolex-cables-q4-results-s0003583",
+        "https://cablecommunity.com/finolex-cables-fy-24-financial-results-revenue-up-12-pat-jumps-29/",
+        "https://www.indmoney.com/stocks/finolex-cables-ltd-share-price/results",
+        "https://www.thehindubusinessline.com/money-and-banking/rbi-mpc-meeting-june-2025-rbi-monetary-policy-live-updates-sanjay-malhotra-repo-rate-cut-news/article69660744.ece",
+        "https://www.gripinvest.in/blog/rbi-repo-rate-cut-impact"
+      ]
+    },
+    {
+      "stock_ticker": "SOBHA",
+      "weight": 0.1,
+      "sources": [
+        "https://www.angelone.in/news/sobha-shares-q4-fy25-earnings-results-reported-482-percent-yoy-jump",
+        "https://www.equitybulls.com/category.php?id=356029",
+        "https://www.ndtv.com/world-news/indias-gdp-growth-in-2025-2026-estimated-to-be-highest-among-g20-nations-report-8584105"
+      ]
+    },
+    {
+      "stock_ticker": "PNCINFRA",
+      "weight": 0.1,
+      "sources": [
+        "https://www.mufgresearch.com/fx/india-rbi-june-2025-front-loading-rate-cuts-next-rate-cut-likely-in-dec-6-june-2025/",
+        "https://m.economictimes.com/news/economy/policy/rbi-monetary-policy-2025-26-key-takeaways-repo-rate-gdp-inflation-check-what-sanjay-malhotra-announced-today/articleshow/121664737.cms",
+        "https://trendlyne.com/equity/share-holding/1717/PNCINFRA/latest/pnc-infratech-ltd/"
+      ]
+    },
+    {
+      "stock_ticker": "TARIL",
+      "weight": 0.09,
+      "sources": [
+        "https://www.indmoney.com/stocks/techno-electric-and-engineering-company-ltd-share-price/results",
+        "https://www.business-standard.com/markets/capital-market-news/techno-electric-engineering-company-consolidated-net-profit-rises-73-65-in-the-march-2025-quarter-125052800372_1.html",
+        "https://www.ndtv.com/world-news/indias-gdp-growth-in-2025-2026-estimated-to-be-highest-among-g20-nations-report-8584105",
+        "https://m.economictimes.com/news/economy/indicators/rbi-mpc-meeting-gdp-forecast-indias-central-bank-retains-growth-forecast-6-5/articleshow/121664715.cms",
+        "https://m.economictimes.com/news/economy/policy/rbi-monetary-policy-2025-26-key-takeaways-repo-rate-gdp-inflation-check-what-sanjay-malhotra-announced-today/articleshow/121664737.cms"
+      ]
+    },
+    {
+      "stock_ticker": "HOMEFIRST",
+      "weight": 0.09,
+      "sources": [
+        "https://homefirstindia.com/files/Q3FY25%20HomeFirst%20Financial%20Results.pdf",
+        "https://cleartax.in/s/repo-rate"
+      ]
+    },
+    {
+      "stock_ticker": "BLS",
+      "weight": 0.09,
+      "sources": [
+        "https://www.tradingview.com/symbols/NSE-BLS/",
+        "https://timesofindia.indiatimes.com/business/india-business/india-q4-gdp-growth-beats-estimates-at-7-4-full-year-2024-25-estimate-at-6-5-check-top-points-and-highlights/articleshow/121515213.cms",
+        "https://tradingeconomics.com/india/interest-rate",
+        "https://www.bajajbroking.in/share-market-news/bls-international-services-limited-q4-results-fy-24-25",
+        "https://in.tradingview.com/symbols/BSE-BLS/ideas/",
+        "https://www.livemint.com/money/personal-finance/rbi-cuts-repo-rate-by-50-bps-here-s-what-it-means-for-your-loan-11750744953317.html"
+      ]
+    },
+    {
+      "stock_ticker": "AKUMS",
+      "weight": 0.1,
+      "sources": [
+        "https://www.screener.in/company/AKUMS/consolidated/",
+        "https://timesofindia.indiatimes.com/business/india-business/indias-pharma-industry-grows-7-8-in-april-government-says-success-of-smart-schemes/articleshow/121250581.cms",
+        "https://www.indmoney.com/stocks/akums-drugs-and-pharmaceuticals-ltd-share-price/results",
+        "https://www.assetmanagement.hsbc.co.in/en/mutual-funds/news-and-insights/rbi-monetary-policy-update-june-2025"
+      ]
+    },
+    {
+      "stock_ticker": "JMFINANCIL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.indmoney.com/stocks/jm-financial-ltd-share-price/results",
+        "https://www.samco.in/stocks/jm-financial-limited-share-price",
+        "https://www.screener.in/company/JMFINANCIL/consolidated/",
+        "https://www.indmoney.com/stocks/jm-financial-ltd-share-price"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio is strategically constructed to maximize short-term gains (1-week and 1-month horizons) in Indian equities while ensuring robust diversification and risk management. The selection prioritizes companies with strong recent financial performance, clear growth catalysts, and favorable macroeconomic tailwinds, aiming to outperform broader market indices.\n\n**Selection Strategy:**\n\n1.  **High Conviction Short-Term Catalysts:** Stocks were chosen based on their immediate positive triggers, such as strong Q4 FY25 results, significant order wins, strategic expansions, and the positive impact of recent RBI repo rate cuts. For instance, **TITAGARH** benefits from robust railway capex and a substantial order book, while **RAYMOND** is poised for value unlocking from its realty demerger and strong Q4 performance. **FINCABLES** and **PNCINFRA** are direct beneficiaries of India's infrastructure boom and favorable interest rates.\n\n2.  **Fundamental Strength & Growth Potential:** Emphasis was placed on companies demonstrating healthy balance sheets (e.g., low debt for Finolex Cables, HomeFirst, JM Financial), consistent revenue/profit growth, and clear market leadership. **SOBHA**'s net cash position and aggressive pre-sales targets, and **AKUMS**'s strong Q4 and CDMO market leadership, exemplify this.\n\n3.  **Macroeconomic Alignment:** The portfolio heavily leverages India's strong economic growth trajectory (projected 6.3-6.5% GDP for FY26) and the RBI's accommodative monetary policy, which includes recent repo rate cuts. These factors are expected to boost consumer spending, industrial activity, and credit growth, directly benefiting sectors like real estate, manufacturing, and financial services.\n\n**Diversification and Risk Management:**\n\n*   **Sectoral Diversification:** The basket spans multiple high-growth sectors to mitigate idiosyncratic risks. It includes:\n    *   **Infrastructure/Capital Goods:** Titagarh (Railways), PNC Infratech (Roads/Infra), Finolex Cables (Wires & Cables), TARIL (Power/Digital Infra)\n    *   **Real Estate/Housing Finance:** Raymond (Realty demerger), Sobha (Luxury Housing), HomeFirst (Affordable Housing Finance)\n    *   **Financial Services:** JM Financial (Investment Banking/Lending)\n    *   **Pharmaceuticals/CDMO:** Akums (Contract Development & Manufacturing)\n    *   **Services:** BLS (Visa/Digital Services)\n*   **Factor Diversification:** The portfolio balances growth-oriented companies (e.g., Titagarh, Akums) with more stable, fundamentally strong players (e.g., Finolex Cables, JM Financial). The inclusion of companies benefiting from domestic consumption (Sobha, Raymond) and government capex (Titagarh, PNC Infratech) provides resilience against specific market shocks.\n*   **Risk Mitigation:** While aiming for high gains, highly speculative stocks or those with significant unmitigated short-term risks were avoided. The chosen companies generally have strong management, clear business strategies, and positive analyst sentiment, reducing downside risk.\n\n**Weighting Rationale:** Weights are assigned based on conviction in short-term catalysts and contribution to overall portfolio diversification. Stocks with very strong immediate catalysts and robust fundamentals receive higher allocations (e.g., Titagarh, Raymond, FinCables, Sobha, PNCInfra, Akums, JM Financial), while others contribute to broader sector exposure.\n\nThis basket is well-positioned to capture the ongoing positive momentum in the Indian market, driven by strong corporate earnings, supportive government policies, and a robust macroeconomic environment, thereby maximizing monthly gains and outperforming market benchmarks.",
+  "expected_gain_1m": 10.3083
+}

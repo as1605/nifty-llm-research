@@ -138,15 +138,20 @@ class Forecast(BaseModel):
 
 ### System Instructions:
 
-1.  **Strict JSON Output:** You *must* output **only a single, valid JSON object** strictly adhering to the `responseSchema` provided via the API call, representing the `Basket` Pydantic model. Do not include any conversational text, explanations, or additional formatting outside this JSON object.
+1.  **Strict JSON Output:** 
+    * You *must* output **only a single, valid JSON object** strictly adhering to the `responseSchema` provided via the API call, representing the `Basket` Pydantic model. 
+    * Make sure to include all the fields in the Basket model in your response
+    * Do not include any conversational text, explanations, or additional formatting outside this JSON object.
 2.  **Output Size Constraints:**
     * The `stocks_ticker_candidates` list must contain exactly `{FILTER_TOP_N}` unique tickers.
     * The `stocks` list must contain exactly `{BASKET_SIZE_K}` unique stocks.
     * The `reason_summary` must be a string, approximately **200-300 words**.
 3.  **Weight Summation:** The sum of all `weight` values in the `stocks` list must be precisely `1.0` (or `100%`) when rounded to two decimal places.
-4.  **Portfolio Objective:** Your primary goal is to maximize the expected short-term gains (specifically for the 1-month horizon) for the portfolio basket while effectively managing risk and ensuring diversification, aiming to outperform broader market indices and mutual funds.
-5.  **Data Interpretation:** Carefully parse the provided STOCK_DATA. For each unique stock, focus on its 1-month (`days=30`) forecast, `target_price`, `gain`, and critically, its `reason_summary` for deeper context. You may also consult the `sources` if the `reason_summary` is insufficient for a critical decision.
+4.  **Portfolio Objective:** Your primary goal is to maximize the expected short-term gains (specifically for the 1-week and 1-month horizon) for the portfolio basket while effectively managing risk and ensuring diversification, aiming to outperform broader market indices and mutual funds.
+5.  **Data Interpretation:** Carefully parse the provided STOCK_DATA. For each unique stock, focus on its forecasts, `target_price`, `gain`, and critically, its `reason_summary` for deeper context. You may also consult the `sources` if the `reason_summary` is insufficient for a critical decision.
 6.  **No Hallucination:** Do not invent stock tickers, weights, or gains. All selected stocks must originate from the `stocks_ticker_candidates` list derived from the input `STOCK_DATA`.
+7.  **Efficiency Focus:** Process the information and generate the response as directly and efficiently as possible, avoiding extensive internal deliberation or overly complex reasoning paths to stay within token limits.
+
 """,
         user_prompt="""
 ### Task:
@@ -156,16 +161,16 @@ Given a flat `STOCK_DATA` (where each item is a forecast object for a specific s
 1.  **Step 1: Parse and Consolidate Input Data:**
     * Iterate through the `STOCK_DATA`.
     * Identify all `{FILTER_TOP_N}` unique stock tickers (`stock_ticker`) present in the input. This will form your `stocks_ticker_candidates` list.
-    * For each unique stock, extract its 1-month (`days=30`) forecast data (specifically `target_price`, `gain`, and `reason_summary`). If a 1-month forecast is missing or invalid, note it as a deficiency for that stock.
+    * For each unique stock, extract its forecast data focusing on 1 week and 1 month (specifically `target_price`, `gain`, and `reason_summary`)
     * Also, briefly review the 3-month, 6-month, and 1-year forecasts and their reasonings for each stock to understand its broader trajectory and long-term risks/catalysts, even if the primary focus is 1-month gain.
 
 2.  **Step 2: Stock Evaluation and Scoring:**
-    * For each of the `{FILTER_TOP_N}` candidates, perform a comprehensive evaluation focused on its potential for **1-month gain** as provided in the forecast data.
-    * Critically analyze the `reason_summary` for each stock's 1-month forecast to understand the underlying drivers and associated risks. Consider the credibility and depth of the previous analysis.
+    * For each of the `{FILTER_TOP_N}` candidates, perform a comprehensive evaluation focused on its potential for short term gains as provided in the forecast data.
+    * Critically analyze the `reason_summary` for each stock's forecasts to understand the underlying drivers and associated risks. Consider the credibility and depth of the previous analysis.
     * Infer or search for the primary industry/sector of each stock to facilitate diversification analysis.
 
 3.  **Step 3: Portfolio Construction Strategy (Maximizing Gain with Risk Management and Diversification):**
-    * **Maximize Gains:** Prioritize `{BASKET_SIZE_K}` with the highest and most reliable `expected_gain_1m` potential.
+    * **Maximize Gains:** Prioritize `{BASKET_SIZE_K}` with the highest and most reliable gain potential.
     * **Diversification - Industry Overlap:** Actively avoid excessive concentration in any single industry or sector. Ensure the selected `{BASKET_SIZE_K}` provide a variety of exposure to different economic factors and industry trends. Explain how this diversification is achieved in the `reason_summary`.
     * **Factor Diversification:** Look beyond just industry; consider underlying factors driving stock performance (e.g., growth vs. value, cyclical vs. defensive, domestic vs. export-oriented). Aim for a mix that provides resilience against specific market shocks.
     * **Risk Management:** While maximizing gains, implicitly manage risk. Avoid stocks with highly speculative `reason_summary` or identified significant, unmitigated short-term risks, even if their `gain` is high. Balance high-conviction growth stocks with potentially more stable choices.
@@ -178,18 +183,14 @@ Given a flat `STOCK_DATA` (where each item is a forecast object for a specific s
 
 5.  **Step 5: Assign Optimal Weights:**
     * Assign a percentage weight (as a float, summing to 1.0) to each of the `{BASKET_SIZE_K}` in the `stocks` list.
-    * The weighting should reflect your conviction in each stock's 1-month potential and its contribution to the overall portfolio's risk-return profile. Higher conviction stocks or those crucial for diversification might receive a relatively higher weight, respecting reasonable individual stock concentration limits (e.g., no single stock typically exceeding 20-25% in a diversified portfolio unless exceptionally high conviction).
+    * The weighting should reflect your conviction in each stock's growth potential and its contribution to the overall portfolio's risk-return profile. Higher conviction stocks or those crucial for diversification might receive a relatively higher weight, respecting reasonable individual stock concentration limits (e.g., no single stock typically exceeding 20-25% in a diversified portfolio unless exceptionally high conviction).
 
-6.  **Step 6: Calculate Portfolio `expected_gain_1m`:**
-    * Calculate the weighted average of the `gain` (for `days=30`) of the `{BASKET_SIZE_K}` picked. This will be the `expected_gain_1m` for the portfolio.
-    * `expected_gain_1m` = $\sum_{i=1}^{K} (weight_i \times gain\_1m_i)$
-
-7.  **Step 7: Generate `reason_summary`:**
+6.  **Step 6: Generate `reason_summary`:**
     * Write a comprehensive `reason_summary` (200-300 words) in Markdown format explaining:
         * The overall strategy applied for stock selection.
-        * Why these specific `{BASKET_SIZE_K}` were chosen, highlighting their individual merits (e.g., strong 1-month forecast, fundamental strength, catalysts).
+        * Why these specific `{BASKET_SIZE_K}` were chosen, highlighting their individual merits (e.g., strong forecasts, fundamental strength, catalysts).
         * How diversification (industry, factors) and risk management were achieved within the basket.
-        * How this basket is positioned to maximize 1-month gains and potentially outperform market indices.
+        * How this basket is positioned to maximize monthly gains and potentially outperform market indices.
 
 ---
 
@@ -218,7 +219,6 @@ class Basket(BaseModel):
         ..., description="List of selected stocks with their weights and sources"
     )
     reason_summary: str = Field(..., description="Summary of why these stocks were picked")
-    expected_gain_1m: float = Field(..., description="Expected gain for the basket in 1 month")
 
 --- 
 ### STOCK_DATA
@@ -234,7 +234,7 @@ class Basket(BaseModel):
             "top_p": 0.4,
             "max_tokens": 32768,
             "response_schema": Basket.model_json_schema(),
-            "thinking_budget": 18 * 1024,
+            "thinking_budget": 0, # Gemini 2.5 Flash issue exceeding thinking tokens
             "include_thoughts": False
         },
         tools=[],
