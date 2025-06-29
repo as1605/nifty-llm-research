@@ -116,10 +116,11 @@ class Forecast(BaseModel):
 ```
 """,
         params=["TICKER"],
-        model="gemini-2.5-flash-preview-05-20",
+        model="gemini-2.5-flash",
         config={
             "temperature": 0.1,
             "max_tokens": 32768,
+            "top_p": 0.6,
             "response_schema": ListForecast.model_json_schema(),
             "thinking_budget": 12 * 1024,
             "include_thoughts": False
@@ -227,9 +228,10 @@ class Basket(BaseModel):
 ```
 """,
         params=["STOCK_DATA", "FILTER_TOP_N", "BASKET_SIZE_K"],
-        model="gemini-2.5-flash-preview-05-20",
+        model="gemini-2.5-flash",
         config={
             "temperature": 0.1,
+            "top_p": 0.4,
             "max_tokens": 32768,
             "response_schema": Basket.model_json_schema(),
             "thinking_budget": 18 * 1024,
