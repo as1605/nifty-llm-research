@@ -1,0 +1,163 @@
+{
+  "creation_date": "2025-07-13T18:40:17.873933+00:00",
+  "invocation_id": "6873fd7b10e0b1e188f312b2",
+  "stocks_ticker_candidates": [
+    "WELSPUNLIV",
+    "HONASA",
+    "WHIRLPOOL",
+    "TANLA",
+    "TEJASNET",
+    "RBLBANK",
+    "J&KBANK",
+    "NBCC",
+    "BRIGADE",
+    "COHANCE",
+    "USHAMART",
+    "RKFORGE",
+    "UCOBANK",
+    "IRCON",
+    "CAMPUS",
+    "ALIVUS",
+    "SHYAMMETL",
+    "SCI",
+    "METROPOLIS",
+    "IFCI",
+    "GRSE",
+    "FINCABLES",
+    "NCC",
+    "GMDCLTD",
+    "PVRINOX",
+    "CENTRALBK",
+    "ABREL",
+    "RITES",
+    "PPLPHARMA",
+    "JPPOWER",
+    "PGEL",
+    "GPPL",
+    "JYOTICNC",
+    "NETWEB",
+    "TITAGARH",
+    "MAPMYINDIA",
+    "IOB",
+    "BLS",
+    "RPOWER",
+    "GRAVITA",
+    "JINDALSAW",
+    "SWSOLAR",
+    "CROMPTON",
+    "GPIL",
+    "HFCL",
+    "RTNINDIA",
+    "DBREALTY",
+    "TARIL",
+    "NETWORK18",
+    "PNCINFRA"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "DBREALTY",
+      "weight": 0.12,
+      "sources": [
+        "https://economictimes.indiatimes.com/valor-estate-ltd/stocks/companyid-20813.cms",
+        "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154573&ModuleId=3",
+        "https://www.thehindu.com/business/Economy/reserve-bank-of-india-monetary-policy-announcement-on-june-6-2025/article69663837.ece",
+        "https://realty.economictimes.indiatimes.com/tag/db+realty",
+        "https://dbrealty.co.in/pdf/Annual%20Report%2031-03-2024.pdf",
+        "https://www.livemint.com/companies/news/real-estate-db-realty-valor-estate-adani-goodhomes-bkc-project-ten-bkc-redevelopment-projects-11736923924590.html"
+      ]
+    },
+    {
+      "stock_ticker": "PPLPHARMA",
+      "weight": 0.11,
+      "sources": [
+        "https://www.prnewswire.com/news-releases/piramal-pharma-limited-announces-results-for-q4-and-fy2025-302455711.html"
+      ]
+    },
+    {
+      "stock_ticker": "NETWEB",
+      "weight": 0.1,
+      "sources": [
+        "https://www.motilaloswal.com/news/stocks/91068",
+        "https://compoundingai.in/blogs/cf906d7b-d460-48b7-9769-4ee184ea4376",
+        "https://www.moneymuscle.in/p/netweb-technologies-q4-fy25-results",
+        "https://netwebindia.com/investors/board-meeting/2024-25/Q4/Press_Release_Q4.pdf"
+      ]
+    },
+    {
+      "stock_ticker": "JYOTICNC",
+      "weight": 0.1,
+      "sources": [
+        "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154573&ModuleId=3",
+        "https://www.livemint.com/economy/india-manufacturing-pmi-factory-activity-india-economic-growth-11751348536498.html",
+        "https://economictimes.indiatimes.com/jyoti-cnc-automation-ltd/stocksupdate/companyid-2162893.cms"
+      ]
+    },
+    {
+      "stock_ticker": "HONASA",
+      "weight": 0.1,
+      "sources": [
+        "https://m.economictimes.com/news/economy/indicators/india-to-remain-fastest-growing-economy-in-2025-2026-while-global-growth-to-decline-morgan-stanley/articleshow/122172107.cms",
+        "https://www.livemint.com/economy/india-gdp-pegged-at-6-4-per-cent-in-2026-to-remain-fastest-growing-economy-till-next-year-despite-global-slowdown-report-11751348752738.html",
+        "https://ddnews.gov.in/en/india-projected-to-see-6-5-gdp-growth-in-fy26-sp-global-ratings/",
+        "https://m.economictimes.com/markets/stocks/earnings/honasa-consumer-q4-results-cons-pat-falls-18-yoy-to-rs-25-crore-revenue-up-13/articleshow/121339428.cms",
+        "https://www.sanskritiias.com/current-affairs/rbi-monetary-policy-2025-repo-rate-cut-gdp-forecast-and-economic-impact",
+        "https://economictimes.indiatimes.com/honasa-consumer-ltd/stocksupdate/companyid-2023293.cms",
+        "https://trendlyne.com/research-reports/post/HONASA/1769048/honasa-consumer-ltd/",
+        "https://www.icicidirect.com/research/equity/rapid-results/honasa-consumer-ltd",
+        "https://www.scconline.com/blog/post/2025/06/17/rbi-monetary-policy-repo-rate-economic-growth/"
+      ]
+    },
+    {
+      "stock_ticker": "RPOWER",
+      "weight": 0.09,
+      "sources": [
+        "https://m.economictimes.com/markets/stocks/earnings/reliance-power-q4-results-company-posts-rs-126-crore-net-profit-on-lower-expenses/articleshow/121036777.cms",
+        "https://www.etnownews.com/markets/reliance-power-q4-results-2025-rs-16337-crore-net-worth-anil-ambani-led-companys-profit-revenue-quarterly-earnings-article-151599954",
+        "https://www.angelone.in/news/reliance-power-share-price-jumped-nearly-19-percent-on-solar-jv",
+        "https://m.economictimes.com/markets/stocks/news/reliance-power-extends-winning-streak-up-13-in-5-sessions-whats-fueling-the-surge/articleshow/122158082.cms",
+        "https://m.economictimes.com/news/economy/indicators/rbi-mpc-meeting-gdp-forecast-indias-central-bank-retains-growth-forecast-6-5/articleshow/121664715.cms",
+        "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=2120509",
+        "https://cleartax.in/s/repo-rate",
+        "https://www.financialexpress.com/business/industry-r-power-becomes-debt-free-infra-recasts-debt-shares-spike-3614896/"
+      ]
+    },
+    {
+      "stock_ticker": "GRSE",
+      "weight": 0.09,
+      "sources": [
+        "https://tejimandi.com/blogs/feature-articles/defence-sector-in-2025-performance-outlook-risks",
+        "https://www.youtube.com/watch?v=EbqbZihU0To",
+        "https://www.newindianexpress.com/cities/delhi/2025/May/23/garden-reach-shipyard-to-construct-rs-25000-crore-next-gen-corvettes-for-navy"
+      ]
+    },
+    {
+      "stock_ticker": "RBLBANK",
+      "weight": 0.09,
+      "sources": [
+        "https://m.economictimes.com/markets/stocks/news/banking-sector-outlook-2025-suresh-ganapathys-perspective-on-growth-and-valuations/sector-insights/slideshow/119120700.cms",
+        "https://www.angelone.in/news/rbl-bank-share-price-soared-over-20-in-june-2025-know-why"
+      ]
+    },
+    {
+      "stock_ticker": "ABREL",
+      "weight": 0.09,
+      "sources": [
+        "https://in.tradingview.com/symbols/NSE-ABREL/",
+        "https://indiamacroindicators.co.in/resources/blogs/rbis-repo-rate-and-crr-cut-what-it-means-for-you-in-2025",
+        "https://www.gripinvest.in/blog/rbi-repo-rate-cut-impact"
+      ]
+    },
+    {
+      "stock_ticker": "COHANCE",
+      "weight": 0.1,
+      "sources": [
+        "https://www.ubs.com/global/en/investment-bank/insights-and-data/2024/indias-outlook-2025-2026-story.html",
+        "https://www.tijorifinance.com/company/suven-pharmaceuticals-ltd/",
+        "https://www.angelone.in/news/suven-pharmaceuticals-changes-to-cohance-lifesciences",
+        "https://suvenpharm.com/pdf/events/SUVENPHAR_29022024190827_Suvenpharm_Press_release.pdf"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio is strategically constructed to maximize short-term gains (1-week and 1-month horizons) by focusing on Indian equities with strong fundamental catalysts, positive macroeconomic tailwinds, and favorable technical indicators, while ensuring diversification across sectors. The selection prioritizes companies poised for immediate upside due to recent positive news, robust financial performance, or supportive industry trends.\n\n**DBREALTY (Real Estate)** and **ABREL (Real Estate)** are included due to the booming Indian real estate sector, supported by RBI rate cuts and significant project completions/strategic pivots. Their strong short-term technicals and fundamental improvements make them attractive for quick gains.\n\n**PPLPHARMA (Pharmaceuticals)** and **COHANCE (Pharmaceuticals)** are chosen for their strong Q4/FY25 results, strategic expansions in high-growth CDMO segments, and positive analyst sentiment. The Indian pharma sector's robust growth provides a favorable backdrop.\n\n**NETWEB (Technology/AI Infrastructure)** and **JYOTICNC (Manufacturing/Capital Goods)** are positioned to benefit from India's digital transformation, AI infrastructure buildout, and manufacturing growth. Their strong financial performance, strategic partnerships, and government support for indigenous tech and manufacturing are key drivers.\n\n**HONASA (FMCG/D2C)** is included for its expanding distribution network, focus on high-growth beauty segments, and improving operational performance, supported by strong consumer spending in India.\n\n**RPOWER (Power/Renewables)** and **GRSE (Defense/Shipbuilding)** represent the infrastructure and defense sectors, which are receiving massive government investment. RPOWER's debt reduction and pivot to renewables, and GRSE's robust order book and strategic importance, offer significant short-term catalysts.\n\n**RBLBANK (Banking)** is selected for its improving asset quality, strategic focus on high-yielding retail loans, and the overall positive outlook for the Indian banking sector, driven by credit growth and supportive RBI policies.\n\nDiversification is achieved by selecting stocks from diverse sectors such as Real Estate, Pharmaceuticals, Technology, Manufacturing, FMCG, Power, Defense, and Banking. This mix reduces concentration risk and positions the basket to capture growth from various economic drivers, aiming to outperform broader market indices and mutual funds by capitalizing on high-conviction short-term opportunities.",
+  "expected_gain_1m": 7.880199999999999
+}
