@@ -1,0 +1,163 @@
+{
+  "creation_date": "2025-07-27T11:13:44.449912+00:00",
+  "invocation_id": "688609d976b1a600879279bb",
+  "stocks_ticker_candidates": [
+    "NEWGEN",
+    "FINCABLES",
+    "INOXWIND",
+    "OLECTRA",
+    "NCC",
+    "SYRMA",
+    "SAREGAMA",
+    "TRIDENT",
+    "NAVA",
+    "SAGILITY",
+    "INTELLECT",
+    "WELSPUNLIV",
+    "JINDALSAW",
+    "RPOWER",
+    "SWSOLAR",
+    "IFCI",
+    "AKUMS",
+    "ANANTRAJ",
+    "HONASA",
+    "GMDCLTD",
+    "BLS",
+    "CAMS",
+    "GRAVITA",
+    "JPPOWER",
+    "IOB",
+    "BEML",
+    "KIMS",
+    "RTNINDIA",
+    "PGEL",
+    "NBCC",
+    "SONATSOFTW",
+    "CROMPTON",
+    "FIRSTCRY",
+    "SAMMAANCAP",
+    "UCOBANK",
+    "JMFINANCIL",
+    "HFCL",
+    "DBREALTY",
+    "RENUKA",
+    "GRSE",
+    "SIGNATURE",
+    "TEJASNET",
+    "IRCON",
+    "RAYMOND",
+    "ELECON",
+    "RAINBOW",
+    "PNCINFRA",
+    "GESHIP",
+    "KAYNES",
+    "ABREL"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "JINDALSAW",
+      "weight": 0.11,
+      "sources": [
+        "https://www.qatar-tribune.com/article/182845/business/sp-ups-indias-gdp-growth-forecasts-for-2025-and-2026",
+        "https://indianexpress.com/article/business/world-bank-india-fy26-gdp-growth-forecast-lowers-2025-10059042/",
+        "https://inshorts.com/en/news/imf-projects-india-s-gdp-growth-to-be-at-6-5--in-2025-and-2026-1737179180642",
+        "https://www.sanskritiias.com/current-affairs/rbi-monetary-policy-2025-repo-rate-cut-gdp-forecast-and-economic-impact",
+        "https://m.economictimes.com/news/economy/policy/rbi-to-hold-rates-in-august-expected-to-cut-again-later-this-year-poll/articleshow/122892703.cms",
+        "https://bfsi.economictimes.indiatimes.com/articles/rbi-set-to-cut-interest-rates-by-25-basis-points-amid-falling-inflation/122801530",
+        "https://www.marketsmojo.com/news/result-analysis/jindal-saw-reports-24-drop-in-profit-before-tax-for-march-2025-2289803"
+      ]
+    },
+    {
+      "stock_ticker": "DBREALTY",
+      "weight": 0.1,
+      "sources": [
+        "https://www.dbrealty.co.in/",
+        "https://bfsi.economictimes.indiatimes.com/articles/rbi-set-to-cut-interest-rates-by-25-basis-points-amid-falling-inflation/122801530",
+        "https://cleartax.in/s/repo-rate"
+      ]
+    },
+    {
+      "stock_ticker": "KAYNES",
+      "weight": 0.1,
+      "sources": [
+        "https://www.indmoney.com/stocks/kaynes-technology-india-ltd-share-price/results",
+        "https://www.ghlindia.com/news-details?dailynews?how-is-indias-manufacturing-growth-impacting-the-economy-in-2025",
+        "https://www.livemint.com/market/market-stats/kaynes-technology-india-q4-results-s0005354",
+        "https://www.hindustantimes.com/real-estate/rbi-cuts-repo-rate-by-100-bps-in-2025-but-home-loan-borrowers-may-have-to-wait-for-full-benefit-101749491219711.html",
+        "https://www.bankbazaar.com/home-loan/repo-rate.html"
+      ]
+    },
+    {
+      "stock_ticker": "ANANTRAJ",
+      "weight": 0.1,
+      "sources": [
+        "https://ddnews.gov.in/en/eci-begins-process-to-elect-new-vice-president-after-dhankhars-resignation-2/",
+        "https://www.aurumproptech.in/pulse/faqs/what-is-the-outlook-for-indias-residential-real-estate-in-2025-and-beyond",
+        "https://www.hindustantimes.com/real-estate/rbi-cuts-repo-rate-by-100-bps-in-2025-but-home-loan-borrowers-may-have-to-wait-for-full-benefit-101749491219711.html",
+        "https://www.sanskritiias.com/current-affairs/rbi-monetary-policy-2025-repo-rate-cut-gdp-forecast-and-economic-impact",
+        "https://upstox.com/news/personal-finance/latest-updates/top-financial-changes-from-august-2025-new-upi-rules-rbi-repo-rate-to-lpg-cng-price-reset-and-more/article-178708/",
+        "https://www.bankbazaar.com/home-loan/repo-rate.html",
+        "https://www.varindia.com/news/anant-raj-sets-sights-on-310-mw-with-new-panchkula-data-center"
+      ]
+    },
+    {
+      "stock_ticker": "INOXWIND",
+      "weight": 0.1,
+      "sources": [
+        "https://www.businesstoday.in/markets/stocks/story/inox-wind-board-clears-rs-1249-cr-rights-issue-at-27-discount-485986-2025-07-23",
+        "https://www.zonebourse.com/cours/action/INOX-WIND-LIMITED-21685628/actualite/Transcript-Inox-Wind-Limited-Q1-2025-Earnings-Call-Aug-09-2024-47613274/",
+        "https://tradebrains.in/green-energy-stock-in-focus-after-board-approves-rights-issue-of-10-41-cr-equity-shares/",
+        "https://ipocentral.in/inox-wind-rights-issue-dates-price-allotment/",
+        "https://www.chittorgarh.com/rights-issue-news/inox-wind-rights-issue/440/"
+      ]
+    },
+    {
+      "stock_ticker": "HONASA",
+      "weight": 0.09,
+      "sources": [
+        "https://m.economictimes.com/news/economy/policy/rbi-may-go-for-another-25-bps-rate-cut-in-august-repo-rate-to-come-down-at-5-25-icici-bank/articleshow/122723754.cms",
+        "https://www.angelone.in/news/honasa-consumer-share-price-rises-reports-6-percent-yoy-revenue-growth-in-q3-fy25",
+        "https://www.icicidirect.com/research/equity/rapid-results/honasa-consumer-ltd"
+      ]
+    },
+    {
+      "stock_ticker": "GMDCLTD",
+      "weight": 0.1,
+      "sources": [
+        "https://ddnews.gov.in/en/indias-gdp-growth-projected-at-6-4-6-7-for-fy26-cii/",
+        "https://www.efginternational.com/us/insights/2025/india-s-encouraging-economic-outlook.html",
+        "https://www.ainvest.com/news/india-q3-2025-industrial-monetary-outlook-navigating-divergent-sectoral-trends-policy-implications-investors-2507/",
+        "https://bazaartrend.com/nse-india/gmdcltd-share-price"
+      ]
+    },
+    {
+      "stock_ticker": "TRIDENT",
+      "weight": 0.1,
+      "sources": [
+        "https://www.outlookmoney.com/invest/equity/trident-share-price-gains-nearly-11-per-cent-in-three-session-gaining-streak-know-why",
+        "https://www.qatar-tribune.com/article/182845/business/sp-ups-indias-gdp-growth-forecasts-for-2025-and-2026",
+        "https://www.ndtv.com/world-news/indias-gdp-growth-in-2025-2026-estimated-to-be-highest-among-g20-nations-report-8584105"
+      ]
+    },
+    {
+      "stock_ticker": "OLECTRA",
+      "weight": 0.1,
+      "sources": [
+        "https://www.angelone.in/news/olectra-share-price-in-focus-profit-nearly-doubles-in-fy25-results",
+        "https://olectra.com/wp-content/uploads/AxisCap-Olectra-May28-2025.pdf",
+        "https://www.marklines.com/en/news/321787",
+        "https://ca.investing.com/news/company-news/olectra-greentech-ltd-bom532439-q4-2025-earnings-call-highlights-strong-revenue-growth-amid--4040909"
+      ]
+    },
+    {
+      "stock_ticker": "INTELLECT",
+      "weight": 0.1,
+      "sources": [
+        "https://vqcodes.com/indian-it-industry-outlook-2025-key-growth-challenges/",
+        "https://www.thehindubusinessline.com/info-tech/intellect-design-arena-wins-major-deal-with-tier-1-canadian-bank-for-us-core-banking-rollout/article69847289.ece"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio is strategically constructed to maximize short-term gains (1-week and 1-month horizons) in Indian equities while ensuring robust diversification and risk management. The selection prioritizes companies with strong immediate catalysts, positive fundamental outlooks, and supportive macroeconomic tailwinds.\n\n**Selection Strategy:**\n\n1.  **High Conviction Short-Term Catalysts:** Stocks like Jindal Saw and Anant Raj are included due to recent positive news (hydrogen-ready pipes, data center launch) and strong Q1 FY26 results, respectively, which are expected to drive immediate price appreciation. Kaynes Technology and Olectra benefit from upcoming earnings reports and significant order book execution in high-growth sectors (electronics manufacturing, EVs).\n\n2.  **Sectoral Tailwinds:** The portfolio leverages India's robust economic growth and government initiatives. Real estate (DB Realty, Anant Raj) is poised for growth with anticipated RBI rate cuts. Manufacturing (Kaynes, Jindal Saw, Trident) benefits from 'Make in India' and 'China+1' strategies. Industrials (GMDC, Olectra) gain from infrastructure spending and green energy push. FMCG (Honasa) is expected to recover with improving rural demand.\n\n3.  **Strong Fundamentals & Improving Financials:** Emphasis is placed on companies demonstrating improving profitability, healthy balance sheets (e.g., Jindal Saw's improved debt, Kaynes' consistent profit growth), and strategic expansions. Inox Wind's successful rights issue significantly strengthens its financial position, enabling future growth.\n\n**Diversification and Risk Management:**\n\n*   **Industry Diversification:** The basket spans diverse sectors including Manufacturing (Jindal Saw, Kaynes, Trident), Real Estate (DB Realty, Anant Raj), Industrials/Capital Goods (GMDC, Inox Wind, Olectra), Consumer Discretionary (Honasa), and IT/Fintech (Intellect). This broad exposure mitigates sector-specific downturns.\n*   **Factor Diversification:** A mix of growth-oriented stocks (Kaynes, Olectra, Intellect) and value/turnaround plays (Jindal Saw, Inox Wind) is included. Companies benefiting from domestic consumption (Honasa) are balanced with those driven by infrastructure and exports (Jindal Saw, Trident).\n*   **Risk Mitigation:** While aiming for high gains, highly speculative stocks or those with unmitigated short-term risks are avoided. For instance, while some stocks might have technical bearish signals, their strong fundamental catalysts (e.g., Intellect's US deal, Olectra's order book) are deemed sufficient to drive a near-term rebound. Weights are assigned to reflect conviction while maintaining reasonable individual stock concentration.\n\nThis basket is positioned to outperform market indices by capitalizing on immediate positive catalysts, strong sectoral tailwinds, and robust macroeconomic conditions in India, while maintaining a diversified and risk-aware approach.",
+  "expected_gain_1m": 10.030000000000001
+}
