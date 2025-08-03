@@ -1,0 +1,155 @@
+{
+  "creation_date": "2025-08-03T02:05:08.003268+00:00",
+  "invocation_id": "688ec3c31d52442d863000d7",
+  "stocks_ticker_candidates": [
+    "CHENNPETRO",
+    "JWL",
+    "AIIL",
+    "AEGISLOG",
+    "ABREL",
+    "TARIL",
+    "ACE",
+    "SWSOLAR",
+    "PVRINOX",
+    "ROUTE",
+    "ALIVUS",
+    "JBMA",
+    "TITAGARH",
+    "INTELLECT",
+    "SONATSOFTW",
+    "HSCL",
+    "ENGINERSIN",
+    "CHALET",
+    "MMTC",
+    "NETWEB",
+    "NETWORK18",
+    "BBTC",
+    "RRKABEL",
+    "ANANTRAJ",
+    "CROMPTON",
+    "SCI",
+    "CAMS",
+    "FINCABLES",
+    "FIRSTCRY",
+    "RPOWER",
+    "INOXWIND",
+    "PNBHOUSING",
+    "HINDCOPPER",
+    "JKTYRE",
+    "KIRLOSENG",
+    "USHAMART",
+    "NCC",
+    "KEC",
+    "RTNINDIA",
+    "TANLA",
+    "MANYAVAR",
+    "JUSTDIAL",
+    "KNRCON",
+    "TEJASNET",
+    "IRCON",
+    "BLS",
+    "HONASA",
+    "SARDAEN",
+    "RAILTEL",
+    "RAYMONDLSL"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "NETWEB",
+      "weight": 0.12,
+      "sources": [
+        "https://www.businesstoday.in/markets/stocks/story/netweb-tech-shares-jump-17-in-4-days-is-there-more-upside-ahead-487484-2025-08-01",
+        "https://www.youtube.com/watch?v=1xeJoCpg620",
+        "https://upstox.com/news/market-news/earnings/netweb-technologies-shares-soar-13-as-q1-net-profit-rises-100-board-sets-record-date-for-final-dividend/article-179063/",
+        "https://hdfcsky.com/news/netweb-technologies-rallies-11-74-percent-to-rs-2269-90-on-robust-q1fy26",
+        "https://scanx.trade/stock-market-news/earnings/netweb-technologies-reports-strong-q1-fy26-growth-driven-by-ai-projects/15534095"
+      ]
+    },
+    {
+      "stock_ticker": "TANLA",
+      "weight": 0.11,
+      "sources": [
+        "https://www.tanla.com/newsroom/results-q1-fy26",
+        "https://www.business-standard.com/content/press-releases-ani/tanla-announces-first-quarter-results-for-fy26-125072500575_1.html",
+        "https://hdfcsky.com/news/tanla-platforms-q1fy26-results-revenue-increased-but-profitability-down",
+        "https://www.youtube.com/watch?v=_u5_lF91z7c",
+        "https://www.imarcgroup.com/india-communication-platform-as-a-service-market",
+        "https://m.economictimes.com/tech/technology/indias-business-messaging-market-set-to-hit-billion-dollar-revenue-mark-in-2025/articleshow/117003615.cms"
+      ]
+    },
+    {
+      "stock_ticker": "CHALET",
+      "weight": 0.1,
+      "sources": [
+        "https://simplywall.st/stocks/in/consumer-services/nse-chalet/chalet-hotels-shares/news/chalet-hotels-first-quarter-2026-earnings-eps-930-vs-279-in",
+        "https://www.tradingview.com/symbols/NSE-CHALET/"
+      ]
+    },
+    {
+      "stock_ticker": "RAILTEL",
+      "weight": 0.09,
+      "sources": [
+        "https://scanx.trade/stock-market-news/earnings/railtel-reports-33-revenue-surge-in-q1-secures-inr-166-crore-order-from-bsnl/15606432",
+        "https://www.youtube.com/watch?v=xuTR5Q_ATms",
+        "https://www.youtube.com/watch?v=k5dFNNdxkmo",
+        "https://www.indiainfoline.com/news/business/railtel-bags-166-crore-bsnl-order-to-execute-by-july-2028",
+        "https://ticker.finology.in/company/RAILTEL",
+        "https://www.newsonair.gov.in/imf-raises-indias-growth-forecast-to-6-4-for-2025-and-2026-retains-status-as-fastest-growing-major-economy/",
+        "https://www.indiatoday.in/business/story/international-monetary-fund-imf-lifts-indias-growth-forecast-for-2025-and-2026-to-64-percent-2763396-2025-07-30"
+      ]
+    },
+    {
+      "stock_ticker": "CAMS",
+      "weight": 0.09,
+      "sources": [
+        "https://www.torusdigital.com/toruscope/quarterly-results/computer-age-management-services-ltd-q1-results-fy26-latest-cams-quarterly-results-insights/",
+        "https://tradebrains.in/monopoly-stock-falls-5-after-announcing-its-q1-fy26-results/"
+      ]
+    },
+    {
+      "stock_ticker": "JUSTDIAL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.tradingview.com/symbols/NSE-JUSTDIAL/",
+        "https://www.tipranks.com/stocks/in:justdial/technical-analysis",
+        "https://www.business-standard.com/content/press-releases-ani/justdial-reports-highest-ever-quarterly-revenue-and-net-profit-marking-13-6-per-cent-and-69-3-per-cent-yoy-growth-respectively-for-q1-fy-25-124071800472_1.html",
+        "https://www.tickertape.in/stocks/just-dial-JUST"
+      ]
+    },
+    {
+      "stock_ticker": "PVRINOX",
+      "weight": 0.09,
+      "sources": [
+        "https://tradingeconomics.com/india/full-year-gdp-growth",
+        "https://www.business-standard.com/markets/pvr-inox-ltd-share-price-14622.html"
+      ]
+    },
+    {
+      "stock_ticker": "SARDAEN",
+      "weight": 0.1,
+      "sources": [
+        "https://www.ndtvprofit.com/quarterly-earnings/sarda-energy-q1-results-profit-more-than-doubles"
+      ]
+    },
+    {
+      "stock_ticker": "TARIL",
+      "weight": 0.1,
+      "sources": [
+        "https://scanx.trade/stock-market-news/earnings/transformers-rectifiers-sets-sights-on-1-billion-revenue-reports-strong-q1-performance/15583509",
+        "https://tradebrains.in/transformer-stock-jumps-5-after-reporting-224-yoy-increase-in-net-profit-in-q1/",
+        "https://scanx.trade/stock-market-news/earnings/transformers-rectifiers-india-reports-strong-q1-fy26-results-on-track-for-1-billion-revenue-goal/15584281"
+      ]
+    },
+    {
+      "stock_ticker": "ALIVUS",
+      "weight": 0.1,
+      "sources": [
+        "https://www.marketsmojo.com/news/result-analysis/alivus-life-sciences-reports-flat-performance-with-2578-increase-in-profit-after-tax-for-june-2025-3333147",
+        "https://www.tradingview.com/symbols/NSE-ALIVUS/",
+        "https://m.economictimes.com/news/economy/policy/rbi-may-announce-25-bps-rate-cut-in-august-to-boost-credit-growth-ahead-of-diwali-sbi-report/articleshow/123056753.cms"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio is strategically constructed to maximize short-term gains (1-week and 1-month horizons) by identifying stocks with strong immediate catalysts and robust underlying fundamentals, while ensuring diversification across key growth sectors of the Indian economy. The selection prioritizes companies that have recently reported strong financial results, are benefiting from favorable macroeconomic tailwinds (e.g., RBI rate cuts, sustained GDP growth), or are poised for a technical rebound from oversold conditions.\n\n**Selection Strategy:**\n\n1.  **Immediate Catalysts:** Stocks like **NETWEB**, **CHALET**, **RAILTEL**, **CAMS**, **JUSTDIAL**, **PVRINOX**, **SARDAEN**, **TARIL**, and **ALIVUS** were chosen due to their recent strong Q1 FY26 results, new order wins, strategic expansions, or positive management commentary, which are expected to drive immediate investor interest and price appreciation. For instance, Netweb's surging AI systems revenue and Chalet's robust profit jump are strong signals.\n2.  **Sectoral Tailwinds:** The portfolio benefits from India's booming digital transformation (**NETWEB**, **TANLA**, **JUSTDIAL**, **ALIVUS**), infrastructure development (**RAILTEL**, **PVRINOX**, **SARDAEN**, **TARIL**), and growing financial services sector (**CAMS**). These sectors are supported by government initiatives and strong domestic demand.\n3.  **Diversification:** The basket achieves diversification by including companies from various high-growth sectors: IT Hardware/AI (**NETWEB**), CPaaS/Telecom (**TANLA**), Hospitality (**CHALET**), Railway/Telecom Infrastructure (**RAILTEL**), Financial Services/Mutual Funds (**CAMS**), Online Local Search (**JUSTDIAL**), Entertainment/Multiplexes (**PVRINOX**), Metals & Mining (**SARDAEN**), Power Equipment (**TARIL**), and Pharmaceuticals/APIs (**ALIVUS**). This mix reduces concentration risk and provides exposure to different economic cycles.\n4.  **Risk Management:** While focusing on gains, stocks with highly speculative `reason_summary` or unmitigated short-term risks were avoided. For example, while some stocks showed high long-term gains, their immediate 1-week outlook was negative due to technical weakness or recent adverse news (e.g., SWSOLAR, PNBHOUSING, HINDCOPPER, INOXWIND, TEJASNET, JBMA, HONASA, RTNINDIA, NCC, JKTYRE, SONATSOFTW, CHENNPETRO, KNRCON, ACE, ANANTRAJ, RAYMONDLSL, JWL, IRCON, HSCL, BBTC, MMTC, CROMPTON). The selected stocks generally have a positive or stabilizing short-term outlook, balancing aggressive growth with a degree of stability.\n\n**Weighting Rationale:** Weights are assigned based on the conviction in the stock's short-term gain potential and its contribution to portfolio diversification. Stocks with higher immediate gain forecasts and stronger catalysts received slightly higher allocations, while maintaining a balanced distribution to prevent over-concentration in any single stock or sector. This balanced approach aims to outperform market indices and mutual funds by capitalizing on specific, near-term growth opportunities while mitigating idiosyncratic risks.",
+  "expected_gain_1m": 10.6501
+}
