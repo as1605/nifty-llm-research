@@ -52,4 +52,16 @@ def setup_logging(level: str = "INFO") -> None:
         root_logger.removeHandler(handler)
     
     # Add console handler
-    root_logger.addHandler(console_handler) 
+    root_logger.addHandler(console_handler)
+
+
+def get_logger(name: str) -> logging.Logger:
+    """Get a logger for the given module name.
+    
+    Args:
+        name: Module name (usually __name__)
+        
+    Returns:
+        Logger instance
+    """
+    return logging.getLogger(name) 

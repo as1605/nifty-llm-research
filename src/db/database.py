@@ -25,6 +25,7 @@ COLLECTIONS = {
     "stocks": "stocks",
     "forecasts": "forecasts",
     "baskets": "baskets",
+    "zerodha_tokens": "zerodha_tokens",
 }
 
 
@@ -52,6 +53,11 @@ def setup_indexes():
     # Basket indexes
     db[COLLECTIONS["baskets"]].create_index([("creation_date", -1)])  # For recent baskets
     db[COLLECTIONS["baskets"]].create_index([("invocation_id", 1)])  # For linking to invocations
+
+    # Zerodha token indexes
+    db[COLLECTIONS["zerodha_tokens"]].create_index([("user_id", 1)], unique=True)  # One token per user
+    db[COLLECTIONS["zerodha_tokens"]].create_index([("is_active", 1)])  # For finding active tokens
+    db[COLLECTIONS["zerodha_tokens"]].create_index([("created_time", -1)])  # For recent tokens
 
 
 async def get_database() -> AsyncGenerator[AsyncIOMotorDatabase, None]:

@@ -36,8 +36,10 @@ class BaseAgent:
 
     def __init__(self):
         """Initialize the agent."""
-        # Initialize Gemini client
-        self.client = genai.Client(api_key=settings.google_api_key)
+        # Prepare list of API keys (supports comma-separated keys)
+        self._api_keys = settings.get_google_api_keys() or [settings.google_api_key]
+        self._api_key_index = 0
+        self.client = genai.Client(api_key=self._api_keys[self._api_key_index])
 
     def _parse_json_response(self, response_text: str) -> dict:
         """Parse JSON response with fallback mechanisms.
@@ -202,9 +204,21 @@ class BaseAgent:
                 break  # Success, exit retry loop
                 
             except ServerError as e:
+                # If explicit 429 rate limit, rotate key and retry immediately
+                if "429" in str(e):
+                    prev_index = self._api_key_index
+                    self._api_key_index = (self._api_key_index + 1) % len(self._api_keys)
+                    # If we looped back to the same key and only have one key, fall through to normal backoff
+                    if len(self._api_keys) > 1 and self._api_key_index != prev_index:
+                        next_key_visible = self._api_key_index + 1
+                        logger.warning(
+                            f"Received 429 rate limit. Rotating Google API key to index {self._api_key_index}.")
+                        # Re-initialize client with next key
+                        self.client = genai.Client(api_key=self._api_keys[self._api_key_index])
+                        continue  # retry immediately with new key
                 if not str(e).startswith("503"):
-                    raise  # Re-raise if not a 503 error
-                    
+                    raise  # Re-raise if not a 503 error and not handled 429 above
+                
                 retry_count += 1
                 if retry_count > MAX_RETRIES:
                     logger.error(f"Max retries ({MAX_RETRIES}) exceeded for 503 error")
@@ -222,6 +236,15 @@ class BaseAgent:
                 await asyncio.sleep(total_delay)
                 
             except Exception as e:
+                # Handle 429 surfaced as generic exception (defensive)
+                if "429" in str(e):
+                    prev_index = self._api_key_index
+                    self._api_key_index = (self._api_key_index + 1) % len(self._api_keys)
+                    if len(self._api_keys) > 1 and self._api_key_index != prev_index:
+                        logger.warning(
+                            f"Received 429 rate limit. Rotating Google API key to index {self._api_key_index}.")
+                        self.client = genai.Client(api_key=self._api_keys[self._api_key_index])
+                        continue
                 logger.error(f"Unexpected error during Gemini API call: {str(e)}")
                 raise ValueError(f"Failed to get completion: {str(e)}")
 

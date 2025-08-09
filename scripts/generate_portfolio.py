@@ -9,7 +9,7 @@ import json
 import logging
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 from config.settings import settings
 from src.db.models import Basket
@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 # Define IST timezone (UTC+5:30)
 IST = timezone(timedelta(hours=5, minutes=30))
 
+
 def format_timestamp_for_filesystem(dt: datetime) -> str:
     """Format datetime for filesystem compatibility.
     
@@ -33,6 +34,81 @@ def format_timestamp_for_filesystem(dt: datetime) -> str:
         dt = dt.replace(tzinfo=timezone.utc)
     ist_dt = dt.astimezone(IST)
     return ist_dt.strftime("%b_%d_%Y_%H_%M")
+
+
+def human_date_ist(dt: datetime) -> str:
+    """Return human-readable date like '3 Aug 2025' in IST."""
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    ist_dt = dt.astimezone(IST)
+    # Day without leading zero + abbreviated month + year
+    day = ist_dt.strftime("%d").lstrip("0")
+    month = ist_dt.strftime("%b")
+    year = ist_dt.strftime("%Y")
+    return f"{day} {month} {year}"
+
+
+def update_index_md(index: str, current_time: datetime, base_name: str) -> None:
+    """Update docs/index.md to reflect latest basket link for the given index.
+    - Replaces existing bullet for the index if present
+    - Otherwise inserts a new bullet under 'Latest Research Outputs'
+    - Preserves any trailing 'Invest with ...' part if it existed
+    """
+    index_md_path = Path("docs/index.md")
+    if not index_md_path.exists():
+        logger.warning("docs/index.md not found; skipping index update")
+        return
+    try:
+        content = index_md_path.read_text(encoding="utf-8").splitlines()
+    except Exception as e:
+        logger.error(f"Failed to read docs/index.md: {e}")
+        return
+
+    bullet_prefix = f"- **{index}**"
+    new_date = human_date_ist(current_time)
+    link_target = f"baskets/{quote(base_name)}"
+    # Construct new bullet; preserve 'Invest with ...' tail if we can find it on existing line
+    new_bullet = None
+
+    # Try to find existing bullet for index
+    idx_line = -1
+    existing_tail = ""
+    for i, line in enumerate(content):
+        if line.strip().startswith(bullet_prefix):
+            idx_line = i
+            # If existing tail contains 'Invest with', preserve it
+            if 'Invest with' in line:
+                tail_pos = line.find('Invest with')
+                existing_tail = ' ' + line[tail_pos:].rstrip()
+            break
+
+    new_bullet = f"{bullet_prefix} ({new_date}): [Analysis]({link_target}).{existing_tail}"
+
+    if idx_line >= 0:
+        # Replace existing line
+        content[idx_line] = new_bullet
+    else:
+        # Insert after '## Latest Research Outputs' header (first bullet position), or append
+        insert_pos = None
+        for i, line in enumerate(content):
+            if line.strip() == "## Latest Research Outputs":
+                insert_pos = i + 1
+                # Skip any blank lines immediately following header
+                while insert_pos < len(content) and content[insert_pos].strip() == "":
+                    insert_pos += 1
+                break
+        if insert_pos is None:
+            # Append at end if header not found
+            content.append("")
+            content.append(new_bullet)
+        else:
+            content.insert(insert_pos, new_bullet)
+
+    try:
+        index_md_path.write_text("\n".join(content) + "\n", encoding="utf-8")
+        logger.info("Updated docs/index.md with latest basket link")
+    except Exception as e:
+        logger.error(f"Failed to write docs/index.md: {e}")
 
 
 def save_basket_outputs(
@@ -119,6 +195,12 @@ Selected K Stocks: {basket_size_k}
         f.write(md_content)
     
     logger.info(f"Saved basket outputs to {baskets_dir}")
+
+    # Update docs index with the new link
+    try:
+        update_index_md(index=index, current_time=current_time, base_name=base_name)
+    except Exception as e:
+        logger.error(f"Failed to update docs/index.md: {e}")
 
 
 async def main():

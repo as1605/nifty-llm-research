@@ -15,6 +15,16 @@ requests==2.32.3
 httpx==0.28.1
 beautifulsoup4==4.13.4
 
+# FastAPI for OAuth redirect server
+fastapi
+uvicorn[standard]
+
+# Zerodha API
+kiteconnect
+
+# Encryption
+cryptography
+
 # Development tools
 black==25.1.0
 isort==6.0.1

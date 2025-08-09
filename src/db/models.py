@@ -131,3 +131,14 @@ class Basket(BaseModel):
     )
     reason_summary: str = Field(..., description="Summary of why these stocks were picked")
     expected_gain_1m: Optional[float] = Field(None, description="Expected gain for the basket in 1 month")
+
+
+class ZerodhaToken(BaseModel):
+    """Model for storing encrypted Zerodha access tokens."""
+    
+    id: PyObjectId | None = Field(None, alias="_id")
+    user_id: str = Field(..., description="Zerodha user ID")
+    encrypted_access_token: str = Field(..., description="Encrypted access token")
+    created_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    expires_at: Optional[datetime] = Field(None, description="Token expiration time")
+    is_active: bool = Field(default=True, description="Whether token is currently active")
