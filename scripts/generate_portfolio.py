@@ -184,7 +184,7 @@ Selected K Stocks: {basket_size_k}
         md_content += f"| {stock.stock_ticker} | {stock.weight:.2%} | {sources_str} |\n"
     
     # Add overall gain
-    md_content += f"\n## Overall Basket Gain\n\nExpected 1M Gain: {result.expected_gain_1m:.2f}%\n"
+    md_content += f"\n## Overall Basket Gain\n\nExpected 1W Gain: {result.expected_gain_1w:.2f}%\n"
     
     # Add analysis summary
     md_content += f"\n## Analysis Summary\n\n{result.reason_summary}\n"

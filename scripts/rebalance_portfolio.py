@@ -132,31 +132,47 @@ class PortfolioRebalancer:
             current_holdings[ticker] = {
                 'quantity': int(holding['quantity']),
                 'average_price': float(holding['average_price']),
-                'current_value': float(holding['average_price']) * int(holding['quantity']),
-                'ltp': float(holding.get('last_price', holding['average_price']))
+                # Per API: use last_price for value computations
+                'current_value': float(holding.get('last_price') or 0.0) * int(holding['quantity']),
+                'ltp': float(holding.get('last_price', holding['average_price'])),
+                'exchange': holding.get('exchange', 'NSE')
             }
         
-        # Add positions (day trading positions)
-        for position in portfolio['positions']['day'] + portfolio['positions']['net']:
+        # Add positions using net positions (per API, 'net' is actual current portfolio)
+        for position in portfolio['positions']['net']:
             ticker = position['tradingsymbol']
+            exchange = position.get('exchange', 'NSE')
+            qty = int(position.get('quantity') or 0)
+            ltp = float(position.get('last_price', position.get('average_price', 0.0)))
+            multiplier = int(position.get('multiplier') or 1)
             if ticker in current_holdings:
                 # Update quantity if position exists
-                current_holdings[ticker]['quantity'] += int(position['quantity'])
-            elif int(position['quantity']) != 0:
+                current_holdings[ticker]['quantity'] += qty
+                # Update latest ltp and exchange if available
+                current_holdings[ticker]['ltp'] = ltp or current_holdings[ticker]['ltp']
+                current_holdings[ticker]['exchange'] = current_holdings[ticker].get('exchange') or exchange
+            elif qty != 0:
                 # Add new position
                 current_holdings[ticker] = {
-                    'quantity': int(position['quantity']),
-                    'average_price': float(position['average_price']),
-                    'current_value': float(position['average_price']) * int(position['quantity']),
-                    'ltp': float(position.get('last_price', position['average_price']))
+                    'quantity': qty,
+                    'average_price': float(position.get('average_price') or 0.0),
+                    # For positions, value = last_price * quantity * multiplier
+                    'current_value': ltp * qty * multiplier,
+                    'ltp': ltp,
+                    'exchange': exchange
                 }
         
         portfolio['current_holdings'] = current_holdings
         return portfolio
     
     async def calculate_rebalancing_actions(self, basket_data: Dict, portfolio: Dict, 
-                                          min_order_value: float = 1000.0) -> List[Dict]:
-        """Calculate what orders need to be placed to rebalance the portfolio."""
+                                          min_order_value: float = 1000.0) -> Tuple[List[Dict], float]:
+        """Calculate rebalancing orders and return (actions, total_deficit_amount).
+
+        total_deficit_amount is the sum over all tickers of |target_value - current_value|,
+        using current LTPs and current quantities. Actions are only created for deficits
+        above min_order_value.
+        """
         target_weights = {stock['stock_ticker']: stock['weight'] for stock in basket_data['stocks']}
         current_holdings = portfolio['current_holdings']
         total_value = portfolio['total_value']
@@ -166,10 +182,16 @@ class PortfolioRebalancer:
         logger.info(f"Current holdings have {len(current_holdings)} stocks")
         
         actions = []
+        total_deficit_amount = 0.0
         
-        # Get current LTP for all relevant stocks
+        # Get current LTP for all relevant stocks using their exchange when known
         all_tickers = set(target_weights.keys()) | set(current_holdings.keys())
-        instruments = [f"NSE:{ticker}" for ticker in all_tickers]
+        instruments = []
+        ticker_to_exchange = {}
+        for ticker in all_tickers:
+            ex = current_holdings.get(ticker, {}).get('exchange', 'NSE')
+            ticker_to_exchange[ticker] = ex
+            instruments.append(f"{ex}:{ticker}")
         
         try:
             ltp_data = await self.zerodha_service.get_ltp(self.user_id, instruments)
@@ -179,7 +201,8 @@ class PortfolioRebalancer:
             ltp_data = {}
             for ticker in all_tickers:
                 if ticker in current_holdings:
-                    ltp_data[f"NSE:{ticker}"] = {
+                    ex = ticker_to_exchange.get(ticker, 'NSE')
+                    ltp_data[f"{ex}:{ticker}"] = {
                         'last_price': current_holdings[ticker]['ltp']
                     }
         
@@ -193,7 +216,8 @@ class PortfolioRebalancer:
             current_quantity = current_holdings.get(ticker, {}).get('quantity', 0)
             
             # Get current price
-            ltp_key = f"NSE:{ticker}"
+            ex = ticker_to_exchange.get(ticker, 'NSE')
+            ltp_key = f"{ex}:{ticker}"
             if ltp_key in ltp_data:
                 current_price = float(ltp_data[ltp_key]['last_price'])
             elif ticker in current_holdings:
@@ -206,6 +230,7 @@ class PortfolioRebalancer:
             
             # Calculate difference
             value_diff = target_value - current_value
+            total_deficit_amount += abs(value_diff)
             
             if abs(value_diff) < min_order_value:
                 logger.info(f"{ticker}: No action needed (diff: ₹{value_diff:.2f})")
@@ -248,7 +273,7 @@ class PortfolioRebalancer:
         deficits.sort(key=lambda x: x[0], reverse=True)
         actions = [action for deficit, action in deficits]
         
-        return actions
+        return actions, total_deficit_amount
     
     async def _wait_for_market_window_if_needed(self):
         """If outside market hours, wait until 9:14 AM IST of next trading day."""
@@ -394,34 +419,59 @@ class PortfolioRebalancer:
         return order_ids
     
     async def rebalance(self, basket_file: str, dry_run: bool = True, 
-                       min_order_value: float = 1000.0, quiet: bool = False) -> List[str]:
-        """Main rebalancing function."""
+                       min_order_value: float = 1000.0, quiet: bool = False,
+                       target_deficit: float = 1000.0) -> List[str]:
+        """Main rebalancing function. Iteratively rebalance until total deficit is below
+        target_deficit or up to 10 tries. In dry-run mode, only one iteration is performed.
+        """
         print("Portfolio Rebalancing Tool")
         print("=" * 50)
         print(f"Basket file: {basket_file}")
         print(f"User ID: {self.user_id}")
         print(f"Mode: {'DRY RUN' if dry_run else 'LIVE'}")
         print(f"Min order value: ₹{min_order_value}")
+        print(f"Target deficit: ₹{target_deficit}")
         print(f"Quiet mode: {'ON' if quiet else 'OFF'}")
         print()
         
         # Load target basket
         basket_data = await self.load_basket(basket_file)
-        
-        # Get current portfolio
-        print("📊 Fetching current portfolio...")
-        portfolio = await self.get_current_portfolio()
-        
-        # Calculate rebalancing actions
-        print("⚖️  Calculating rebalancing actions...")
-        actions = await self.calculate_rebalancing_actions(
-            basket_data, portfolio, min_order_value
-        )
-        
-        # Execute orders
-        order_ids = await self.execute_orders(actions, dry_run, quiet)
-        
-        return order_ids
+
+        overall_order_ids: List[str] = []
+        attempt = 0
+
+        while True:
+            attempt += 1
+            print(f"\n📊 Fetching current portfolio (attempt {attempt})...")
+            portfolio = await self.get_current_portfolio()
+
+            print("⚖️  Calculating rebalancing actions and total deficit...")
+            actions, total_deficit = await self.calculate_rebalancing_actions(
+                basket_data, portfolio, min_order_value
+            )
+            print(f"📉 Total deficit: ₹{total_deficit:,.2f} (target ≤ ₹{target_deficit:,.2f})")
+
+            if total_deficit <= target_deficit:
+                print("✅ Target deficit achieved. No further rebalancing needed.")
+                break
+
+            if not actions:
+                print("ℹ️  No actionable orders (all diffs below min order value). Stopping.")
+                break
+
+            if dry_run:
+                print("🧪 Dry run mode: not executing orders. Stopping after first iteration.")
+                break
+
+            # Execute orders
+            order_ids = await self.execute_orders(actions, dry_run, quiet)
+            overall_order_ids.extend(order_ids)
+
+            if attempt >= 10:
+                print("⚠️  Reached maximum attempts (10). Stopping.")
+                break
+
+        return overall_order_ids
 
 
 async def get_user_id(provided_user_id: Optional[str], quiet: bool = False) -> str:
@@ -492,6 +542,8 @@ async def main():
     parser.add_argument("--min-order-value", type=float, default=1000.0,
                        help="Minimum order value in rupees (default: 1000)")
     parser.add_argument("--quiet", action="store_true", help="Run in quiet non-interactive mode (auto-select defaults)")
+    parser.add_argument("--target-deficit", type=float, default=1000.0,
+                       help="Target total deficit to reach before stopping (default: 1000)")
     
     args = parser.parse_args()
     
@@ -514,6 +566,7 @@ async def main():
             dry_run=dry_run,
             min_order_value=args.min_order_value,
             quiet=args.quiet,
+            target_deficit=args.target_deficit,
         )
         
         if order_ids:

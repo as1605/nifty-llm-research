@@ -1,0 +1,168 @@
+{
+  "creation_date": "2025-08-11T08:21:20.815821+00:00",
+  "invocation_id": "6899a7edbc24d95724a2fa39",
+  "stocks_ticker_candidates": [
+    "KFINTECH",
+    "KAYNES",
+    "CAPLIPOINT",
+    "INOXWIND",
+    "ELECON",
+    "AKUMS",
+    "NETWORK18",
+    "PNCINFRA",
+    "PRAJIND",
+    "RRKABEL",
+    "TANLA",
+    "JMFINANCIL",
+    "FIRSTCRY",
+    "SWSOLAR",
+    "PGEL",
+    "PVRINOX",
+    "WELCORP",
+    "BRIGADE",
+    "USHAMART",
+    "ANANTRAJ",
+    "IGIL",
+    "TIMKEN",
+    "AAVAS",
+    "TARIL",
+    "AADHARHFC",
+    "SAGILITY",
+    "BLS",
+    "BEML",
+    "TECHNOE",
+    "ACMESOLAR",
+    "SCI",
+    "GMDCLTD",
+    "HBLENGINE",
+    "KPIL",
+    "CENTURYPLY",
+    "CHALET",
+    "PNBHOUSING",
+    "HEG",
+    "ITI",
+    "GRSE",
+    "SIGNATURE",
+    "LEMONTREE",
+    "TITAGARH",
+    "FACT",
+    "NCC",
+    "NBCC",
+    "EMCURE",
+    "GRAVITA",
+    "KAJARIACER",
+    "MINDACORP"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "TANLA",
+      "weight": 0.11,
+      "sources": [
+        "https://www.marketscreener.com/news/tanla-platforms-limited-reports-earnings-results-for-the-first-quarter-ended-june-30-2025-ce7c5cd3d08cf023",
+        "https://www.indmoney.com/stocks/tanla-platforms-ltd-share-price",
+        "https://www.tradingview.com/symbols/NSE-TANLA/forecast/",
+        "https://economictimes.indiatimes.com/tanla-platforms-ltd/stocks/companyid-5351.cms"
+      ]
+    },
+    {
+      "stock_ticker": "PNCINFRA",
+      "weight": 0.1,
+      "sources": [
+        "https://www.indmoney.com/stocks/pnc-infratech-ltd-share-price",
+        "https://ticker.finology.in/company/PNCINFRA",
+        "https://www.goodreturns.in/company/pnc-infratech/bulkdeals.html"
+      ]
+    },
+    {
+      "stock_ticker": "BLS",
+      "weight": 0.1,
+      "sources": [
+        "https://www.business-standard.com/markets/bls-international-services-ltd-share-price-22535.html",
+        "https://trendlyne.com/equity/share-holding/4751/BLS/latest/bls-international-services-ltd/",
+        "https://www.indmoney.com/stocks/bls-international-services-ltd-share-price",
+        "https://www.angelone.in/stocks/bls-international-services-ltd/shareholding",
+        "https://www.livemint.com/market/market-stats/stocks-bls-international-services-share-price-nse-bse-s0004039",
+        "https://simplywall.st/stocks/in/commercial-services/nse-bls/bls-international-services-shares/health",
+        "https://ticker.finology.in/company/BLS",
+        "https://uk.marketscreener.com/quote/stock/BLS-INTERNATIONAL-SERVICE-35005615/quotes/"
+      ]
+    },
+    {
+      "stock_ticker": "TARIL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.tradingview.com/symbols/NSE-TARIL/",
+        "https://www.tradingview.com/symbols/NSE-TARIL/forecast/"
+      ]
+    },
+    {
+      "stock_ticker": "ACMESOLAR",
+      "weight": 0.1,
+      "sources": [
+        "https://ca.marketscreener.com/quote/stock/ACME-SOLAR-HOLDINGS-LIMIT-178290969/consensus/",
+        "https://hdfcsky.com/news/acme-solar-holdings-surges-9-percent-after-robust-q1-fy26-earnings",
+        "https://www.tradingview.com/symbols/NSE-ACMESOLAR/forecast/",
+        "https://www.screener.in/company/ACMESOLAR/consolidated/",
+        "https://www.capitalmarket.com/markets/news/corporate-results/acme-solar-holdings-consolidated-net-profit-rises-9312-23-in-the-june-2025-quarter/1619901",
+        "https://in.investing.com/equities/acme-solar-holdings-pvt"
+      ]
+    },
+    {
+      "stock_ticker": "TITAGARH",
+      "weight": 0.09,
+      "sources": [
+        "https://www.angelone.in/stocks/titagarh-rail-systems-ltd/shareholding",
+        "https://themachinemaker.com/news/titagarh-rail-systems-secures-%E2%82%B91600-crore-order-to-supply-108-coaches-for-mumbai-metro-line-6/",
+        "https://in.tradingview.com/symbols/NSE-TITAGARH/",
+        "https://www.indmoney.com/stocks/titagarh-rail-systems-ltd-share-price",
+        "https://themachinemaker.com/news/titagarh-rail-systems-secures-%E2%82%B91600-crore-order-to-supply-108-coaches-for-mumbai-metro-line-6/"
+      ]
+    },
+    {
+      "stock_ticker": "PGEL",
+      "weight": 0.09,
+      "sources": [
+        "https://in.tradingview.com/symbols/NSE-PGEL/",
+        "https://dhan.co/stocks/pg-electroplast-ltd-share-price/",
+        "https://m.economictimes.com/markets/stocks/news/pg-electroplast-shares-plunge-23-after-q1-pat-drops-yoy-qoq-near-term-headwinds-seen/articleshow/123187791.cms"
+      ]
+    },
+    {
+      "stock_ticker": "KAYNES",
+      "weight": 0.11,
+      "sources": [
+        "https://www.tradingview.com/symbols/NSE-KAYNES/",
+        "https://hk.marketscreener.com/news/kaynes-technology-india-limited-reports-earnings-results-for-the-first-quarter-ended-june-30-2025-ce7c5fdcd18ef521",
+        "https://m.economictimes.com/markets/stocks/news/kaynes-technology-shares-in-focus-as-unit-inks-rs-4995-crore-investment-mou-with-tamil-nadu/articleshow/123108480.cms"
+      ]
+    },
+    {
+      "stock_ticker": "CAPLIPOINT",
+      "weight": 0.1,
+      "sources": [
+        "https://www.topstockresearch.com/rt/Financial/CAPLIPOINT/DebtToEquityRatio",
+        "https://dhan.co/stocks/caplin-point-laboratories-ltd-share-price/",
+        "https://trendlyne.com/equity/share-holding/237/CAPLIPOINT/latest/caplin-point-laboratories-ltd/",
+        "https://economictimes.indiatimes.com/caplin-point-laboratories-ltd/stocks/companyid-8581.cms",
+        "https://www.marketscreener.com/quote/stock/CAPLIN-POINT-LABORATORIES-31670633/consensus/",
+        "https://www.marketscreener.com/news/caplin-point-laboratories-limited-reports-earnings-results-for-the-first-quarter-ended-june-30-2025-ce7c5edfd88af721",
+        "https://ticker.finology.in/company/CAPLIPOINT",
+        "https://www.icicidirect.com/research/equity/trending-news/caplin-point-s-revenues-grew-11-yoy-to-510-crore-on-the-back-of-caplin-steriles"
+      ]
+    },
+    {
+      "stock_ticker": "EMCURE",
+      "weight": 0.1,
+      "sources": [
+        "https://www.obnews.co/Flow/News/id/11500498.html?val=594ec7fd15db92e16bc33b0d921a1c87&ch=o_ls&g_v=SBie7Ls8G4WyGFeBUHgO_GfRdjFpiJTLkpdfOy18gtcOJ0l6TEDA3aC8IQHceXaP%27",
+        "https://www.marketscreener.com/news/emcure-pharmaceuticals-limited-reports-earnings-results-for-the-first-quarter-ended-june-30-2025-ce7c5edfd88ff722",
+        "https://themachinemaker.com/news/emcure-pharmaceuticals-reports-impressive-q1-fy26-results-with-16-revenue-rise-and-41-surge-in-profit-after-tax/",
+        "https://www.indmoney.com/stocks/emcure-pharmaceuticals-ltd-share-price",
+        "https://www.equitymaster.com/research-it/annual-results-analysis/EMCU/EMCURE-PHARMACEUTICALS-LTD-2024-25-Annual-Report-Analysis/12654",
+        "https://www.topstockresearch.com/rt/Financial/EMCURE/DebtToEquityRatio"
+      ]
+    }
+  ],
+  "reason_summary": "The portfolio basket for the next 1 week (7-day horizon) is strategically constructed to maximize short-term gains while ensuring robust diversification and risk management. The selection process prioritized stocks exhibiting strong immediate catalysts, such as recent positive earnings reports, significant order wins, share buyback programs, or technical indicators signaling an imminent rebound from oversold conditions.\n\n**Selection Strategy:**\n\n1.  **High Conviction, Immediate Catalysts:** Stocks like **TANLA** (11.58% gain) are included due to the strong magnet effect of its ongoing share buyback at a premium. **PNCINFRA** (10.71% gain) and **ACMESOLAR** (7.05% gain) are driven by robust Q1 FY25/26 results and strategic project advancements. **BLS** (6.42% gain) benefits from strong Q1 FY26 performance and bullish technicals. **TARIL** (6.88% gain) is supported by strong Q1 FY26 performance and a substantial order book. **KAYNES** (7.47% gain) is propelled by strong Q1 FY26 earnings and a significant investment MoU. **CAPLIPOINT** (7.53% gain) and **EMCURE** (4.64% gain) are included due to impressive Q1 FY26 results and positive analyst sentiment.\n\n2.  **Technical Rebound Potential:** **PGEL** (8.7% gain) is selected for its oversold RSI, indicating a potential technical rebound despite recent declines. **TITAGARH** (8.35% gain) is poised for a bounce from recent lows, contingent on Q1 FY26 results.\n\n**Diversification and Risk Management:**\n\n*   **Sectoral Diversification:** The basket spans multiple high-growth and resilient sectors. **TANLA** (CPaaS/Tech), **BLS** (Visa/Digital Services), **CAPLIPOINT** and **EMCURE** (Pharmaceuticals), **KAYNES** (Electronics Manufacturing), **PNCINFRA** and **TITAGARH** (Infrastructure/Railways), **PGEL** (Consumer Durables/Electronics Manufacturing), and **TARIL** (Power/Transformers) provide exposure to diverse economic drivers, mitigating sector-specific risks.\n*   **Fundamental Strength:** A key criterion was strong underlying fundamentals. Most selected stocks boast healthy balance sheets, low debt-to-equity ratios, and positive operating cash flows, providing a fundamental floor against market volatility. For instance, BLS, TARIL, and CAPLIPOINT are virtually debt-free.\n*   **Catalyst-Driven vs. Speculative:** The focus is on stocks with clear, near-term catalysts rather than purely speculative plays. While some stocks are recovering from dips, their inclusion is based on strong fundamental support or oversold technicals, not just high beta.\n*   **Liquidity:** All selected stocks are liquid, ensuring ease of entry and exit within the short 1-week horizon.\n\nThis basket is positioned to outperform broader market indices by capitalizing on specific company-level positive developments and technical rebounds, while the diversification across industries and a focus on fundamentally sound companies help manage inherent short-term market risks.",
+  "expected_gain_1w": 7.953
+}

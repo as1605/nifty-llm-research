@@ -89,20 +89,22 @@ python scripts/generate_portfolio.py --index "NIFTY 50" --filter-top-n 20 --bask
 4. Rebalance portfolio (Zerodha):
 ```bash
 # Dry run (safe)
-python scripts/rebalance_portfolio.py docs/baskets/"NIFTY 50__Jun_30_2025_00_58__N20_K5.json" --dry-run --quiet
+python scripts/rebalance_portfolio.py docs/baskets/"NIFTY 50__Jun_30_2025_00_58__N20_K5.json" --dry-run --quiet --target-deficit 5000
 
 # Live execution (places orders)
-python scripts/rebalance_portfolio.py docs/baskets/"NIFTY 50__Jun_30_2025_00_58__N20_K5.json" --live --quiet
+python scripts/rebalance_portfolio.py docs/baskets/"NIFTY 50__Jun_30_2025_00_58__N20_K5.json" --live --quiet --target-deficit 5000
 ```
 
 See the dedicated guide: [Rebalancing README](README_REBALANCING.md).
 
-## Rebalancing (Brief)
+-## Rebalancing (Brief)
 
 - **Access token flow**: Secure OAuth via a local FastAPI callback server; tokens are encrypted and stored in MongoDB
 - **Market-hour handling**: If outside 9:15–15:30 IST, the script waits until 09:14 IST, then retries rapidly until market open; if between 09:14 and 09:15, it starts immediately
-- **Prices**: Uses Kite `ltp()` (Last Traded Price) for permissions compatibility
+- **Prices**: Uses exchange-aware Kite `ltp()` instrument keys
+- **Portfolio value**: Holdings use `last_price × quantity`; positions use `last_price × quantity × multiplier`; available cash uses `margins.equity.net`
 - **Order strategy**: Prioritizes biggest deficits first, places MARKET CNC orders on NSE; exponential backoff on transient errors
+- **Iterative convergence**: Computes total deficit (sum of absolute diffs from targets) and repeats up to 10 iterations until total deficit ≤ `--target-deficit` (dry-run performs a single iteration)
 - **Quiet mode**: `--quiet` auto-confirms and avoids prompts; picks first stored user token if available
 
 For full details and safety considerations, see [README_REBALANCING.md](README_REBALANCING.md).

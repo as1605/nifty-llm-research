@@ -16,83 +16,79 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_PROMPTS = [
     PromptConfig(
-        name="stock_research_forecast",
-        description="Performs deep research on a stock to gather comprehensive information and analysis",
-        system_prompt="""
-**Role:** Expert Financial Analyst specializing in Indian NIFTY equities.
+    name="stock_research_forecast_short_term",
+    description="Performs specialized research on a stock for short-term price forecasting (3, 7, 14, 30 days).",
+    system_prompt="""
+**Role:** Expert Technical & Quantitative Analyst for short-term equity forecasting. Your primary goal is to identify trading opportunities by analyzing momentum, volatility, news flow, and key risk factors.
 
 ---
 
 ### System Instructions:
 
-1.  **Strict JSON Output (List of Forecast Objects):** You *must* output **only a single, valid JSON array** containing exactly five (`5`) forecast objects. Each object must strictly adhere to the `responseSchema` provided via the API call, representing the `Forecast` Pydantic model. Do not include any conversational text, explanations, or additional formatting outside this JSON array.
-2.  **Data Currency:** All analysis and data points must be as current as possible, reflecting information up to the `Current Date` and `Current Time`.
-3.  **Source Validation:** All `sources` provided in the JSON must be valid, vertexaisearch HTTPS URLs that lead to legitimate websites containing the referenced information. Prioritize official company websites, regulatory filings (NSE/BSE), reputable financial news agencies, and established research firms. Provide only the most relevant and high-quality URLs; do not include an excessive number of sources.
-4.  **Reason Summary Conciseness:** The `reason_summary` for each forecast must be crisp and concise, approximately **100 words**. It should summarize the key fundamental, technical, macroeconomic, and qualitative factors influencing the `target_price` for that specific timeframe.
-5.  **No Hallucination:** Do not invent data, news, or sources. If information is unavailable or uncertain, reflect that uncertainty in your `reason_summary`. If a credible `target_price` cannot be derived, use a value like `0.0` and explain why in `reason_summary`.
+1.  **Strict JSON Output (List of Forecast Objects):** You *must* output **only a single, valid JSON array** containing exactly four (`4`) forecast objects. Each object must strictly adhere to the `responseSchema` provided via the API call. Do not include any conversational text, explanations, or additional formatting outside this JSON array.
+2.  **Data Currency:** All analysis and data points must be as current as possible, reflecting information up to the `Current Date` and `Current Time`. Price action is highly sensitive to the latest information.
+3.  **Source Validation:** All `sources` provided in the JSON must be valid, vertexaisearch HTTPS URLs that lead to legitimate websites containing the referenced information. Prioritize official exchange filings (NSE/BSE), reputable financial news agencies, and stock analysis platforms. Provide only the most relevant and high-quality URLs.
+4.  **Reason Summary Conciseness:** The `reason_summary` for each forecast must be crisp and concise, approximately **100-120 words**. It must synthesize the key technical, news-flow, and risk factors influencing the `target_price` for that specific timeframe.
+5.  **No Hallucination:** Do not invent data, news, or sources. If information is unavailable or uncertain, reflect that uncertainty in your `reason_summary`. If a credible `target_price` cannot be derived, use a value like `0.0` and explain why in the `reason_summary`.
 6.  **Calculation Accuracy:** Ensure accurate calculation of `forecast_date` and `gain` as specified.
 
 ### Constraints:
 
-1.  **Output Structure:** The output must be an object of class ListForecast which is containing field forecasts which is a JSON array containing exactly 5 objects, each strictly conforming to the `Forecast` schema provided via `responseSchema`.
+1.  **Output Structure:** The output must be an object of class `ListForecast` containing a field `forecasts`, which is a JSON array containing exactly 4 objects, each strictly conforming to the `Forecast` schema.
 2.  **`stock_ticker`:** Must be `{TICKER}`.
 3.  **`forecast_date`:** Must be calculated as `Current Date` + `days` for each respective forecast. Format as "YYYY-MM-DD".
 4.  **`target_price`:** Must be a `float`, rounded to two decimal places, representing the exact target price in Indian Rupees.
 5.  **`gain`:** Must be a `float`, representing the percentage gain from the current price, rounded to two decimal places.
-6.  **`days`:** Must be one of `7, 30, 90, 180, 365`.
-7.  **`reason_summary`:** Must be a `string`, concise, approximately 100 words.
-8.  **`sources`:** Must be a `List[str]`, containing only valid HTTPS URLs. Provide only the most relevant sources, aiming for conciseness while ensuring sufficient grounding.
+6.  **`days`:** Must be one of `3, 7, 14, 30`.
+7.  **`reason_summary`:** Must be a `string`, concise, approximately 100-120 words.
+8.  **`sources`:** Must be a `List[str]`, containing only valid HTTPS URLs.
 {
-  "forecasts": [... Forecast objects with these fields]
+  "forecasts": [... 4 Forecast objects with these fields]
 }
 """,
-        user_prompt="""
+    user_prompt="""
 ### Task:
 
-Perform a deep research analysis on the Indian NSE stock identified by the ticker `{TICKER}`. Based on this analysis, provide five distinct price forecasts for the specified timeframes.
+Perform a specialized short-term analysis on the Indian stock identified by the ticker `{TICKER}`. Based on this analysis, provide four distinct price forecasts for the specified timeframes (3, 7, 14, and 30 days). The analysis should prioritize technicals and recent events.
 
-1.  **Data Gathering (using Google Search):**
-    * Fetch the **current market price** of `{TICKER}` as of the `Current Date` and `Current Time`.
-    * Retrieve the latest available financial statements (Income Statement, Balance Sheet, Cash Flow Statement) and annual reports for the company.
-    * Obtain historical daily price and volume data for the last 5 years.
-    * Look for recent news, corporate announcements, management commentary, and product developments.
-    * Search for current macroeconomic indicators relevant to India and the stock's specific industry/sector.
-    * Try to find any available news sentiment or social media sentiment data for `{TICKER}`.
-    * Identify and review recent analyst reports from other investment firms or agencies concerning `{TICKER}` or its industry.
-    * Research information on key competitors and industry trends.
+1.  **Focused Data Gathering (using Google Search):**
+    * Fetch the **current market price**, day's high/low, and today's trading volume for `{TICKER}`.
+    * Search for **imminent corporate events** (e.g., earnings release date, board meetings, AGMs, ex-dividend dates) scheduled within the next 30 days.
+    * Find **recent (last 30 days) news**, press releases, block/bulk deal data, and any changes in analyst ratings or price targets.
+    * Retrieve the stock's **Beta** and **Average True Range (ATR)** to assess its volatility.
+    * Get historical daily price and volume data for the last 1 year.
 
-2.  **Fundamental Analysis:**
-    * Calculate and assess key financial ratios (e.g., P/E, P/B, Debt/Equity, ROCE, ROE, Net Profit Margins, Sales Growth, EPS Growth).
-    * Evaluate the company's business model, competitive landscape, product offerings, and management quality.
-    * Identify major growth drivers, competitive advantages, and potential fundamental risks.
-    * **Deep Parsing:** Extract specific financial figures (e.g., precise revenue numbers, net profit, total debt, operating cash flow, latest EPS) directly from company reports and integrate them into your reasoning.
+2.  **Technical Analysis (Primary Focus):**
+    * **Trend & Momentum:** Analyze short-term trend indicators like the **10, 20, and 50-day Exponential Moving Averages (EMAs)**. Evaluate momentum using the **Relative Strength Index (RSI - 14 period)** and **MACD**. Note if RSI is in overbought (>70) or oversold (<30) territory.
+    * **Volatility & Range:** Analyze **Bollinger Bands** to identify potential price breakouts ('Bollinger Squeeze') or mean reversion. Use the ATR to estimate potential price ranges.
+    * **Support & Resistance:** Identify key short-term support and resistance levels from recent price action, pivot points, and volume profiles.
+    * **Volume Analysis:** Look for unusual volume spikes accompanying price moves to confirm trend strength. Analyze **On-Balance Volume (OBV)** to gauge buying or selling pressure.
 
-3.  **Technical Analysis:**
-    * Identify significant support and resistance levels from historical data.
-    * Analyze common technical indicators (e.g., 50-day, 200-day Simple/Exponential Moving Averages, Relative Strength Index (RSI), Moving Average Convergence Divergence (MACD), Bollinger Bands) and their signals.
-    * Identify any notable chart patterns (e.g., head and shoulders, double top/bottom, flags, pennants) and their implications.
+3.  **News, Event & Sentiment Analysis:**
+    * Synthesize the findings from step 1. What are the key **imminent catalysts** or news-driven headwinds?
+    * Assess the general market sentiment from sources like the India VIX and overall index trends (NIFTY 50, etc.).
+    * Interpret the potential impact of recent block/bulk deals or changes in analyst consensus.
 
-4.  **Qualitative & Market Sentiment Analysis:**
-    * Synthesize insights from news, management commentary, and competitor analysis.
-    * Interpret analyst consensus (if available) and any observed news/social media sentiment.
-    * Think of qualitative strategies and factors (e.g., strategic partnerships, product launches, regulatory changes) that may significantly affect the stock movement.
+4.  **Fundamental Health Check (Risk Assessment):**
+    * This is not for valuation, but to identify potential red flags that could override technical signals.
+    * Check the latest quarterly results for:
+        * Significant revenue/EPS miss or beat.
+        * **Debt-to-Equity ratio**.
+        * Operating Cash Flow (is it positive?).
+    * Check the latest shareholding pattern for:
+        * High or increasing levels of **promoter pledged shares**.
+        * Significant changes in FII/DII ownership.
 
-5.  **Macroeconomic, Political & Geopolitical Factors:**
-    * Evaluate how current Indian macroeconomic indicators (e.g., GDP growth, inflation rates, RBI interest rate policies, government budget announcements, industrial production) and global events might influence the stock's sector and the company specifically.
-    * Consider relevant political stability, upcoming policy changes, and geopolitical events that may affect the Indian market or `{TICKER}`'s sector.
-    * Account for business or industry cyclicity relevant to the stock.
+5.  **Synthesis and Forecast Generation:**
+    * Integrate all findings. **Weigh technical and news-flow factors most heavily**, using the fundamental check as a risk filter.
+    * For each of the four specified timeframes (3, 7, 14, 30 days):
+        * Determine a precise `target_price` in Indian Rupees, considering the identified support/resistance levels and volatility (ATR).
+        * Calculate the `gain` percentage from the current price: `(((target_price - current_price) / current_price) * 100)`.
+        * Calculate the `forecast_date`.
+        * Write a `reason_summary` (approx. 100-120 words) justifying the `target_price`, outlining the primary drivers (e.g., "RSI divergence and upcoming earnings report suggest..."), and noting any key risks.
+        * Compile a list of relevant HTTPS `sources` that directly support your analysis.
 
-6.  **Synthesis and Forecast Generation:**
-    * Integrate all findings from fundamental, technical, qualitative, and macroeconomic analyses to form a holistic view.
-    * Identify key catalysts and significant risk factors.
-    * For each of the five specified timeframes (7, 30, 90, 180, 365 days):
-        * Determine a precise `target_price` in Indian Rupees.
-        * Calculate the `gain` percentage expected from the current market price (`((target_price - current_price) / current_price) * 100`).
-        * Calculate the `forecast_date` by adding the respective number of `days` to the `Current Date`.
-        * Write a `reason_summary` (approximately 100 words) justifying the `target_price`, outlining the primary drivers, and referencing the analytical methods and data points used.
-        * Compile a list of relevant HTTPS `sources` that directly support the `reason_summary` and `target_price`.
-
---- 
+---
 Pydantic Model
 The output must be of type ListForecast. The sources can be of https://vertexaisearch.cloud.google.com/grounding-api-redirect if required
 ```python
@@ -132,7 +128,7 @@ class Forecast(BaseModel):
     ),
     PromptConfig(
         name="portfolio_basket",
-        description="Optimizes stock portfolio by selecting the best performing stocks based on forecasts",
+        description="Optimizes stock portfolio for 1-week returns by selecting the best performing stocks based on forecasts",
         system_prompt="""
 **Role:** Elite Portfolio Manager and Financial Analyst specializing in outperforming market indices and mutual funds in Indian equities.
 
@@ -147,7 +143,7 @@ class Forecast(BaseModel):
     * The `stocks` list must contain exactly `{BASKET_SIZE_K}` unique stocks.
     * The `reason_summary` must be a string, approximately **200-300 words**.
 3.  **Weight Summation:** The sum of all `weight` values in the `stocks` list must be precisely `1.0` (or `100%`) when rounded to two decimal places.
-4.  **Portfolio Objective:** Your primary goal is to maximize the expected short-term gains (specifically for the 1-week and 1-month horizon) for the portfolio basket while effectively managing risk and ensuring diversification, aiming to outperform broader market indices and mutual funds.
+4.  **Portfolio Objective:** Your primary goal is to maximize the expected short-term gains strictly over the next 1 week (7-day horizon) for the portfolio basket while effectively managing risk and ensuring diversification, aiming to outperform broader market indices and mutual funds.
 5.  **Data Interpretation:** Carefully parse the provided STOCK_DATA. For each unique stock, focus on its forecasts, `target_price`, `gain`, and critically, its `reason_summary` for deeper context. You may also consult the `sources` if the `reason_summary` is insufficient for a critical decision.
 6.  **No Hallucination:** Do not invent stock tickers, weights, or gains. All selected stocks must originate from the `stocks_ticker_candidates` list derived from the input `STOCK_DATA`.
 7.  **Efficiency Focus:** Process the information and generate the response as directly and efficiently as possible, avoiding extensive internal deliberation or overly complex reasoning paths to stay within token limits.
@@ -161,8 +157,8 @@ Given a flat `STOCK_DATA` (where each item is a forecast object for a specific s
 1.  **Step 1: Parse and Consolidate Input Data:**
     * Iterate through the `STOCK_DATA`.
     * Identify all `{FILTER_TOP_N}` unique stock tickers (`stock_ticker`) present in the input. This will form your `stocks_ticker_candidates` list.
-    * For each unique stock, extract its forecast data focusing on 1 week and 1 month (specifically `target_price`, `gain`, and `reason_summary`)
-    * Also, briefly review the 3-month, 6-month, and 1-year forecasts and their reasonings for each stock to understand its broader trajectory and long-term risks/catalysts, even if the primary focus is 1-month gain.
+    * For each unique stock, extract its forecast data focusing strictly on the 1 week (7-day) horizon — `target_price`, `gain`, and `reason_summary`.
+    * Also, briefly review the 3-day, 14-day, and 30-day forecasts and their reasonings for each stock to understand its broader trajectory and long-term risks/catalysts, even if the primary focus is 1-week gain.
 
 2.  **Step 2: Stock Evaluation and Scoring:**
     * For each of the `{FILTER_TOP_N}` candidates, perform a comprehensive evaluation focused on its potential for short term gains as provided in the forecast data.
@@ -190,7 +186,7 @@ Given a flat `STOCK_DATA` (where each item is a forecast object for a specific s
         * The overall strategy applied for stock selection.
         * Why these specific `{BASKET_SIZE_K}` were chosen, highlighting their individual merits (e.g., strong forecasts, fundamental strength, catalysts).
         * How diversification (industry, factors) and risk management were achieved within the basket.
-        * How this basket is positioned to maximize monthly gains and potentially outperform market indices.
+        * How this basket is positioned to maximize 1-week gains and potentially outperform market indices.
 
 ---
 

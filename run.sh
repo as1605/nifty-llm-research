@@ -7,6 +7,7 @@ cd "$(dirname "$0")"
 # Optional: activate venv if present
 if [[ -d "env" ]]; then
   # shellcheck disable=SC1091
+  echo "Enabling env"
   source env/bin/activate || true
 fi
 
@@ -28,6 +29,7 @@ FORCE_LLM=${FORCE_LLM:-0}  # 1 to force LLM analysis
 QUIET_REBALANCE=${QUIET_REBALANCE:-1}
 LIVE_REBALANCE=${LIVE_REBALANCE:-1}  # Default to LIVE ordering
 MIN_ORDER_VALUE=${MIN_ORDER_VALUE:-1000}
+TARGET_DEFICIT=${TARGET_DEFICIT:-1000}
 
 # Run ID for log naming
 RUN_ID=$(date +"%Y%m%d_%H%M%S")
@@ -66,11 +68,19 @@ fi
 
 # 1st analysis pass
 echo "[1/6] Running stock analysis for: $INDEX (1st pass)" >&2
-python3 scripts/analyze_stocks.py -i "$INDEX" "${parallel_flag[@]}" "${force_nse_flag[@]}" "${force_llm_flag[@]}" 2>&1 | tee "$ANALYZE1_LOG"
+python3 scripts/analyze_stocks.py -i "$INDEX" \
+  ${parallel_flag+"${parallel_flag[@]}"} \
+  ${force_nse_flag+"${force_nse_flag[@]}"} \
+  ${force_llm_flag+"${force_llm_flag[@]}"} \
+  2>&1 | tee "$ANALYZE1_LOG"
 
 # 2nd analysis pass
 echo "[2/6] Running stock analysis for: $INDEX (2nd pass)" >&2
-python3 scripts/analyze_stocks.py -i "$INDEX" "${parallel_flag[@]}" "${force_nse_flag[@]}" "${force_llm_flag[@]}" 2>&1 | tee "$ANALYZE2_LOG"
+python3 scripts/analyze_stocks.py -i "$INDEX" \
+  ${parallel_flag+"${parallel_flag[@]}"} \
+  ${force_nse_flag+"${force_nse_flag[@]}"} \
+  ${force_llm_flag+"${force_llm_flag[@]}"} \
+  2>&1 | tee "$ANALYZE2_LOG"
 
 # Generate portfolio
 echo "[3/6] Generating portfolio for: $INDEX (N=${FILTER_TOP_N}, K=${BASKET_SIZE_K})" >&2
@@ -99,6 +109,11 @@ fi
 
 # Rebalance portfolio
 echo "[5/6] Rebalancing portfolio (mode: ${live_flag[*]} | quiet: ${QUIET_REBALANCE})" >&2
-python3 scripts/rebalance_portfolio.py "$LATEST_JSON" "${live_flag[@]}" "${quiet_flag[@]}" --min-order-value "$MIN_ORDER_VALUE" 2>&1 | tee "$REBALANCE_LOG"
+python3 scripts/rebalance_portfolio.py "$LATEST_JSON" \
+  ${live_flag+"${live_flag[@]}"} \
+  ${quiet_flag+"${quiet_flag[@]}"} \
+  --min-order-value "$MIN_ORDER_VALUE" \
+  --target-deficit "$TARGET_DEFICIT" \
+  2>&1 | tee "$REBALANCE_LOG"
 
 echo "[6/6] Completed end-to-end flow." >&2

@@ -72,7 +72,7 @@ class PortfolioAgent(BaseAgent):
             # Filter stocks with enough forecasts if force_llm is True
             {
                 "$match": {
-                    "forecast_count": {"$gte": 5 if force_llm else 1}
+                    "forecast_count": {"$gte": 4 if force_llm else 1}
                 }
             },
             # Sort by average gain in descending order
@@ -179,23 +179,23 @@ class PortfolioAgent(BaseAgent):
                 stocks.append(basket_stock)
                 ticker_to_weight[stock["stock_ticker"]] = stock["weight"]
 
-            # Calculate expected_gain_1m as weighted average of 1m gains
-            # 1. Gather all 1m (days==30) forecasts for each stock in the basket
-            ticker_to_1m_gains = {ticker: [] for ticker in ticker_to_weight}
+            # Calculate expected_gain_1w as weighted average of 1-week (7d) gains
+            # 1. Gather all 1w (days==7) forecasts for each stock in the basket
+            ticker_to_1w_gains = {ticker: [] for ticker in ticker_to_weight}
             for forecast in stock_data:
                 ticker = forecast["stock_ticker"]
-                if ticker in ticker_to_1m_gains and forecast.get("days") == 30:
-                    ticker_to_1m_gains[ticker].append(forecast["gain"])
-            # 2. Average the 1m gains for each stock
-            ticker_to_avg_1m_gain = {}
-            for ticker, gains in ticker_to_1m_gains.items():
+                if ticker in ticker_to_1w_gains and forecast.get("days") == 7:
+                    ticker_to_1w_gains[ticker].append(forecast["gain"])
+            # 2. Average the 1w gains for each stock
+            ticker_to_avg_1w_gain = {}
+            for ticker, gains in ticker_to_1w_gains.items():
                 if gains:
-                    ticker_to_avg_1m_gain[ticker] = sum(gains) / len(gains)
+                    ticker_to_avg_1w_gain[ticker] = sum(gains) / len(gains)
                 else:
-                    ticker_to_avg_1m_gain[ticker] = 0.0  # or handle missing data as needed
+                    ticker_to_avg_1w_gain[ticker] = 0.0  # or handle missing data as needed
             # 3. Weighted average
-            expected_gain_1m = sum(
-                ticker_to_avg_1m_gain[ticker] * ticker_to_weight[ticker]
+            expected_gain_1w = sum(
+                ticker_to_avg_1w_gain[ticker] * ticker_to_weight[ticker]
                 for ticker in ticker_to_weight
             )
 
@@ -209,7 +209,7 @@ class PortfolioAgent(BaseAgent):
                 stocks_ticker_candidates=unique_ticker_candidates,
                 stocks=stocks,
                 reason_summary=basket_data["reason_summary"],
-                expected_gain_1m=expected_gain_1m
+                expected_gain_1w=expected_gain_1w
             )
             await async_db[COLLECTIONS["baskets"]].insert_one(basket.model_dump())
 

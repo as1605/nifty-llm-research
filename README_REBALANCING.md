@@ -76,7 +76,7 @@ python scripts/rebalance_portfolio.py docs/baskets/"NIFTY 50__Jun_30_2025_00_58_
 Test rebalancing without placing actual orders:
 
 ```bash
-python scripts/rebalance_portfolio.py docs/baskets/NIFTY_50__Jul_27_2025_22_04__N20_K5.json --dry-run
+python scripts/rebalance_portfolio.py docs/baskets/NIFTY_50__Jul_27_2025_22_04__N20_K5.json --dry-run --target-deficit 5000
 ```
 
 ### 3. Execute Live Rebalancing
@@ -84,7 +84,7 @@ python scripts/rebalance_portfolio.py docs/baskets/NIFTY_50__Jul_27_2025_22_04__
 ⚠️ CAUTION: This places real orders on Zerodha!
 
 ```bash
-python scripts/rebalance_portfolio.py docs/baskets/NIFTY_50__Jul_27_2025_22_04__N20_K5.json --live
+python scripts/rebalance_portfolio.py docs/baskets/NIFTY_50__Jul_27_2025_22_04__N20_K5.json --live --target-deficit 5000
 ```
 
 ## Authentication Flow Details
@@ -99,9 +99,9 @@ python scripts/rebalance_portfolio.py docs/baskets/NIFTY_50__Jul_27_2025_22_04__
 ### Portfolio Value Calculation
 
 Total portfolio value includes:
-- Holdings (quantity × price) using `ltp()` for current price
-- Positions (day/net P&L)
-- Available cash (margins)
+- Holdings: `last_price × quantity` from holdings
+- Positions (net): `last_price × quantity × multiplier`
+- Available cash: `margins.equity.net`
 
 ### Target Allocation
 
@@ -117,10 +117,10 @@ The script reads basket JSON files with this structure:
 
 ### Order Calculation & Execution
 
-- Calculates `target_value - current_value` per stock
+- Calculates `target_value - current_value` per stock using exchange-aware `ltp()`
 - Prioritizes by largest deficit first
 - Places MARKET CNC orders on NSE
-- Uses `ltp()` for price to avoid elevated quote permissions
+- Iterative convergence: computes total deficit (sum of absolute diffs to target) each round and repeats until total deficit ≤ `--target-deficit` or up to 10 rounds (dry-run runs once)
 - Market-hour handling:
   - If outside 9:15–15:30 IST, waits until 09:14 IST of next trading day
   - If between 09:14–09:15 IST, starts retrying immediately
@@ -135,13 +135,13 @@ The script reads basket JSON files with this structure:
 
 ```bash
 # Dry run with defaults
-python scripts/rebalance_portfolio.py docs/baskets/my_basket.json --dry-run --quiet
+python scripts/rebalance_portfolio.py docs/baskets/my_basket.json --dry-run --quiet --target-deficit 5000
 
 # Live execution
-python scripts/rebalance_portfolio.py docs/baskets/my_basket.json --live --quiet
+python scripts/rebalance_portfolio.py docs/baskets/my_basket.json --live --quiet --target-deficit 5000
 
-# Minimum order value override
-python scripts/rebalance_portfolio.py docs/baskets/my_basket.json --live --min-order-value 2000
+# Minimum order value + target deficit override
+python scripts/rebalance_portfolio.py docs/baskets/my_basket.json --live --min-order-value 2000 --target-deficit 3000
 ```
 
 ## Relevant Zerodha Docs

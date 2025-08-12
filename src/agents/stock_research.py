@@ -165,7 +165,7 @@ class StockResearchAgent(BaseAgent):
             raise ValueError(f"Stock {symbol} not found in database")
 
         # Get prompt config
-        prompt_config = await self.get_prompt_config("stock_research_forecast")
+        prompt_config = await self.get_prompt_config("stock_research_forecast_short_term")
 
         # Get completion
         response, invocation_id = await self.get_completion(

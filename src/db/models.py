@@ -130,7 +130,7 @@ class Basket(BaseModel):
         ..., description="List of selected stocks with their weights and sources"
     )
     reason_summary: str = Field(..., description="Summary of why these stocks were picked")
-    expected_gain_1m: Optional[float] = Field(None, description="Expected gain for the basket in 1 month")
+    expected_gain_1w: Optional[float] = Field(None, description="Expected gain for the basket in 1 week")
 
 
 class ZerodhaToken(BaseModel):

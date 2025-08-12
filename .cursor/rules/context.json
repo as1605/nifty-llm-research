@@ -13,7 +13,7 @@
             "Use Perplexity AI for deep research",
             "Store data in MongoDB",
             "Send emails via Amazon SES",
-            "Never modify files in prompts/ directory - only add new files",
+            "Never modify files in prompt_history/ directory - only add new files",
             "Follow strict type checking and code quality standards"
         ],
         "key_components": {
@@ -30,7 +30,7 @@
             "virtual_env": "venv"
         },
         "restricted_directories": {
-            "prompts/": {
+            "prompt_history/": {
                 "action": "read_only",
                 "reason": "Historical record of AI prompts used to generate the repository",
                 "modification_policy": "Only new files can be added, existing files must not be modified"

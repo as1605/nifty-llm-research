@@ -159,9 +159,15 @@ class ZerodhaService:
             margins = kite.margins()
             
             # Calculate total portfolio value
-            holdings_value = sum(float(h['average_price']) * int(h['quantity']) for h in holdings)
-            positions_value = sum(float(p['pnl']) for p in positions['day'] + positions['net'])
-            available_cash = float(margins['equity']['available']['cash'])
+            # Holdings: last_price * quantity
+            holdings_value = sum(float(h.get('last_price') or 0.0) * int(h.get('quantity') or 0) for h in holdings)
+            # Positions (net): last_price * quantity * multiplier
+            positions_value = sum(
+                float(p.get("last_price") or 0.0) * int(p.get("quantity") or 0) * int(p.get("multiplier") or 1)
+                for p in positions.get("net", [])
+            )
+
+            available_cash = float(margins['equity']['net'])
             
             total_value = holdings_value + positions_value + available_cash
             

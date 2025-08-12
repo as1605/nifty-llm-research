@@ -1,5 +1,5 @@
 # Never modify prompt files - they are for auditing only
-prompts/
+prompt_history/
 
 # Ignore Python cache files
 __pycache__/
