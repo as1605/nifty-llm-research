@@ -773,3 +773,12 @@ After rebalancing, report the total deficit amount. Create a parameter for targe
 
 
 Update the documentation (@README.md  @README_REBALANCING.md ) and the @run.sh  script according to the new algorithm
+
+
+Use opening_quantity instead of quantity when computing holdings @get_current_portfolio@get_portfolio_summary   . Instead of Zerodha API for fetching LTP @get_ltp  , use yfinance library get_fast_info for fetching lastPrice
+
+
+Update docs
+
+
+When rebalancing, execute sell orders first then buy orders. Keep min order value as 100 by default.

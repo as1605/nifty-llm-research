@@ -99,7 +99,7 @@ python scripts/rebalance_portfolio.py docs/baskets/NIFTY_50__Jul_27_2025_22_04__
 ### Portfolio Value Calculation
 
 Total portfolio value includes:
-- Holdings: `last_price × quantity` from holdings
+- Holdings: `last_price × opening_quantity` from holdings
 - Positions (net): `last_price × quantity × multiplier`
 - Available cash: `margins.equity.net`
 
@@ -117,7 +117,7 @@ The script reads basket JSON files with this structure:
 
 ### Order Calculation & Execution
 
-- Calculates `target_value - current_value` per stock using exchange-aware `ltp()`
+- Calculates `target_value - current_value` per stock using yfinance last price (exchange-aware mapping)
 - Prioritizes by largest deficit first
 - Places MARKET CNC orders on NSE
 - Iterative convergence: computes total deficit (sum of absolute diffs to target) each round and repeats until total deficit ≤ `--target-deficit` or up to 10 rounds (dry-run runs once)

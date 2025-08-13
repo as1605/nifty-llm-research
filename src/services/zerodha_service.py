@@ -4,6 +4,7 @@ Zerodha Kite API service for authentication and trading operations.
 
 import asyncio
 import base64
+import json
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 import webbrowser
@@ -12,6 +13,7 @@ from urllib.parse import urlencode
 from cryptography.fernet import Fernet
 from fastapi import FastAPI, HTTPException, Request
 from kiteconnect import KiteConnect
+import yfinance as yf
 import uvicorn
 
 from config.settings import settings
@@ -159,8 +161,11 @@ class ZerodhaService:
             margins = kite.margins()
             
             # Calculate total portfolio value
-            # Holdings: last_price * quantity
-            holdings_value = sum(float(h.get('last_price') or 0.0) * int(h.get('quantity') or 0) for h in holdings)
+            # Holdings: last_price * opening_quantity
+            holdings_value = sum(
+                float(h.get('last_price') or 0.0) * int(h.get('opening_quantity') or 0)
+                for h in holdings
+            )
             # Positions (net): last_price * quantity * multiplier
             positions_value = sum(
                 float(p.get("last_price") or 0.0) * int(p.get("quantity") or 0) * int(p.get("multiplier") or 1)
@@ -229,14 +234,46 @@ class ZerodhaService:
             raise
     
     async def get_ltp(self, user_id: str, instruments: List[str]) -> Dict:
-        """Get Last Traded Price (LTP) for given instruments."""
-        kite = await self.get_authenticated_kite(user_id)
-        
-        try:
-            return kite.ltp(instruments)
-        except Exception as e:
-            logger.error(f"Failed to get LTP: {e}")
-            raise
+        """Get Last Traded Price (LTP) for given instruments using yfinance fast_info.
+
+        Input instruments are expected as ["NSE:RELIANCE", "BSE:SBIN", ...].
+        Returns a dict like {"NSE:RELIANCE": {"last_price": 1234.5}, ...}.
+        """
+        results: Dict[str, Dict[str, float]] = {}
+
+        def to_yf_symbol(instrument: str) -> Optional[str]:
+            try:
+                exchange, symbol = instrument.split(":", 1)
+            except ValueError:
+                return None
+            exchange = exchange.upper().strip()
+            suffix = ".NS" if exchange == "NSE" else ".BO" if exchange == "BSE" else None
+            if not suffix:
+                return None
+            return f"{symbol}{suffix}"
+
+        for inst in instruments:
+            yf_symbol = to_yf_symbol(inst)
+            if not yf_symbol:
+                continue
+            try:
+                tkr = yf.Ticker(yf_symbol)
+                fast = getattr(tkr, "fast_info", {}) or {}
+                price = None
+                # Try both canonical keys
+                if isinstance(fast, dict):
+                    price = fast.get("last_price") or fast.get("lastPrice")
+                # Fallback to info if needed
+                if price is None:
+                    info = getattr(tkr, "info", {}) or {}
+                    price = info.get("regularMarketPrice") or info.get("currentPrice")
+                if price is not None:
+                    results[inst] = {"last_price": float(price)}
+            except Exception as e:
+                logger.warning(f"yfinance LTP fetch failed for {inst} ({yf_symbol}): {e}")
+                continue
+
+        return results
 
 
 async def start_auth_server() -> Tuple[str, asyncio.Event]:

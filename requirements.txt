@@ -21,6 +21,7 @@ uvicorn[standard]
 
 # Zerodha API
 kiteconnect
+yfinance==0.2.52
 
 # Encryption
 cryptography

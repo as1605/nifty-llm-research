@@ -130,10 +130,10 @@ class PortfolioRebalancer:
         for holding in portfolio['holdings']:
             ticker = holding['tradingsymbol']
             current_holdings[ticker] = {
-                'quantity': int(holding['quantity']),
+                'quantity': int(holding.get('opening_quantity') or 0),
                 'average_price': float(holding['average_price']),
                 # Per API: use last_price for value computations
-                'current_value': float(holding.get('last_price') or 0.0) * int(holding['quantity']),
+                'current_value': float(holding.get('last_price') or 0.0) * int(holding.get('opening_quantity') or 0),
                 'ltp': float(holding.get('last_price', holding['average_price'])),
                 'exchange': holding.get('exchange', 'NSE')
             }
@@ -166,7 +166,7 @@ class PortfolioRebalancer:
         return portfolio
     
     async def calculate_rebalancing_actions(self, basket_data: Dict, portfolio: Dict, 
-                                          min_order_value: float = 1000.0) -> Tuple[List[Dict], float]:
+                                          min_order_value: float = 100.0) -> Tuple[List[Dict], float]:
         """Calculate rebalancing orders and return (actions, total_deficit_amount).
 
         total_deficit_amount is the sum over all tickers of |target_value - current_value|,
@@ -338,6 +338,8 @@ class PortfolioRebalancer:
     async def execute_orders(self, actions: List[Dict], dry_run: bool = True, quiet: bool = False) -> List[str]:
         """Execute the calculated rebalancing orders."""
         order_ids = []
+        # Execute sell orders first to free up cash, while preserving internal priority
+        ordered_actions = [a for a in actions if a['action'] == 'SELL'] + [a for a in actions if a['action'] == 'BUY']
         
         if dry_run:
             print("\n" + "="*80)
@@ -348,32 +350,32 @@ class PortfolioRebalancer:
             print("LIVE MODE - Orders will be placed on Zerodha")
             print("="*80)
         
-        total_buy_value = sum(action['value'] for action in actions if action['action'] == 'BUY')
-        total_sell_value = sum(action['value'] for action in actions if action['action'] == 'SELL')
+        total_buy_value = sum(action['value'] for action in ordered_actions if action['action'] == 'BUY')
+        total_sell_value = sum(action['value'] for action in ordered_actions if action['action'] == 'SELL')
         
         print(f"\nPortfolio Rebalancing Summary:")
         print(f"Total Buy Orders:  ₹{total_buy_value:,.2f}")
         print(f"Total Sell Orders: ₹{total_sell_value:,.2f}")
         print(f"Net Cash Flow:     ₹{total_sell_value - total_buy_value:,.2f}")
-        print(f"\nPlanned Orders ({len(actions)} total):")
+        print(f"\nPlanned Orders ({len(ordered_actions)} total):")
         print("-" * 80)
         
-        for i, action in enumerate(actions, 1):
+        for i, action in enumerate(ordered_actions, 1):
             print(f"{i:2d}. {action['action']:<4} {action['quantity']:>6} × {action['ticker']:<12} "
                   f"@ ₹{action['price']:>8.2f} = ₹{action['value']:>10,.2f} "
                   f"({action['current_weight']:.1%} → {action['target_weight']:.1%})")
         
-        if not actions:
+        if not ordered_actions:
             print("No rebalancing actions needed!")
             return order_ids
         
         if dry_run:
-            print(f"\n✅ Dry run completed. {len(actions)} orders planned.")
+            print(f"\n✅ Dry run completed. {len(ordered_actions)} orders planned.")
             return order_ids
         
         # Confirm before executing
         if not quiet:
-            print(f"\n⚠️  Ready to place {len(actions)} orders on Zerodha.")
+            print(f"\n⚠️  Ready to place {len(ordered_actions)} orders on Zerodha.")
             confirm = input("Type 'CONFIRM' to proceed: ")
             if confirm != 'CONFIRM':
                 print("❌ Orders cancelled.")
@@ -387,7 +389,7 @@ class PortfolioRebalancer:
         print("\n🚀 Placing orders...")
         
         # Execute orders with prioritization
-        for i, action in enumerate(actions, 1):
+        for i, action in enumerate(ordered_actions, 1):
             try:
                 print(f"[{i}/{len(actions)}] Placing {action['action']} order for {action['ticker']}...")
                 order_id = await self._place_order_with_retries(action)
@@ -406,7 +408,7 @@ class PortfolioRebalancer:
                 print(f"❌ Failed to place order for {action['ticker']}: {e}")
                 
                 # Ask if user wants to continue
-                if i < len(actions):
+                if i < len(ordered_actions):
                     if not quiet:
                         continue_trading = input("Continue with remaining orders? (y/n): ")
                         if continue_trading.lower() != 'y':
@@ -419,7 +421,7 @@ class PortfolioRebalancer:
         return order_ids
     
     async def rebalance(self, basket_file: str, dry_run: bool = True, 
-                       min_order_value: float = 1000.0, quiet: bool = False,
+                       min_order_value: float = 100.0, quiet: bool = False,
                        target_deficit: float = 1000.0) -> List[str]:
         """Main rebalancing function. Iteratively rebalance until total deficit is below
         target_deficit or up to 10 tries. In dry-run mode, only one iteration is performed.
@@ -539,8 +541,8 @@ async def main():
                        help="Perform dry run without placing actual orders (default: True)")
     parser.add_argument("--live", action="store_true", 
                        help="Place actual orders (overrides --dry-run)")
-    parser.add_argument("--min-order-value", type=float, default=1000.0,
-                       help="Minimum order value in rupees (default: 1000)")
+    parser.add_argument("--min-order-value", type=float, default=100.0,
+                       help="Minimum order value in rupees (default: 100)")
     parser.add_argument("--quiet", action="store_true", help="Run in quiet non-interactive mode (auto-select defaults)")
     parser.add_argument("--target-deficit", type=float, default=1000.0,
                        help="Target total deficit to reach before stopping (default: 1000)")
