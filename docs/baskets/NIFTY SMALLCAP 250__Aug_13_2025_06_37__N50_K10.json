@@ -1,0 +1,156 @@
+{
+  "creation_date": "2025-08-13T01:07:33.538013+00:00",
+  "invocation_id": "689be53ee4dee188324350af",
+  "stocks_ticker_candidates": [
+    "IGIL",
+    "KFINTECH",
+    "BLS",
+    "HEG",
+    "EMCURE",
+    "KPIL",
+    "ANANTRAJ",
+    "PNCINFRA",
+    "CENTURYPLY",
+    "METROPOLIS",
+    "SIGNATURE",
+    "ELGIEQUIP",
+    "TANLA",
+    "JMFINANCIL",
+    "NCC",
+    "TECHNOE",
+    "PVRINOX",
+    "ACMESOLAR",
+    "FIRSTCRY",
+    "CHALET",
+    "CAPLIPOINT",
+    "GRAVITA",
+    "PNBHOUSING",
+    "GESHIP",
+    "KAJARIACER",
+    "MASTEK",
+    "BEML",
+    "SARDAEN",
+    "INOXWIND",
+    "RAINBOW",
+    "APTUS",
+    "AADHARHFC",
+    "FACT",
+    "AKUMS",
+    "BRIGADE",
+    "TARIL",
+    "SAGILITY",
+    "WELCORP",
+    "USHAMART",
+    "TITAGARH",
+    "CANFINHOME",
+    "NBCC",
+    "GRSE",
+    "AAVAS",
+    "TRIDENT",
+    "HBLENGINE",
+    "LEMONTREE",
+    "ALOKINDS",
+    "SWSOLAR",
+    "NETWORK18"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "ALOKINDS",
+      "weight": 0.12,
+      "sources": [
+        "https://in.tradingview.com/symbols/NSE-ALOKINDS/",
+        "https://www.investing.com/indices/india-vix",
+        "https://www.capitalmarket.com/markets/news/corporate-news/alok-industries-to-conduct-board-meeting/1524079",
+        "https://upstox.com/news/market-news/stocks/alok-industries-trident-raymond-lifestyle-other-textile-shares-surge-after-us-imposes-35-tariff-on-bangladesh/article-177719/"
+      ]
+    },
+    {
+      "stock_ticker": "PNCINFRA",
+      "weight": 0.11,
+      "sources": [
+        "https://simplywall.st/stocks/in/capital-goods/nse-pncinfra/pnc-infratech-shares",
+        "http://enjoyta.com/Rie"
+      ]
+    },
+    {
+      "stock_ticker": "SWSOLAR",
+      "weight": 0.1,
+      "sources": [
+        "https://www.tradingview.com/symbols/NSE-SWSOLAR/",
+        "https://stockinvest.us/stock/SWSOLAR.NS"
+      ]
+    },
+    {
+      "stock_ticker": "INOXWIND",
+      "weight": 0.09,
+      "sources": [
+        "https://economictimes.indiatimes.com/inox-wind-ltd/stocks/companyid-32069.cms",
+        "https://www.icicidirect.com/stocks/inox-wind-ltd-share-price"
+      ]
+    },
+    {
+      "stock_ticker": "PVRINOX",
+      "weight": 0.09,
+      "sources": [
+        "https://in.tradingview.com/symbols/NSE-PVRINOX/",
+        "https://tradebrains.in/stocks-to-buy-pvr-inox-and-4-other-stocks-to-buy-for-an-upside-of-up-to-55/",
+        "https://businessnewsthisweek.com/business/pvr-inox-announces-results-for-the-quarter-ended-june-30-2025/",
+        "https://indianexpress.com/article/entertainment/bollywood/rs-1469-cr-revenue-pvr-inox-net-loss-shrinks-rs-54-cr-box-office-collections-rise-22-percent-10174009/"
+      ]
+    },
+    {
+      "stock_ticker": "SAGILITY",
+      "weight": 0.09,
+      "sources": [
+        "https://www.tradingview.com/symbols/NSE-SAGILITY/",
+        "https://simplywall.st/stocks/in/commercial-services/nse-sagility/sagility-india-shares/health",
+        "https://www.smart-investing.in/financial-ratios.php?Company=SAGILITY+INDIA+LTD&p=Total+Debt%2FEquity",
+        "https://www.investing.com/indices/india-vix",
+        "https://www.marketsmojo.com/stocks-analysis/sagility-india-10039450-0",
+        "https://www.business-standard.com/markets/sagility-india-ltd-share-price-93271.html",
+        "https://www.youtube.com/watch?v=xwwe9vrxpUc"
+      ]
+    },
+    {
+      "stock_ticker": "BLS",
+      "weight": 0.1,
+      "sources": [
+        "https://scanx.trade/stock-market-news/earnings/bls-international-reports-robust-q1-fy-26-results-with-44-revenue-growth/16451582",
+        "https://trendlyne.com/equity/share-holding/4751/BLS/latest/bls-international-services-ltd/",
+        "https://www.angelone.in/stocks/bls-international-services-ltd/shareholding"
+      ]
+    },
+    {
+      "stock_ticker": "ACMESOLAR",
+      "weight": 0.1,
+      "sources": [
+        "https://ticker.finology.in/company/ACMESOLAR",
+        "https://www.tickertape.in/stocks/acme-solar-holdings-ACMES",
+        "https://economictimes.indiatimes.com/acme-solar-holdings-ltd/stocks/companyid-67870.cms",
+        "https://www.business-standard.com/topic/acme-solar"
+      ]
+    },
+    {
+      "stock_ticker": "BEML",
+      "weight": 0.1,
+      "sources": [
+        "https://www.topstockresearch.com/rt/Financial/BEML/DebtToEquityRatio",
+        "https://blinkx.in/stocks/beml-ltd-financials",
+        "https://m.economictimes.com/markets/stocks/news/buy-sell-or-hold-antique-maintains-a-buy-on-beml-motilal-oswal-cuts-target-price-of-nippon-life-amc/articleshow/123250891.cms",
+        "https://stocktwits.com/symbol/BEML.NSE/news",
+        "https://univest.in/blogs/beml-q1-results-fy26"
+      ]
+    },
+    {
+      "stock_ticker": "SIGNATURE",
+      "weight": 0.1,
+      "sources": [
+        "https://www.financialexpress.com/market/signatureglobal-(india)-ltd-share-price/",
+        "https://www.nirmalbang.com/company/signatureglobal-ind/306733",
+        "https://trendlyne.com/equity/share-holding/1696785/SIGNATURE/latest/signatureglobal-india-ltd/"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio is strategically constructed to maximize short-term gains over a 1-week horizon, aiming to outperform broader market indices and mutual funds, while maintaining diversification and managing risk. The selection process prioritized stocks exhibiting strong positive catalysts, robust Q1 FY26 earnings, and favorable technical indicators, with a keen eye on underlying fundamental health.\n\n**Selection Strategy & Stock Merits:**\n\n1.  **High Conviction, Strong Catalysts:** Stocks like **ALOKINDS** (13.87% gain) are included due to immediate, impactful catalysts such as US tariffs on Bangladesh textiles, which directly benefit Indian textile exporters. **PNCINFRA** (9.03% gain) and **SWSOLAR** (10.19% gain) are driven by significant order book growth, successful asset monetization, and strong Q1 results, signaling a turnaround.\n2.  **Operational Turnaround & Debt Reduction:** **INOXWIND** (9.38% gain) and **BEML** (4.81% gain) are poised for recovery as they address debt concerns (INOXWIND achieving net cash status) and leverage substantial order pipelines (BEML's railway contracts). Their Q1 results, despite some challenges, indicate improving operational efficiency.\n3.  **Sectoral Tailwinds & Growth:** **PVRINOX** (8.25% gain) benefits from a robust film content pipeline and strategic initiatives driving footfalls, coupled with strong Q1 recovery. **ACMESOLAR** (6.59% gain) is a play on the booming renewable energy sector, supported by new project wins and strong Q1 performance.\n4.  **Fundamental Strength & Institutional Confidence:** **SAGILITY** (6.51% gain), **BLS** (5.93% gain), and **SIGNATURE** (4.94% gain) are chosen for their healthy balance sheets (low/no debt, no promoter pledges), consistent Q1 growth, and increasing institutional (FII/MF) interest, which provides a strong floor and upward momentum.\n\n**Diversification and Risk Management:**\n\n*   **Industry Diversification:** The basket spans diverse sectors including Textiles (**ALOKINDS**), Infrastructure/Capital Goods (**PNCINFRA, SWSOLAR, INOXWIND, BEML**), Entertainment (**PVRINOX**), IT/BPO Services (**SAGILITY, BLS**), Real Estate (**SIGNATURE**), and Renewable Energy (**ACMESOLAR**). This broad exposure mitigates sector-specific downturns.\n*   **Factor Diversification:** We balance high-growth, high-beta stocks (e.g., ALOKINDS, SWSOLAR) with fundamentally strong, more stable companies (e.g., SAGILITY, BLS) to manage overall portfolio volatility. Emphasis is placed on companies with improving financial health (debt reduction, positive cash flow) to implicitly manage risk, even for those with higher short-term volatility.\n*   **Catalyst-Driven Approach:** Each stock has a clear, near-term catalyst (Q1 results, new orders, industry shifts) that is expected to drive price appreciation within the 1-week horizon, reducing reliance on broader market sentiment alone.\n\nThis basket is positioned to capture significant short-term gains by focusing on companies with strong recent performance, clear positive catalysts, and robust underlying fundamentals, while ensuring a diversified exposure across key growth sectors of the Indian economy.",
+  "expected_gain_1w": 7.40125
+}
