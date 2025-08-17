@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlparse, quote
 
-from config.settings import settings
+from src.config.settings import settings
 from src.db.models import Basket
 from src.agents.portfolio import PortfolioAgent
 from src.utils.logging import setup_logging

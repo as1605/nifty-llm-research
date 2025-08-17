@@ -8,7 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo import MongoClient
 
-from config.settings import settings
+from src.config.settings import settings
 
 # Create MongoDB client
 client = MongoClient(settings.mongodb_uri)

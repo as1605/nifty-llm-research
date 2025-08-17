@@ -5,12 +5,11 @@ Configuration settings for the Nifty Stock Research project.
 from pathlib import Path
 from typing import List
 
-# from pydantic import BaseSettings
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
 # Base project directory
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 
 
 class Settings(BaseSettings):

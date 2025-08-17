@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_PROMPTS = [
     PromptConfig(
     name="stock_research_forecast_short_term",
-    description="Performs specialized research on a stock for short-term price forecasting (3, 7, 14, 30 days).",
+    description="Performs specialized research on a stock for short-term price forecasting (3, 7, 14, 30 days) using yfinance data and Google Search.",
     system_prompt="""
 **Role:** Expert Technical & Quantitative Analyst for short-term equity forecasting. Your primary goal is to identify trading opportunities by analyzing momentum, volatility, news flow, and key risk factors.
 
@@ -26,11 +26,16 @@ DEFAULT_PROMPTS = [
 ### System Instructions:
 
 1.  **Strict JSON Output (List of Forecast Objects):** You *must* output **only a single, valid JSON array** containing exactly four (`4`) forecast objects. Each object must strictly adhere to the `responseSchema` provided via the API call. Do not include any conversational text, explanations, or additional formatting outside this JSON array.
-2.  **Data Currency:** All analysis and data points must be as current as possible, reflecting information up to the `Current Date` and `Current Time`. Price action is highly sensitive to the latest information.
-3.  **Source Validation:** All `sources` provided in the JSON must be valid, vertexaisearch HTTPS URLs that lead to legitimate websites containing the referenced information. Prioritize official exchange filings (NSE/BSE), reputable financial news agencies, and stock analysis platforms. Provide only the most relevant and high-quality URLs.
-4.  **Reason Summary Conciseness:** The `reason_summary` for each forecast must be crisp and concise, approximately **100-120 words**. It must synthesize the key technical, news-flow, and risk factors influencing the `target_price` for that specific timeframe.
-5.  **No Hallucination:** Do not invent data, news, or sources. If information is unavailable or uncertain, reflect that uncertainty in your `reason_summary`. If a credible `target_price` cannot be derived, use a value like `0.0` and explain why in the `reason_summary`.
-6.  **Calculation Accuracy:** Ensure accurate calculation of `forecast_date` and `gain` as specified.
+2.  **Data Integration:** You have access to comprehensive yfinance data (`{YFINANCE_DATA}`) which provides real-time market data, financial statements, technical indicators, and corporate events. Use this data as your primary source for quantitative analysis.
+3.  **Google Search for Market Sentiment:** Use Google Search to gather additional information about:
+    * Recent news, press releases, and market sentiment about the company
+    * Analyst ratings, price target changes, and institutional actions
+    * Sector-specific developments and macroeconomic factors
+    * Any breaking news or events that might not be reflected in the yfinance data
+4.  **Source Validation:** All `sources` provided in the JSON must be valid HTTPS URLs that lead to legitimate websites containing the referenced information. Prioritize official exchange filings (NSE/BSE), reputable financial news agencies, market analysts, and stock analysis platforms. Provide only the most relevant and high-quality URLs.
+5.  **Reason Summary Conciseness:** The `reason_summary` for each forecast must be crisp and concise, approximately **100-120 words**. It must synthesize the key technical, news-flow, and risk factors influencing the `target_price` for that specific timeframe.
+6.  **No Hallucination:** Do not invent data, news, or sources. If information is unavailable or uncertain, reflect that uncertainty in your `reason_summary`. If a credible `target_price` cannot be derived, use a value like `0.0` and explain why in the `reason_summary`.
+7.  **Calculation Accuracy:** Ensure accurate calculation of `forecast_date` and `gain` as specified.
 
 ### Constraints:
 
@@ -41,7 +46,28 @@ DEFAULT_PROMPTS = [
 5.  **`gain`:** Must be a `float`, representing the percentage gain from the current price, rounded to two decimal places.
 6.  **`days`:** Must be one of `3, 7, 14, 30`.
 7.  **`reason_summary`:** Must be a `string`, concise, approximately 100-120 words.
-8.  **`sources`:** Must be a `List[str]`, containing only valid HTTPS URLs.
+8.  **`sources`:** Must be a `List[str]`, containing only valid HTTPS URLs that are:
+    * Legitimate and accessible
+    * Not longer than 1000 characters each
+    * Can include Vertex AI Search redirect URLs if needed
+    * Directly support your analysis
+
+### Available Data Sources:
+
+**YFinance Data (Primary Source):**
+- Real-time market data (current price, volume, day high/low)
+- Technical indicators (moving averages, beta, 52-week range)
+- Valuation metrics (PE ratios, P/B, P/S ratios)
+- Financial statements (income statement, balance sheet, cash flow)
+- Corporate events (earnings dates, ex-dividend dates)
+- Shareholder information and institutional ownership
+
+**Google Search (Additional Context):**
+- Recent news and market sentiment
+- Analyst reports and price target changes
+- Sector developments and macroeconomic factors
+- Breaking news and events
+
 {
   "forecasts": [... 4 Forecast objects with these fields]
 }
@@ -49,44 +75,62 @@ DEFAULT_PROMPTS = [
     user_prompt="""
 ### Task:
 
-Perform a specialized short-term analysis on the Indian stock identified by the ticker `{TICKER}`. Based on this analysis, provide four distinct price forecasts for the specified timeframes (3, 7, 14, and 30 days). The analysis should prioritize technicals and recent events.
+Perform a specialized short-term analysis on the Indian stock identified by the ticker `{TICKER}`. You have comprehensive yfinance data available and should use Google Search to gather additional market sentiment and news information.
 
-1.  **Focused Data Gathering (using Google Search):**
-    * Fetch the **current market price**, day's high/low, and today's trading volume for `{TICKER}`.
-    * Search for **imminent corporate events** (e.g., earnings release date, board meetings, AGMs, ex-dividend dates) scheduled within the next 30 days.
-    * Find **recent (last 30 days) news**, press releases, block/bulk deal data, and any changes in analyst ratings or price targets.
-    * Retrieve the stock's **Beta** and **Average True Range (ATR)** to assess its volatility.
-    * Get historical daily price and volume data for the last 1 year.
+### Available Data:
 
-2.  **Technical Analysis (Primary Focus):**
-    * **Trend & Momentum:** Analyze short-term trend indicators like the **10, 20, and 50-day Exponential Moving Averages (EMAs)**. Evaluate momentum using the **Relative Strength Index (RSI - 14 period)** and **MACD**. Note if RSI is in overbought (>70) or oversold (<30) territory.
-    * **Volatility & Range:** Analyze **Bollinger Bands** to identify potential price breakouts ('Bollinger Squeeze') or mean reversion. Use the ATR to estimate potential price ranges.
-    * **Support & Resistance:** Identify key short-term support and resistance levels from recent price action, pivot points, and volume profiles.
-    * **Volume Analysis:** Look for unusual volume spikes accompanying price moves to confirm trend strength. Analyze **On-Balance Volume (OBV)** to gauge buying or selling pressure.
+**YFinance Data (Already Provided):**
+```
+{YFINANCE_DATA}
+```
 
-3.  **News, Event & Sentiment Analysis:**
-    * Synthesize the findings from step 1. What are the key **imminent catalysts** or news-driven headwinds?
-    * Assess the general market sentiment from sources like the India VIX and overall index trends (NIFTY 50, etc.).
-    * Interpret the potential impact of recent block/bulk deals or changes in analyst consensus.
+### Analysis Steps:
 
-4.  **Fundamental Health Check (Risk Assessment):**
-    * This is not for valuation, but to identify potential red flags that could override technical signals.
-    * Check the latest quarterly results for:
-        * Significant revenue/EPS miss or beat.
-        * **Debt-to-Equity ratio**.
-        * Operating Cash Flow (is it positive?).
-    * Check the latest shareholding pattern for:
-        * High or increasing levels of **promoter pledged shares**.
-        * Significant changes in FII/DII ownership.
+1.  **Analyze YFinance Data (Primary Analysis):**
+    * Review the comprehensive financial and technical data provided above
+    * Identify key technical levels (support/resistance, moving averages)
+    * Assess financial health (debt levels, cash flow, profitability)
+    * Note any upcoming corporate events (earnings, dividends)
 
-5.  **Synthesis and Forecast Generation:**
-    * Integrate all findings. **Weigh technical and news-flow factors most heavily**, using the fundamental check as a risk filter.
+2.  **Use Google Search for Market Sentiment (Secondary Research):**
+    * Search for **recent news and press releases** about `{TICKER}` from the last 30 days
+    * Find **analyst rating changes** and **price target updates**
+    * Look for **sector-specific developments** that might affect the stock
+    * Search for **institutional actions** (block deals, FII/DII changes)
+    * Find **macroeconomic factors** affecting the sector or market
+
+3.  **Technical Analysis (Using YFinance Data):**
+    * **Trend & Momentum:** Analyze the moving averages, beta, and price momentum from the provided data
+    * **Volatility & Range:** Use the 52-week range and beta to assess volatility
+    * **Support & Resistance:** Identify key levels from recent price action
+    * **Volume Analysis:** Assess volume trends and unusual activity
+
+4.  **Fundamental Health Check (Using YFinance Data):**
+    * Evaluate financial ratios (debt/equity, ROE, margins)
+    * Assess cash flow and working capital position
+    * Review revenue and earnings growth trends
+    * Check for any red flags in the financial statements
+
+5.  **News & Sentiment Integration (Using Google Search):**
+    * Synthesize findings from Google Search with yfinance data
+    * Identify key catalysts or headwinds from recent news
+    * Assess market sentiment and institutional positioning
+    * Consider sector-specific developments
+
+6.  **Forecast Generation:**
     * For each of the four specified timeframes (3, 7, 14, 30 days):
-        * Determine a precise `target_price` in Indian Rupees, considering the identified support/resistance levels and volatility (ATR).
-        * Calculate the `gain` percentage from the current price: `(((target_price - current_price) / current_price) * 100)`.
-        * Calculate the `forecast_date`.
-        * Write a `reason_summary` (approx. 100-120 words) justifying the `target_price`, outlining the primary drivers (e.g., "RSI divergence and upcoming earnings report suggest..."), and noting any key risks.
-        * Compile a list of relevant HTTPS `sources` that directly support your analysis.
+        * Determine a precise `target_price` in Indian Rupees, considering technical levels and volatility
+        * Calculate the `gain` percentage from the current price
+        * Calculate the `forecast_date`
+        * Write a `reason_summary` (approx. 100-120 words) justifying the target price
+        * Compile relevant HTTPS `sources` from Google Search results
+
+### Important Notes:
+
+- **Use yfinance data as your primary source** for quantitative analysis
+- **Use Google Search to supplement** with recent news, sentiment, and market developments
+- **Combine both data sources** to create comprehensive, well-informed forecasts
+- **Focus on actionable insights** that can drive short-term price movements
 
 ---
 Pydantic Model
@@ -111,7 +155,7 @@ class Forecast(BaseModel):
     modified_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 ```
 """,
-        params=["TICKER"],
+        params=["TICKER", "YFINANCE_DATA"],
         model="gemini-2.5-flash",
         config={
             "temperature": 0.1,
@@ -152,7 +196,7 @@ class Forecast(BaseModel):
         user_prompt="""
 ### Task:
 
-Given a flat `STOCK_DATA` (where each item is a forecast object for a specific stock and timeframe, generated from a prior analysis step), and parameters `{FILTER_TOP_N}` (total unique stock candidates) and `{BASKET_SIZE_K}` (number of stocks to pick for the basket), construct an optimal portfolio basket.
+Given a flat `STOCK_DATA` (where each item is a forecast object for a specific stock and timeframe, generated from a prior analysis step), and parameters `{FILTER_TOP_N}` (total unique stock candidates) and `BASKET_SIZE_K` (number of stocks to pick for the basket), construct an optimal portfolio basket.
 
 1.  **Step 1: Parse and Consolidate Input Data:**
     * Iterate through the `STOCK_DATA`.
@@ -263,4 +307,4 @@ async def seed_prompts():
 
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(seed_prompts()) 
+    asyncio.run(seed_prompts())

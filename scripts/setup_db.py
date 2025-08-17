@@ -6,7 +6,7 @@ Script for setting up the MongoDB database indexes.
 import logging
 import asyncio
 
-from config.settings import settings
+from src.config.settings import settings
 from src.db.database import setup_indexes, async_db, COLLECTIONS
 from scripts.seed_prompts import seed_prompts
 from src.utils.logging import setup_logging

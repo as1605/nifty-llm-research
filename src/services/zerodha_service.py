@@ -6,20 +6,16 @@ import asyncio
 import base64
 import json
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
-import webbrowser
-from urllib.parse import urlencode
+from typing import Dict, List, Optional
 
 from cryptography.fernet import Fernet
-from fastapi import FastAPI, HTTPException, Request
 from kiteconnect import KiteConnect
-import yfinance as yf
-import uvicorn
 
-from config.settings import settings
+from src.config.settings import settings
 from src.db.database import db, COLLECTIONS
 from src.db.models import ZerodhaToken
 from src.utils.logging import get_logger
+from src.services.yfinance_service import YFinanceService
 
 logger = get_logger(__name__)
 
@@ -46,6 +42,7 @@ class ZerodhaService:
         self.fernet = Fernet(self.encryption_key)
         self.kite = None
         self.redirect_url = "http://localhost:8080/callback"
+        self.yfinance_service = YFinanceService()
         
     def _encrypt_token(self, token: str) -> str:
         """Encrypt access token for storage."""
@@ -234,7 +231,7 @@ class ZerodhaService:
             raise
     
     async def get_ltp(self, user_id: str, instruments: List[str]) -> Dict:
-        """Get Last Traded Price (LTP) for given instruments using yfinance fast_info.
+        """Get Last Traded Price (LTP) for given instruments using the yfinance service.
 
         Input instruments are expected as ["NSE:RELIANCE", "BSE:SBIN", ...].
         Returns a dict like {"NSE:RELIANCE": {"last_price": 1234.5}, ...}.
@@ -247,28 +244,29 @@ class ZerodhaService:
             except ValueError:
                 return None
             exchange = exchange.upper().strip()
-            suffix = ".NS" if exchange == "NSE" else ".BO" if exchange == "BSE" else None
-            if not suffix:
+            # For NSE stocks, just return the symbol (yfinance service will add .NS)
+            # For BSE stocks, return with .BO suffix
+            if exchange == "NSE":
+                return symbol.strip()
+            elif exchange == "BSE":
+                return f"{symbol.strip()}.BO"
+            else:
                 return None
-            return f"{symbol}{suffix}"
 
         for inst in instruments:
             yf_symbol = to_yf_symbol(inst)
             if not yf_symbol:
+                logger.warning(f"Invalid instrument format: {inst}")
                 continue
+                
             try:
-                tkr = yf.Ticker(yf_symbol)
-                fast = getattr(tkr, "fast_info", {}) or {}
-                price = None
-                # Try both canonical keys
-                if isinstance(fast, dict):
-                    price = fast.get("last_price") or fast.get("lastPrice")
-                # Fallback to info if needed
-                if price is None:
-                    info = getattr(tkr, "info", {}) or {}
-                    price = info.get("regularMarketPrice") or info.get("currentPrice")
-                if price is not None:
-                    results[inst] = {"last_price": float(price)}
+                # Use the yfinance service to get LTP
+                ltp = self.yfinance_service.get_stock_ltp(yf_symbol)
+                if ltp is not None:
+                    results[inst] = {"last_price": ltp}
+                    logger.debug(f"Successfully fetched LTP for {inst} ({yf_symbol}): ₹{ltp}")
+                else:
+                    logger.warning(f"No LTP available for {inst} ({yf_symbol})")
             except Exception as e:
                 logger.warning(f"yfinance LTP fetch failed for {inst} ({yf_symbol}): {e}")
                 continue
@@ -276,98 +274,9 @@ class ZerodhaService:
         return results
 
 
-async def start_auth_server() -> Tuple[str, asyncio.Event]:
-    """Start FastAPI server for OAuth callback and return user_id when authentication completes."""
-    app = FastAPI()
-    auth_complete = asyncio.Event()
-    user_id_result = {"user_id": None, "error": None}
-    zerodha_service = ZerodhaService()
-    
-    @app.get("/callback")
-    async def callback(request: Request):
-        """Handle OAuth callback from Zerodha."""
-        request_token = request.query_params.get("request_token")
-        
-        if not request_token:
-            error_msg = "No request token received"
-            user_id_result["error"] = error_msg
-            auth_complete.set()
-            return {"error": error_msg}
-        
-        try:
-            user_id = await zerodha_service.authenticate(request_token)
-            user_id_result["user_id"] = user_id
-            auth_complete.set()
-            return {"success": True, "user_id": user_id, "message": "Authentication successful! You can close this tab."}
-            
-        except Exception as e:
-            error_msg = f"Authentication failed: {e}"
-            user_id_result["error"] = error_msg
-            auth_complete.set()
-            return {"error": error_msg}
-    
-    @app.get("/")
-    async def root():
-        return {"message": "Zerodha OAuth callback server is running"}
-    
-    # Start server in background
-    config = uvicorn.Config(app, host="localhost", port=8080, log_level="error")
-    server = uvicorn.Server(config)
-    
-    async def run_server():
-        await server.serve()
-    
-    # Start server as background task
-    server_task = asyncio.create_task(run_server())
-    
-    # Wait a moment for server to start
-    await asyncio.sleep(1)
-    
-    return user_id_result, auth_complete, server_task
-
-
+# Authentication functions are now in src.services.auth_server
+# Import and re-export for backward compatibility
 async def authenticate_user(quiet: bool = False) -> str:
     """Complete authentication flow and return user_id."""
-    zerodha_service = ZerodhaService()
-    
-    if not quiet:
-        print("Starting Zerodha authentication...")
-        print("=" * 60)
-    
-    # Start the callback server
-    user_id_result, auth_complete, server_task = await start_auth_server()
-    
-    # Generate and display login URL
-    login_url = zerodha_service.get_login_url()
-    if not quiet:
-        print(f"Please click the following link to authenticate with Zerodha:")
-        print(f"\n🔗 {login_url}\n")
-    
-    # Try to open browser automatically
-    try:
-        webbrowser.open(login_url)
-        if not quiet:
-            print("✅ Browser opened automatically")
-    except:
-        if not quiet:
-            print("❌ Could not open browser automatically")
-    
-    if not quiet:
-        print("Waiting for authentication to complete...")
-        print("(The browser will redirect to localhost:8080 after login)")
-    
-    # Wait for authentication to complete
-    await auth_complete.wait()
-    
-    # Stop the server
-    server_task.cancel()
-    
-    if user_id_result["error"]:
-        raise Exception(user_id_result["error"])
-    
-    user_id = user_id_result["user_id"]
-    if not quiet:
-        print(f"✅ Authentication successful! User ID: {user_id}")
-        print("=" * 60)
-    
-    return user_id 
+    from src.services.auth_server import authenticate_user as auth_user
+    return await auth_user(quiet) 

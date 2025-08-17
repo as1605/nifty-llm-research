@@ -101,7 +101,7 @@ See the dedicated guide: [Rebalancing README](README_REBALANCING.md).
 
 - **Access token flow**: Secure OAuth via a local FastAPI callback server; tokens are encrypted and stored in MongoDB
 - **Market-hour handling**: If outside 9:15–15:30 IST, the script waits until 09:14 IST, then retries rapidly until market open; if between 09:14 and 09:15, it starts immediately
-- **Prices**: Uses yfinance `fast_info` for last price with exchange-aware mapping (`NSE:TICKER` → `TICKER.NS`, `BSE:TICKER` → `TICKER.BO`)
+- **Prices**: Uses yfinance service for last price with automatic symbol normalization (`NSE:TICKER` → `TICKER.NS`, `BSE:TICKER` → `TICKER.BO`)
 - **Portfolio value**: Holdings use `last_price × opening_quantity`; positions use `last_price × quantity × multiplier`; available cash uses `margins.equity.net`
 - **Order strategy**: Prioritizes biggest deficits first, places MARKET CNC orders on NSE; exponential backoff on transient errors
 - **Iterative convergence**: Computes total deficit (sum of absolute diffs from targets) and repeats up to 10 iterations until total deficit ≤ `--target-deficit` (dry-run performs a single iteration)

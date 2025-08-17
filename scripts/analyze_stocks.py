@@ -11,7 +11,7 @@ import requests
 from urllib.parse import quote
 from typing import List, Dict, Any
 
-from config.settings import settings
+from src.config.settings import settings
 from src.agents.stock_research import StockResearchAgent
 from src.db.database import COLLECTIONS
 from src.db.database import async_db

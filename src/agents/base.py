@@ -19,7 +19,7 @@ from src.db.database import async_db
 from src.db.models import Invocation
 from src.db.models import PromptConfig
 
-from config.settings import settings
+from src.config.settings import settings
 
 # Configure logging
 logger = logging.getLogger(__name__)

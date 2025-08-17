@@ -24,7 +24,7 @@ from zoneinfo import ZoneInfo
 # Add src to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
-from config.settings import settings
+from src.config.settings import settings
 from src.services.zerodha_service import ZerodhaService, authenticate_user
 from src.utils.logging import get_logger
 
