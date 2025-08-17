@@ -1,0 +1,165 @@
+{
+  "creation_date": "2025-08-17T21:47:43.270677+00:00",
+  "invocation_id": "68a24dea576ff2c85ac14e1c",
+  "stocks_ticker_candidates": [
+    "CENTURYPLY",
+    "IIFL",
+    "HEG",
+    "SAILIFE",
+    "SWSOLAR",
+    "BEML",
+    "FIRSTCRY",
+    "SHYAMMETL",
+    "SUNDRMFAST",
+    "ACMESOLAR",
+    "INOXWIND",
+    "SAGILITY",
+    "BRIGADE",
+    "CAPLIPOINT",
+    "TANLA",
+    "PNCINFRA",
+    "JMFINANCIL",
+    "SUMICHEM",
+    "CANFINHOME",
+    "PNBHOUSING",
+    "KPIL",
+    "AKUMS",
+    "IGIL",
+    "RAYMOND",
+    "TITAGARH",
+    "WELCORP",
+    "SIGNATURE",
+    "HBLENGINE",
+    "HONASA",
+    "AAVAS",
+    "PVRINOX",
+    "BLS",
+    "TECHNOE",
+    "AADHARHFC",
+    "TRIDENT",
+    "APTUS",
+    "SBFC",
+    "CHALET",
+    "EMCURE",
+    "GRAVITA",
+    "USHAMART",
+    "TARIL",
+    "SYRMA",
+    "CGCL",
+    "KEC",
+    "CHOLAHLDNG",
+    "GRSE",
+    "MINDACORP",
+    "UCOBANK",
+    "SARDAEN"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "PVRINOX",
+      "weight": 0.12,
+      "sources": [
+        "https://in.tradingview.com/symbols/NSE-PVRINOX/",
+        "https://tradebrains.in/stocks-to-buy-pvr-inox-and-4-other-stocks-to-buy-for-an-upside-of-up-to-55/",
+        "https://businessnewsthisweek.com/business/pvr-inox-announces-results-for-the-quarter-ended-june-30-2025/",
+        "https://indianexpress.com/article/entertainment/bollywood/rs-1469-cr-revenue-pvr-inox-net-loss-shrinks-rs-54-cr-box-office-collections-rise-22-percent-10174009/"
+      ]
+    },
+    {
+      "stock_ticker": "INOXWIND",
+      "weight": 0.11,
+      "sources": [
+        "https://economictimes.indiatimes.com/inox-wind-ltd/stocks/companyid-32069.cms",
+        "https://www.icicidirect.com/stocks/inox-wind-ltd-share-price"
+      ]
+    },
+    {
+      "stock_ticker": "PNCINFRA",
+      "weight": 0.1,
+      "sources": [
+        "https://simplywall.st/stocks/in/capital-goods/nse-pncinfra/pnc-infratech-shares",
+        "http://enjoyta.com/Rie"
+      ]
+    },
+    {
+      "stock_ticker": "ACMESOLAR",
+      "weight": 0.1,
+      "sources": [
+        "https://ticker.finology.in/company/ACMESOLAR",
+        "https://www.tickertape.in/stocks/acme-solar-holdings-ACMES",
+        "https://economictimes.indiatimes.com/acme-solar-holdings-ltd/stocks/companyid-67870.cms",
+        "https://www.business-standard.com/topic/acme-solar"
+      ]
+    },
+    {
+      "stock_ticker": "TANLA",
+      "weight": 0.09,
+      "sources": [
+        "https://www.tanla.com/newsroom/results-q1-fy26",
+        "https://getmoneyrich.com/analysis-of-tanla-platforms-after-q1-fy26-update/",
+        "https://www.topstockresearch.com/rt/Financial/TANLA/DebtToEquityRatio",
+        "https://simplywall.st/stocks/in/software/nse-tanla/tanla-platforms-shares/health",
+        "https://economictimes.indiatimes.com/tanla-platforms-ltd/stocks/companyid-5351.cms"
+      ]
+    },
+    {
+      "stock_ticker": "BLS",
+      "weight": 0.09,
+      "sources": [
+        "https://www.business-standard.com/markets/bls-international-services-ltd-share-price-22535.html",
+        "https://trendlyne.com/equity/share-holding/4751/BLS/latest/bls-international-services-ltd/",
+        "https://www.angelone.in/stocks/bls-international-services-ltd/shareholding",
+        "https://www.livemint.com/market/market-stats/stocks-bls-international-services-share-price-nse-bse-s0004039",
+        "https://simplywall.st/stocks/in/commercial-services/nse-bls/bls-international-services-shares/health",
+        "https://ticker.finology.in/company/BLS",
+        "https://uk.marketscreener.com/quote/stock/BLS-INTERNATIONAL-SERVICE-35005615/quotes/"
+      ]
+    },
+    {
+      "stock_ticker": "TRIDENT",
+      "weight": 0.09,
+      "sources": [
+        "https://www.fibre2fashion.com/news/textile-news/india-s-trident-posts-207-24-mn-revenue-in-q1-ebitda-jumps-18--304225-newsdetails.htm",
+        "https://www.topstockresearch.com/rt/Financial/TRIDENT/DebtToEquityRatio",
+        "https://www.fashionatingworld.com/new1-2/trident-reports-rs-1-727-crore-revenues-in-q1-fy26",
+        "https://www.obnews.co/Index/newsDetail/id/11472539.html?val=7d0a906640af9a177807a0cd00fd4aa9",
+        "https://economictimes.indiatimes.com/trident-ltd/stocks/companyid-11163.cms",
+        "https://www.livemint.com/market/stock-market-news/nifty-50-sensex-today-what-to-expect-from-indian-stock-market-on-august-12-after-us-china-tariff-truce-extension-11754936865105.html"
+      ]
+    },
+    {
+      "stock_ticker": "HONASA",
+      "weight": 0.09,
+      "sources": [
+        "https://www.indmoney.com/stocks/honasa-consumer-ltd-share-price",
+        "https://economictimes.indiatimes.com/honasa-consumer-ltd/stocks/companyid-2023293.cms",
+        "https://simplywall.st/stocks/in/household/nse-honasa/honasa-consumer-shares/health",
+        "https://www.investing.com/equities/honasa-consumer",
+        "https://www.livemint.com/companies/honasa-consumer-q1-results-mamaearth-sunscreen-market-quick-commerce-margins-distribution-overhaul-11755007783070.html"
+      ]
+    },
+    {
+      "stock_ticker": "SAGILITY",
+      "weight": 0.1,
+      "sources": [
+        "https://www.tradingview.com/symbols/NSE-SAGILITY/",
+        "https://simplywall.st/stocks/in/commercial-services/nse-sagility/sagility-india-shares/health",
+        "https://www.smart-investing.in/financial-ratios.php?Company=SAGILITY+INDIA+LTD&p=Total+Debt%2FEquity",
+        "https://www.investing.com/indices/india-vix",
+        "https://www.marketsmojo.com/stocks-analysis/sagility-india-10039450-0",
+        "https://www.business-standard.com/markets/sagility-india-ltd-share-price-93271.html",
+        "https://www.youtube.com/watch?v=xwwe9vrxpUc"
+      ]
+    },
+    {
+      "stock_ticker": "TARIL",
+      "weight": 0.1,
+      "sources": [
+        "https://in.tradingview.com/symbols/NSE-TARIL/",
+        "https://www.indmoney.com/stocks/transformers-and-rectifiers-india-ltd-share-price",
+        "https://www.livemint.com/market/market-stats/transformers-and-rectifiers-in-q1-results-s0003602"
+      ]
+    }
+  ],
+  "reason_summary": "The portfolio basket for the next 1-week horizon is strategically constructed to maximize short-term gains while ensuring diversification and managing risk, aiming to outperform broader market indices. The selection process prioritized stocks exhibiting strong positive catalysts, robust Q1 FY26 financial performance, and favorable industry tailwinds, with a keen eye on technical indicators and analyst sentiment.\n\n**PVRINOX (Entertainment):** Selected for its strong Q1 FY26 recovery, significant debt reduction, and optimistic outlook on content pipeline. Its high beta allows it to capitalize on positive market sentiment, driving gains as footfalls and advertising revenues improve.\n\n**INOXWIND (Renewable Energy - Wind):** Included due to its impressive Q1 FY26 profit surge, substantial debt reduction from the IWEL merger, and a healthy order book. The positive long-term outlook for India's wind energy sector provides a strong macro tailwind.\n\n**PNCINFRA (Infrastructure):** Chosen for its diversified and robust order book (over \u20b922,000 crores, including solar and mining projects) and improved financial health through asset monetization. India's infrastructure growth provides a strong sectoral backdrop.\n\n**ACMESOLAR (Renewable Energy - Solar):** A high-conviction pick due to significant debt funding for greenfield projects, strong Q1 FY26 results, and aggressive capacity expansion plans. The booming Indian solar sector offers substantial growth potential.\n\n**TANLA (Software/CPaaS):** Despite a Q1 profit dip, its ongoing share buyback at a premium, commercial launch of an AI-native platform, and a virtually debt-free status make it attractive. The high growth of the Indian CPaaS market is a key driver.\n\n**BLS (Commercial Services):** Included for its robust Q1 FY26 performance in visa and digital services, asset-light model, and strategic global expansion. Increasing travel demand and strong institutional confidence support its upward trajectory.\n\n**TRIDENT (Textiles):** Selected for its strong Q1 FY26 profit growth, improved debt metrics, and the positive demand outlook for the Indian textile sector. Its healthy balance sheet and high promoter holding provide stability.\n\n**HONASA (FMCG/Beauty & Personal Care):** Chosen for its positive Q1 FY26 results (narrowed losses, positive free cash flow), strong brand portfolio, and expansion in the rapidly growing Indian beauty market. Analyst optimism reinforces its potential.\n\n**SAGILITY (Healthcare IT/BPO):** A strong performer with robust Q1 FY26 revenue and earnings growth, operating in the booming Indian healthcare IT sector. Its healthy balance sheet and increasing institutional ownership signal sustained confidence.\n\n**TARIL (Electrical Equipment):** Included for its impressive Q1 FY26 profit surge, robust unexecuted order book, and strategic backward integration. The strong growth in India's electrical equipment market, driven by infrastructure, provides a significant tailwind.\n\nThis basket achieves diversification across key growth sectors like renewable energy, infrastructure, technology, consumer discretionary, and industrials, mitigating sector-specific risks. The selected stocks generally exhibit strong Q1 FY26 performance, healthy balance sheets (low debt or improving debt profiles), and positive analyst sentiment, positioning the portfolio to capture short-term alpha and outperform market benchmarks.",
+  "expected_gain_1w": 6.498183333333333
+}
