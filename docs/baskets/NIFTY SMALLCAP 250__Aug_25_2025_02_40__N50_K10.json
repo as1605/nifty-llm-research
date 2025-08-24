@@ -1,0 +1,158 @@
+{
+  "creation_date": "2025-08-24T21:10:11.857554+00:00",
+  "invocation_id": "68ab7f9d67e0f170a6ab25db",
+  "stocks_ticker_candidates": [
+    "RAYMOND",
+    "JMFINANCIL",
+    "SAGILITY",
+    "PGEL",
+    "APTUS",
+    "AFCONS",
+    "RPOWER",
+    "NSLNISP",
+    "MASTEK",
+    "INDIAMART",
+    "AARTIIND",
+    "TITAGARH",
+    "GODFRYPHLP",
+    "EIHOTEL",
+    "HFCL",
+    "FACT",
+    "DBREALTY",
+    "SCI",
+    "TECHNOE",
+    "DOMS",
+    "NUVAMA",
+    "LATENTVIEW",
+    "RAYMONDLSL",
+    "SOBHA",
+    "SWANENERGY",
+    "GPIL",
+    "CESC",
+    "FIRSTCRY",
+    "GRSE",
+    "OLECTRA",
+    "SIGNATURE",
+    "PTCIL",
+    "ACMESOLAR",
+    "CAPLIPOINT",
+    "SUMICHEM",
+    "INOXWIND",
+    "SARDAEN",
+    "IOB",
+    "CUB",
+    "SWSOLAR",
+    "TRIDENT",
+    "TARIL",
+    "GSPL",
+    "USHAMART",
+    "PVRINOX",
+    "PNBHOUSING",
+    "IDBI",
+    "GRAVITA",
+    "JWL",
+    "GRANULES"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "SAGILITY",
+      "weight": 0.11,
+      "sources": [
+        "https://www.ndtvprofit.com/markets/sagility-india-shares-in-focus-as-kotak-securities-initiates-coverage-with-buy-rating",
+        "https://www.alphaspread.com/security/nse/sagility/analyst-estimates"
+      ]
+    },
+    {
+      "stock_ticker": "PTCIL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.ptcil.com/PDF/Investors/press-releases/2024/PTC-Industries-Reports-Q1-FY25-Consolidated-Financial-Results.pdf",
+        "https://www.angelone.in/news/share-market/ptc-industries-q1-fy25-results-income-falls",
+        "https://mobilityforesights.com/product/india-metal-fabrication-market",
+        "https://scanx.trade/stock-market-news/earnings/ptc-industries-reports-113-revenue-surge-in-q1-bolstered-by-aerolloy-technologies-performance/16385785",
+        "https://upstox.com/news/market-news/stocks/ptc-industries-shares-in-focus-company-wins-100-crore-order-from-brah-mos-aerospace/article-180090/",
+        "https://hdfcsky.com/news/ptc-industries-shares-surge-over-3-percent-after-securing-rs-110-crore"
+      ]
+    },
+    {
+      "stock_ticker": "DBREALTY",
+      "weight": 0.1,
+      "sources": [
+        "https://www.marketsmojo.com/news/result-analysis/valor-estate-reports-2529-increase-in-net-sales-and-positive-profit-after-tax-in-june-2025-3397481",
+        "https://scanx.trade/stock-market-news/earnings/valor-estate-reports-record-840-crore-q1-revenue-completes-hospitality-demerger/16741963",
+        "https://m.economictimes.com/industry/services/property-/-cstruction/outlook-2025-indian-real-estate-poised-for-consolidation-and-innovation/articleshow/116359479.cms",
+        "https://www.outlookbusiness.com/corporate/realtors-financial-institutions-bullish-on-growth-in-indian-real-estate-for-jul-dec-period-report"
+      ]
+    },
+    {
+      "stock_ticker": "SWSOLAR",
+      "weight": 0.09,
+      "sources": [
+        "https://www.mordorintelligence.com/industry-reports/india-solar-energy-market",
+        "https://www.psmarketresearch.com/market-analysis/india-solar-energy-market",
+        "https://www.sterlingandwilsonre.com/media",
+        "https://economictimes.indiatimes.com/sterling-and-wilson-renewable-energy-ltd/stocksupdate/companyid-1944712.cms",
+        "https://m.economictimes.com/markets/stocks/earnings/sterling-and-wilson-q1-results-cons-pat-skyrockets-680-yoy-to-rs-39-crore-revenue-soars-93/articleshow/122646733.cms"
+      ]
+    },
+    {
+      "stock_ticker": "GPIL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.goindiastocks.in/GIA/NewsDetailStock?Id=760",
+        "https://bharatneeti.com/godawari-power-ispat-q1fy26-ebitda-margin-pat-margin-stands-strong-at-24-16-respectively/",
+        "https://munafasutra.com/nse/forecast/GPIL",
+        "https://www.moneylife.in/article/india-moves-to-shield-steel-industry-from-import-surge-with-3year-tariffs/77996.html",
+        "https://www.marketsmojo.com/stocks-analysis/godawari-power-761113-0"
+      ]
+    },
+    {
+      "stock_ticker": "JMFINANCIL",
+      "weight": 0.11,
+      "sources": [
+        "https://www.angelone.in/news/market-updates/jm-financial-q1-fy26-earnings-results-posted-net-profit-of-rs-454-crore",
+        "https://m.economictimes.com/markets/stocks/earnings/jm-financial-q1-profit-jumps-166-pc-to-rs-454-crore/articleshow/123240214.cms",
+        "https://in.investing.com/equities/jm-financial-technical",
+        "https://www.tradingview.com/symbols/NSE-JMFINANCIL/technicals/",
+        "https://www.business-standard.com/companies/news/jm-financial-unit-to-sell-2-1-stake-in-jmfhll-to-bajaj-allianz-life-125081000399_1.html"
+      ]
+    },
+    {
+      "stock_ticker": "CAPLIPOINT",
+      "weight": 0.09,
+      "sources": [
+        "https://www.marketsmojo.com/news/result-analysis/caplin-point-laboratories-reports-record-net-sales-of-rs-51022-crore-in-august-2025-3356391",
+        "https://trendlyne.com/equity/share-holding/237/CAPLIPOINT/latest/caplin-point-laboratories-ltd/",
+        "https://indiaemployerforum.org/world-of-work/pharma-industry-in-india-2025-2030/"
+      ]
+    },
+    {
+      "stock_ticker": "EIHOTEL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.hrawi.com/(S(emskgwprs4cgwxhj5krdqarl))/News/2045654233_India%E2%80%99s-Hospitality-Sector-Ey.pdf",
+        "https://scanx.trade/stock-market-news/earnings/eih-limited-reports-strong-q1-performance-despite-geopolitical-challenges/16636813"
+      ]
+    },
+    {
+      "stock_ticker": "JWL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.business-standard.com/markets/jupiter-wagons-ltd-share-price-39220.html",
+        "https://simplywall.st/stocks/in/capital-goods/nse-jwl/jupiter-wagons-shares/ownership",
+        "https://www.indmoney.com/stocks/jupiter-wagons-ltd-share-price",
+        "https://www.businesstoday.in/markets/stocks/story/vande-bharat-jupiter-wagons-share-jumps-13-on-rs-215-crore-wheelset-order-490404-2025-08-21"
+      ]
+    },
+    {
+      "stock_ticker": "IDBI",
+      "weight": 0.1,
+      "sources": [
+        "https://www.angelone.in/news/market-updates/idbi-bank-shares-surge-9-percent-as-divestment-nears-key-milestone",
+        "https://scanx.trade/stock-market-news/corporate-actions/idbi-bank-sale-process-advances-as-due-diligence-nears-completion/17310047"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio basket is strategically constructed to maximize short-term gains over the next 1-week horizon, aiming to outperform broader market indices and mutual funds. The selection process prioritized stocks exhibiting strong fundamental catalysts, robust Q1 FY26 earnings, positive analyst sentiment, and favorable sector tailwinds, while ensuring diversification and managing risk.\n\n**Selection Strategy & Individual Merits:**\n\n1.  **SAGILITY (8.55% gain):** Chosen for strong 'Buy' ratings from analysts like Kotak Securities and increasing institutional interest in Q1 FY26, indicating sustained buying momentum in the healthcare IT sector.\n2.  **PTCIL (7.30% gain):** Driven by the significant \u20b9110 crore BrahMos Aerospace order and strategic advancements in aerospace and defense, supported by growing institutional confidence.\n3.  **DBREALTY (7.67% gain):** Selected due to a strong Q1 FY26 turnaround, improved profitability, reduced debt, and a positive outlook for the Indian real estate sector.\n4.  **SWSOLAR (6.93% gain):** Included for robust Q1 FY26 performance, continuous project wins, and significant growth projections in the Indian solar energy sector.\n5.  **GPIL (8.97% gain):** Benefits from bullish technicals, strategic \u20b91,600 crore capex for diversification into value-added steel and battery storage, and government support for the steel sector.\n6.  **JMFINANCIL (7.76% gain):** Driven by robust Q1 FY26 earnings (166% YoY profit increase), 'Strong Buy' technical signals, and a positive outlook for Indian capital markets.\n7.  **CAPLIPOINT (6.06% gain):** Strong Q1 FY26 earnings, increasing institutional holdings, and a robust Indian pharmaceutical sector outlook provide solid fundamental backing.\n8.  **EIHOTEL (8.60% gain):** Poised for gains due to strong Q1 operational performance, ambitious expansion plans, and a positive outlook for the Indian hospitality sector.\n9.  **JWL (7.13% gain):** Supported by the recent \u20b9215 crore Vande Bharat order, a substantial overall order book, and positive long-term prospects for the Indian railway sector.\n10. **IDBI (5.37% gain):** Fueled by ongoing privatization momentum, SEBI approval for LIC's reclassification, and strong Q1 FY26 financial results.\n\n**Diversification and Risk Management:**\n\nThis basket achieves diversification across several high-growth sectors, including Healthcare IT (SAGILITY), Defense/Metal Fabrication (PTCIL), Real Estate (DBREALTY), Renewable Energy (SWSOLAR, ACMESOLAR), Steel (GPIL), Financial Services (JMFINANCIL, IDBI), Pharma (CAPLIPOINT), Hospitality (EIHOTEL), and Capital Goods/Railways (JWL). This mix mitigates sector-specific risks. While the focus is on short-term gains, stocks with highly speculative `reason_summary` or unmitigated short-term risks were avoided. The chosen stocks generally have strong underlying fundamentals, positive analyst sentiment, and clear catalysts, balancing high-conviction growth with a degree of stability. The weighting strategy assigns slightly higher weights to stocks with higher conviction and immediate catalysts, while maintaining a balanced exposure to ensure no single stock dominates the portfolio, thus managing concentration risk. The sum of weights is precisely 1.0, ensuring a fully allocated portfolio.",
+  "expected_gain_1w": 7.4672
+}
