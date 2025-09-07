@@ -1,0 +1,166 @@
+{
+  "creation_date": "2025-09-07T23:19:53.966822+00:00",
+  "invocation_id": "68be130296b9eb0cdcbd9880",
+  "stocks_ticker_candidates": [
+    "INOXWIND",
+    "GRAVITA",
+    "AKUMS",
+    "JINDALSAW",
+    "JKTYRE",
+    "BATAINDIA",
+    "SOBHA",
+    "SARDAEN",
+    "RTNINDIA",
+    "BEML",
+    "RPOWER",
+    "SIGNATURE",
+    "J&KBANK",
+    "DOMS",
+    "CUB",
+    "NSLNISP",
+    "BALRAMCHIN",
+    "POLYMED",
+    "HEG",
+    "RAYMOND",
+    "ATUL",
+    "SYRMA",
+    "BLS",
+    "ACMESOLAR",
+    "NUVAMA",
+    "HOMEFIRST",
+    "DELHIVERY",
+    "PGEL",
+    "JBCHEPHARM",
+    "FIVESTAR",
+    "PNBHOUSING",
+    "NBCC",
+    "SBFC",
+    "PVRINOX",
+    "TANLA",
+    "CAMPUS",
+    "ZENTEC",
+    "PNCINFRA",
+    "IGIL",
+    "NCC",
+    "SWSOLAR",
+    "JMFINANCIL",
+    "JUBLINGREA",
+    "FIRSTCRY",
+    "PPLPHARMA",
+    "AMBER",
+    "TARIL",
+    "JPPOWER",
+    "NEULANDLAB",
+    "MAHSEAMLES"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "FIRSTCRY",
+      "weight": 0.11,
+      "sources": [
+        "https://www.motilaloswal.com/news/stocks/101123",
+        "https://upstox.com/news/market-news/stocks/brainbees-solutions-share-price-first-cry-parent-s-stock-rises-over-12-check-key-details/article-180780/"
+      ]
+    },
+    {
+      "stock_ticker": "AMBER",
+      "weight": 0.11,
+      "sources": [
+        "https://www.ndtvprofit.com/quarterly-earnings/amber-enterprises-q1-results-net-profit-rises-43-to-rs-104-crore-beats-estimates",
+        "https://m.economictimes.com/industry/cons-products/electronics/amber-enterprises-raising-rs-1200-crore-for-its-subsidiary-iljin-electronics/articleshow/123748383.cms",
+        "https://trendlyne.com/research-reports/stock/73518/AMBER/amber-enterprises-india-ltd/",
+        "https://m.economictimes.com/markets/stocks/news/amber-enterprises-trent-among-key-winners-of-gst-driven-demand-upswing/articleshow/123732315.cms"
+      ]
+    },
+    {
+      "stock_ticker": "BALRAMCHIN",
+      "weight": 0.1,
+      "sources": [
+        "https://trendlyne.com/research-reports/stock/157/BALRAMCHIN/balrampur-chini-mills-ltd/",
+        "https://www.investing.com/equities/balrampur-chini-mills-consensus-estimates",
+        "https://www.indmoney.com/stocks/balrampur-chini-mills-ltd-share-price",
+        "https://uk.investing.com/equities/balrampur-chini-mills-consensus-estimates",
+        "https://www.crisilratings.com/en/home/newsroom/press-releases/2025/06/sugar-output-seen-up-15persent-in-ss-2026-on-favourable-monsoon.html",
+        "https://www.intellinews.com/india-s-sugar-output-set-to-rise-15-in-2026-season-392680/",
+        "https://m.economictimes.com/news/economy/agriculture/sugar-production-to-increase-by-15-pc-to-35-million-tonnes-in-ss-26-on-favourable-monsoon-report/articleshow/122117200.cms",
+        "https://www.indmoney.com/blog/stocks/sugar-stocks-rally-renuka-sugars-balrampur-chini-surge"
+      ]
+    },
+    {
+      "stock_ticker": "INOXWIND",
+      "weight": 0.1,
+      "sources": [
+        "https://windinsider.com/2025/08/18/inox-wind-reports-record-q1-fy26-profits-with-134-yoy-growth-in-net-earnings/",
+        "https://www.etnownews.com/markets/inox-wind-share-price-target-2025-nuvama-maintains-buy-on-energy-stock-sees-30-profit-article-152675712",
+        "https://www.acuite.in/documents/ratings/revised/29738-RR-20250905.pdf",
+        "https://reglobal.org/harnessing-wind-market-trends-challenges-and-outlook/",
+        "https://www.livemint.com/market/mark-to-market/inox-wind-share-price-inox-wind-q1-results-wind-energy-orders-renewable-energy-stocks-11756970262523.html",
+        "https://bsmedia.business-standard.com/_media/bs/data/market-reports/equity-brokertips/2025-09/17568072160.58232900.pdf",
+        "https://economictimes.indiatimes.com/inox-wind-ltd/stocks/companyid-32069.cms"
+      ]
+    },
+    {
+      "stock_ticker": "SBFC",
+      "weight": 0.1,
+      "sources": [
+        "https://economictimes.indiatimes.com/sbfc-finance-ltd/stocks/companyid-2141419.cms",
+        "https://www.youtube.com/watch?v=zUoTYIzLzIs",
+        "https://trendlyne.com/equity/share-holding/1578900/SBFC/latest/sbfc-finance-ltd/",
+        "https://timesofindia.indiatimes.com/business/india-business/stock-market-outlook-global-cues-inflation-data-in-focus-this-week-crude-rupee-to-guide-sentiment/articleshow/123744580.cms",
+        "https://www.livemint.com/market/stock-market-news/inflation-data-to-trump-tariffs-top-5-triggers-for-the-indian-stock-market-this-week-11757159785293.html",
+        "https://www.ey.com/en_in/insights/strategy-transactions/onwards-and-upwards-a-positive-outlook-for-private-credit-in-india"
+      ]
+    },
+    {
+      "stock_ticker": "JPPOWER",
+      "weight": 0.09,
+      "sources": [
+        "https://www.india-briefing.com/news/indias-power-sector-in-2025-investor-outlook-36367.html/",
+        "https://www.pib.gov.in/FactsheetDetails.aspx?Id=149218",
+        "https://m.economictimes.com/industry/energy/power/race-for-investment-in-jp-power-ahead-of-parent-auction-today/articleshow/123704613.cms",
+        "https://www.tgnns.com/news/jaiprakash-power-ventures-acquisitions-news/2025/06/25/"
+      ]
+    },
+    {
+      "stock_ticker": "PPLPHARMA",
+      "weight": 0.09,
+      "sources": [
+        "https://stocktwits.com/news-articles/markets/equity/piramal-pharma-analyst-flags-technical-breakout-sees-over-10-upside-by-october/chwTH3KRd8f",
+        "https://www.investing.com/equities/piramal-pharma-consensus-estimates"
+      ]
+    },
+    {
+      "stock_ticker": "NCC",
+      "weight": 0.1,
+      "sources": [
+        "https://economictimes.indiatimes.com/ncc-ltd/stocksupdate/companyid-11234.cms",
+        "https://trendlyne.com/research-reports/stock/918/NCC/ncc-ltd/",
+        "https://www.alphaspread.com/security/nse/ncc/summary",
+        "https://bnminfra.com/indianconstructionindustrytrendsfor2025/",
+        "https://www.nextmsc.com/report/india-construction-market"
+      ]
+    },
+    {
+      "stock_ticker": "JMFINANCIL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.business-standard.com/markets/capital-market-news/jm-financial-q1-pat-soars-166-yoy-to-rs-454-cr-125081101130_1.html",
+        "https://www.morganstanley.com/insights/podcasts/thoughts-on-the-market/indian-stock-market-outlook-jonathan-garner",
+        "https://trendlyne.com/research-reports/stock/689/JMFINANCIL/jm-financial-ltd/"
+      ]
+    },
+    {
+      "stock_ticker": "TANLA",
+      "weight": 0.1,
+      "sources": [
+        "https://www.icicidirect.com/research/equity/rapid-results/tanla-platforms-ltd",
+        "https://www.tanla.com/newsroom/results-q1-fy26",
+        "https://www.imarcgroup.com/india-communication-platform-as-a-service-market",
+        "https://ng.investing.com/equities/tanla-solutions-consensus-estimates",
+        "https://hdfcsky.com/news/tanla-platforms-soars-over-5-percent"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio is strategically constructed to maximize short-term gains over the next 1-week horizon, leveraging strong fundamental catalysts and favorable market dynamics in Indian equities. The selection process prioritized stocks with high and reliable 7-day gain potential, robust Q1 FY26 earnings, and clear positive triggers, while ensuring diversification across sectors to mitigate risk.\n\n**Selection Rationale:**\n\n*   **FIRSTCRY (E-commerce/Retail):** Expected to benefit from the recent GST rate cut on baby and personal care products, narrowed Q1 FY26 losses, and positive free cash flow. Its strong market position in a growing e-retail segment provides a solid foundation for a quick rebound.\n*   **AMBER (Consumer Durables/Electronics Manufacturing):** Poised for significant upside due to strong Q1 FY26 performance, strategic fundraising for its electronics subsidiary, and the impending GST 2.0 reforms boosting consumer electronics demand. This positions Amber to capitalize on favorable policy changes and sector growth.\n*   **BALRAMCHIN (Sugar/Ethanol):** Driven by positive ethanol policy changes (removal of production restrictions, E20 petrol clearance) and an anticipated increase in sugar production for SS 2026 due to favorable monsoons. This provides strong tailwinds for the sugar sector.\n*   **INOXWIND (Renewable Energy):** Benefiting from record Q1 FY26 profits, a robust 3.1 GW order book, and a strengthened balance sheet from a recent merger and rights issue. The favorable outlook for India's wind energy sector further supports its upward momentum.\n*   **SBFC (Financial Services/NBFC):** Expected to continue its upward trend due to robust Q1 FY26 performance, strong AUM growth guidance, and increasing FII interest. The positive outlook for the Indian credit services sector provides a supportive macro environment.\n*   **JPPOWER (Power Generation):** Driven by ongoing interest from major players for a controlling stake through CCPS conversion, which could de-risk its debt. The broader Indian power sector's positive outlook and recent solar project announcements are strong catalysts.\n*   **PPLPHARMA (Pharmaceuticals/CDMO):** Poised for gains from a new multimillion-dollar CDMO collaboration with NewAmsterdam Pharma and strong analyst endorsements. The bullish sentiment in the Indian pharmaceutical sector further supports its growth.\n*   **NCC (Construction/Infrastructure):** Supported by a robust order book, consistent project acquisitions, and the booming Indian construction sector fueled by government initiatives. Despite recent muted quarterly results, future revenue visibility is strong.\n*   **JMFINANCIL (Financial Services/Capital Markets):** Benefiting from exceptional Q1 FY26 performance and a bullish outlook for India's capital markets. Strong earnings growth and consistent trading above key moving averages indicate fundamental strength.\n*   **TANLA (CPaaS/Technology):** Expected to sustain its upward trajectory due to a premium share buyback, strategic focus on its AI-native platform, and robust growth in the Indian CPaaS market. Strong free cash flow and attractive forward PE indicate underlying financial health.\n\n**Diversification and Risk Management:**\n\nThis basket achieves diversification by including companies from various high-growth sectors such as E-commerce, Electronics Manufacturing, Renewable Energy, Financial Services, Pharmaceuticals, Construction, Sugar/Ethanol, and CPaaS. This mix reduces concentration risk associated with any single industry downturn. While some stocks are growth-oriented (e.g., FirstCry, Amber, Tanla), others offer stability through strong order books or policy tailwinds (e.g., Inox Wind, NCC, Balramchin). Implicit risk management is applied by focusing on companies with strong Q1 FY26 results and clear, near-term catalysts, avoiding highly speculative plays despite potentially high gains. The chosen stocks generally have positive analyst sentiment and are positioned to benefit from broader Indian economic growth and government policy support, aiming to outperform market indices and mutual funds over the next week.",
+  "expected_gain_1w": 7.1449
+}
