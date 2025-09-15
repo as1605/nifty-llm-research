@@ -225,7 +225,7 @@ async def main():
         "-d",
         "--since-days",
         type=int,
-        default=7,
+        default=1,
         help="Number of days to look back for forecasts"
     )
     args = parser.parse_args()

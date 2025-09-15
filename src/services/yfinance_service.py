@@ -41,13 +41,13 @@ class YFinanceService:
         return f"{symbol}.NS"
     
     def get_stock_info(self, symbol: str) -> Dict[str, Any]:
-        """Get comprehensive stock information for research purposes.
+        """Get stock information in the new format for LLM consumption.
         
         Args:
             symbol: Stock symbol (e.g., 'RELIANCE', 'RELIANCE.NS', 'OLECTRA')
             
         Returns:
-            Dictionary containing comprehensive stock information
+            Dictionary containing stock information in the new format
         """
         try:
             # Normalize symbol to ensure .NS suffix
@@ -59,147 +59,94 @@ class YFinanceService:
             # Get basic info
             info = ticker.info
             
-            # Get historical data for technical analysis
-            hist = ticker.history(period='30d')
+            # Get historical data for last 20 trading days
+            hist = ticker.history(period='1mo')  # Get more data to ensure we have 20 trading days
             
-            # Get financial statements
-            financials = ticker.financials
-            balance_sheet = ticker.balance_sheet
-            cash_flow = ticker.cashflow
+            # Get news headlines
+            news = ticker.news
             
-            # Get corporate events
-            calendar = ticker.calendar
-            dividends = ticker.dividends
-            splits = ticker.splits
+            # Helper function to safely get values
+            def safe_get(key, default="N/A"):
+                value = info.get(key)
+                if value is None or (isinstance(value, float) and pd.isna(value)):
+                    return default
+                return value
             
-            # Get shareholder information
-            major_holders = ticker.major_holders
-            institutional_holders = ticker.institutional_holders
+            # Helper function to format price
+            def format_price(price, default="N/A"):
+                if price is None or (isinstance(price, float) and pd.isna(price)):
+                    return default
+                return f"₹{price:.2f}"
             
-            # Compile comprehensive data
+            # Helper function to format volume
+            def format_volume(volume, default="N/A"):
+                if volume is None or (isinstance(volume, float) and pd.isna(volume)):
+                    return default
+                return f"{volume:,.0f}"
+            
+            # Get 10-day average volume
+            ten_day_avg_volume = None
+            if not hist.empty and len(hist) >= 10:
+                ten_day_avg_volume = hist['Volume'].tail(10).mean()
+            elif not hist.empty:
+                ten_day_avg_volume = hist['Volume'].mean()
+            
+            # Process historical data for last 20 days
+            historical_data = []
+            if not hist.empty:
+                # Get last 20 trading days
+                last_20_days = hist.tail(20)
+                for date, row in last_20_days.iterrows():
+                    historical_data.append({
+                        "date": date.strftime("%Y-%m-%d"),
+                        "open": float(row['Open']),
+                        "high": float(row['High']),
+                        "low": float(row['Low']),
+                        "close": float(row['Close']),
+                        "volume": int(row['Volume'])
+                    })
+            
+            # Process news headlines (limit to 3 most recent)
+            news_headlines = []
+            if news:
+                for article in news[:3]:  # Limit to 3 most recent
+                    news_headlines.append({
+                        "timestamp": datetime.fromtimestamp(article.get('providerPublishTime', 0), tz=timezone.utc).strftime("%Y-%m-%d %H:%M") if article.get('providerPublishTime') else "N/A",
+                        "headline": article.get('title', 'N/A'),
+                        "publisher": article.get('publisher', 'N/A')
+                    })
+            
+            # Compile data in new format
             stock_data = {
-                # Basic company info
-                "company_name": info.get("longName"),
-                "sector": info.get("sector"),
-                "industry": info.get("industry"),
-                "website": info.get("website"),
-                "country": info.get("country"),
+                "company_name": safe_get("longName", "N/A"),
+                "ticker": normalized_symbol,
+                "data_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
                 
-                # Market data
-                "current_price": info.get("currentPrice"),
-                "day_high": info.get("dayHigh"),
-                "day_low": info.get("dayLow"),
-                "volume": info.get("volume"),
-                "market_cap": info.get("marketCap"),
-                "beta": info.get("beta"),
+                # Key Information
+                "beta": safe_get("beta", "N/A"),
+                "fifty_two_week_high": safe_get("fiftyTwoWeekHigh", "N/A"),
+                "fifty_two_week_low": safe_get("fiftyTwoWeekLow", "N/A"),
+                "previous_close": safe_get("previousClose", "N/A"),
+                "ten_day_avg_volume": format_volume(ten_day_avg_volume, "N/A"),
+                "day_high": safe_get("dayHigh", "N/A"),
+                "day_low": safe_get("dayLow", "N/A"),
                 
-                # Technical indicators
-                "fifty_two_week_high": info.get("fiftyTwoWeekHigh"),
-                "fifty_two_week_low": info.get("fiftyTwoWeekLow"),
-                "fifty_day_average": info.get("fiftyDayAverage"),
-                "two_hundred_day_average": info.get("twoHundredDayAverage"),
+                # News headlines
+                "news_headlines": news_headlines,
                 
-                # Valuation metrics
-                "trailing_pe": info.get("trailingPE"),
-                "forward_pe": info.get("forwardPE"),
-                "price_to_book": info.get("priceToBook"),
-                "price_to_sales": info.get("priceToSalesTrailing12Months"),
-                "peg_ratio": info.get("pegRatio"),
-                
-                # Financial ratios
-                "debt_to_equity": info.get("debtToEquity"),
-                "return_on_equity": info.get("returnOnEquity"),
-                "return_on_assets": info.get("returnOnAssets"),
-                "operating_margins": info.get("operatingMargins"),
-                "profit_margins": info.get("profitMargins"),
-                
-                # Growth metrics
-                "revenue_growth": info.get("revenueGrowth"),
-                "earnings_growth": info.get("earningsGrowth"),
-                
-                # Historical price data
-                "historical_data": {
-                    "period": "30d",
-                    "days_available": len(hist) if not hist.empty else 0,
-                    "latest_close": float(hist['Close'].iloc[-1]) if not hist.empty else None,
-                    "thirty_day_high": float(hist['High'].max()) if not hist.empty else None,
-                    "thirty_day_low": float(hist['Low'].min()) if not hist.empty else None,
-                    "thirty_day_change_pct": float(((hist['Close'].iloc[-1] - hist['Close'].iloc[0]) / hist['Close'].iloc[0] * 100)) if len(hist) > 1 else None,
-                    "average_volume": float(hist['Volume'].mean()) if not hist.empty else None,
-                    "volume_trend": "increasing" if not hist.empty and len(hist) > 5 and hist['Volume'].iloc[-1] > hist['Volume'].iloc[-5:].mean() else "decreasing" if not hist.empty and len(hist) > 5 else "stable"
-                },
-                
-                # Financial statements
-                "financials": {
-                    "quarters_available": len(financials.columns) if not financials.empty else 0,
-                    "latest_quarter": str(financials.columns[0].date()) if not financials.empty else None,
-                    "total_revenue": float(financials.loc['Total Revenue'].iloc[0]) if not financials.empty and 'Total Revenue' in financials.index else None,
-                    "net_income": float(financials.loc['Net Income'].iloc[0]) if not financials.empty and 'Net Income' in financials.index else None,
-                    "ebitda": float(financials.loc['EBITDA'].iloc[0]) if not financials.empty and 'EBITDA' in financials.index else None,
-                    "operating_income": float(financials.loc['Operating Income'].iloc[0]) if not financials.empty and 'Operating Income' in financials.index else None
-                },
-                
-                # Balance sheet
-                "balance_sheet": {
-                    "quarters_available": len(balance_sheet.columns) if not balance_sheet.empty else 0,
-                    "total_assets": float(balance_sheet.loc['Total Assets'].iloc[0]) if not balance_sheet.empty and 'Total Assets' in balance_sheet.index else None,
-                    "total_debt": float(balance_sheet.loc['Total Debt'].iloc[0]) if not balance_sheet.empty and 'Total Debt' in balance_sheet.index else None,
-                    "common_stock_equity": float(balance_sheet.loc['Common Stock Equity'].iloc[0]) if not balance_sheet.empty and 'Common Stock Equity' in balance_sheet.index else None,
-                    "working_capital": float(balance_sheet.loc['Working Capital'].iloc[0]) if not balance_sheet.empty and 'Working Capital' in balance_sheet.index else None
-                },
-                
-                # Cash flow
-                "cash_flow": {
-                    "quarters_available": len(cash_flow.columns) if not cash_flow.empty else 0,
-                    "free_cash_flow": float(cash_flow.loc['Free Cash Flow'].iloc[0]) if not cash_flow.empty and 'Free Cash Flow' in cash_flow.index else None,
-                    "operating_cash_flow": float(cash_flow.loc['Operating Cash Flow'].iloc[0]) if not cash_flow.empty and 'Operating Cash Flow' in cash_flow.index else None,
-                    "capital_expenditure": float(cash_flow.loc['Capital Expenditure'].iloc[0]) if not cash_flow.empty and 'Capital Expenditure' in cash_flow.index else None
-                },
-                
-                # Corporate events
-                "corporate_events": {
-                    "ex_dividend_date": calendar.get("Ex-Dividend Date") if calendar else None,
-                    "earnings_dates": calendar.get("Earnings Date") if calendar else None,
-                    "earnings_estimate_high": calendar.get("Earnings High") if calendar else None,
-                    "earnings_estimate_low": calendar.get("Earnings Low") if calendar else None,
-                    "earnings_estimate_average": calendar.get("Earnings Average") if calendar else None,
-                    "revenue_estimate_high": calendar.get("Revenue High") if calendar else None,
-                    "revenue_estimate_low": calendar.get("Revenue Low") if calendar else None,
-                    "revenue_estimate_average": calendar.get("Revenue Average") if calendar else None
-                },
-                
-                # Dividends and splits
-                "dividends": {
-                    "total_dividends": len(dividends) if not dividends.empty else 0,
-                    "latest_dividend": float(dividends.iloc[-1]) if not dividends.empty else None,
-                    "latest_dividend_date": str(dividends.index[-1].date()) if not dividends.empty else None
-                },
-                
-                "splits": {
-                    "total_splits": len(splits) if not splits.empty else 0,
-                    "latest_split": float(splits.iloc[-1]) if not splits.empty else None,
-                    "latest_split_date": str(splits.index[-1].date()) if not splits.empty else None
-                },
-                
-                # Shareholder information
-                "shareholders": {
-                    "insiders_percent_held": float(major_holders.loc['insidersPercentHeld'].iloc[0] * 100) if not major_holders.empty and 'insidersPercentHeld' in major_holders.index else None,
-                    "institutions_percent_held": float(major_holders.loc['institutionsPercentHeld'].iloc[0] * 100) if not major_holders.empty and 'institutionsPercentHeld' in major_holders.index else None,
-                    "institutions_count": int(major_holders.loc['institutionsCount'].iloc[0]) if not major_holders.empty and 'institutionsCount' in major_holders.index else None
-                },
+                # Historical data
+                "historical_data": historical_data,
                 
                 # Data quality indicators
                 "data_quality": {
                     "has_real_time_data": info.get("currentPrice") is not None,
-                    "has_financials": not financials.empty,
-                    "has_balance_sheet": not balance_sheet.empty,
-                    "has_cash_flow": not cash_flow.empty,
-                    "has_corporate_events": calendar is not None and len(calendar) > 0,
+                    "has_historical_data": not hist.empty,
+                    "has_news": len(news) > 0,
                     "last_updated": datetime.now(timezone.utc).isoformat()
                 }
             }
             
-            logger.info(f"Successfully fetched comprehensive data for {normalized_symbol}")
+            logger.info(f"Successfully fetched data for {normalized_symbol}")
             return stock_data
             
         except Exception as e:
@@ -207,7 +154,15 @@ class YFinanceService:
             return {
                 "error": str(e),
                 "symbol": symbol,
-                "last_updated": datetime.now(timezone.utc).isoformat()
+                "company_name": "N/A",
+                "ticker": self._normalize_symbol(symbol),
+                "data_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                "data_quality": {
+                    "has_real_time_data": False,
+                    "has_historical_data": False,
+                    "has_news": False,
+                    "last_updated": datetime.now(timezone.utc).isoformat()
+                }
             }
     
     def get_stock_ltp(self, symbol: str) -> Optional[float]:

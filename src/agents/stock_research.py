@@ -6,6 +6,7 @@ import logging
 from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any
 import aiohttp
+import pandas as pd
 
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
@@ -87,6 +88,11 @@ class StockResearchAgent(BaseAgent):
         async with aiohttp.ClientSession() as session:
             for url in sources:
                 try:
+                    # Ensure URL has protocol
+                    if not url.startswith(('http://', 'https://')):
+                        url = f"https://{url}"
+                        logger.info(f"Added protocol to URL: {url}")
+                    
                     async with session.get(url, allow_redirects=False) as response:
                         if response.status == 302:
                             location = response.headers.get("Location")
@@ -140,10 +146,10 @@ class StockResearchAgent(BaseAgent):
             raise ValueError(f"Invalid forecast date format: {forecast_date_str}. Expected YYYY-MM-DD") from e
 
     def _format_yfinance_data_for_llm(self, yfinance_data: Dict[str, Any]) -> str:
-        """Format yfinance data into a structured format for the LLM.
+        """Format yfinance data into the new structured format for the LLM.
         
         Args:
-            yfinance_data: Raw yfinance data
+            yfinance_data: Raw yfinance data in new format
             
         Returns:
             Formatted string for LLM consumption
@@ -151,145 +157,80 @@ class StockResearchAgent(BaseAgent):
         if "error" in yfinance_data:
             return f"Error fetching yfinance data: {yfinance_data['error']}"
         
-        # Format the data in a clear, structured way
+        # Format the data in the new structured way
         formatted_data = []
         
-        # Basic company info
-        formatted_data.append("=== COMPANY INFORMATION ===")
-        formatted_data.append(f"Company: {yfinance_data.get('company_name', 'N/A')}")
-        formatted_data.append(f"Sector: {yfinance_data.get('sector', 'N/A')}")
-        formatted_data.append(f"Industry: {yfinance_data.get('industry', 'N/A')}")
-        formatted_data.append(f"Website: {yfinance_data.get('website', 'N/A')}")
+        # Header
+        company_name = yfinance_data.get('company_name', 'N/A')
+        ticker = yfinance_data.get('ticker', 'N/A')
+        data_date = yfinance_data.get('data_date', 'N/A')
         
-        # Market data
-        formatted_data.append("\n=== CURRENT MARKET DATA ===")
-        formatted_data.append(f"Current Price: ₹{yfinance_data.get('current_price', 'N/A')}")
-        formatted_data.append(f"Day High: ₹{yfinance_data.get('day_high', 'N/A')}")
-        formatted_data.append(f"Day Low: ₹{yfinance_data.get('day_low', 'N/A')}")
-        formatted_data.append(f"Volume: {yfinance_data.get('volume', 'N/A'):,}" if yfinance_data.get('volume') else "Volume: N/A")
-        formatted_data.append(f"Market Cap: ₹{yfinance_data.get('market_cap', 'N/A'):,.0f}" if yfinance_data.get('market_cap') else "Market Cap: N/A")
+        formatted_data.append(f"**Stock Analysis Data for: {company_name} ({ticker})**")
+        formatted_data.append(f"**Date of Data:** {data_date}")
+        formatted_data.append("---")
         
-        # Technical indicators
-        formatted_data.append("\n=== TECHNICAL INDICATORS ===")
-        formatted_data.append(f"Beta: {yfinance_data.get('beta', 'N/A')}")
-        formatted_data.append(f"52-Week High: ₹{yfinance_data.get('fifty_two_week_high', 'N/A')}")
-        formatted_data.append(f"52-Week Low: ₹{yfinance_data.get('fifty_two_week_low', 'N/A')}")
-        formatted_data.append(f"50-Day Average: ₹{yfinance_data.get('fifty_day_average', 'N/A')}")
-        formatted_data.append(f"200-Day Average: ₹{yfinance_data.get('two_hundred_day_average', 'N/A')}")
+        # Key Information section
+        formatted_data.append("**## Key Information**")
         
-        # Valuation metrics
-        formatted_data.append("\n=== VALUATION METRICS ===")
-        formatted_data.append(f"Trailing PE: {yfinance_data.get('trailing_pe', 'N/A')}")
-        formatted_data.append(f"Forward PE: {yfinance_data.get('forward_pe', 'N/A')}")
-        formatted_data.append(f"Price to Book: {yfinance_data.get('price_to_book', 'N/A')}")
-        formatted_data.append(f"Price to Sales: {yfinance_data.get('price_to_sales', 'N/A')}")
-        formatted_data.append(f"PEG Ratio: {yfinance_data.get('peg_ratio', 'N/A')}")
+        # Helper function to format values
+        def format_value(value, prefix="", suffix=""):
+            if value is None or value == "N/A" or (isinstance(value, float) and pd.isna(value)):
+                return "N/A"
+            return f"{prefix}{value}{suffix}"
         
-        # Financial ratios
-        formatted_data.append("\n=== FINANCIAL RATIOS ===")
-        formatted_data.append(f"Debt to Equity: {yfinance_data.get('debt_to_equity', 'N/A')}")
-        formatted_data.append(f"Return on Equity: {yfinance_data.get('return_on_equity', 'N/A')}")
-        formatted_data.append(f"Return on Assets: {yfinance_data.get('return_on_assets', 'N/A')}")
-        formatted_data.append(f"Operating Margin: {yfinance_data.get('operating_margins', 'N/A')}")
-        formatted_data.append(f"Profit Margin: {yfinance_data.get('profit_margins', 'N/A')}")
+        # Format 52-week range
+        week_52_high = yfinance_data.get('fifty_two_week_high', 'N/A')
+        week_52_low = yfinance_data.get('fifty_two_week_low', 'N/A')
+        week_52_range = f"₹{week_52_low} - ₹{week_52_high}" if week_52_low != "N/A" and week_52_high != "N/A" else "N/A"
         
-        # Growth metrics
-        formatted_data.append("\n=== GROWTH METRICS ===")
-        formatted_data.append(f"Revenue Growth: {yfinance_data.get('revenue_growth', 'N/A')}")
-        formatted_data.append(f"Earnings Growth: {yfinance_data.get('earnings_growth', 'N/A')}")
+        # Format day's range
+        day_high = yfinance_data.get('day_high', 'N/A')
+        day_low = yfinance_data.get('day_low', 'N/A')
+        day_range = f"₹{day_low} - ₹{day_high}" if day_low != "N/A" and day_high != "N/A" else "N/A"
         
-        # Historical data
-        hist_data = yfinance_data.get('historical_data', {})
-        if hist_data:
-            formatted_data.append("\n=== RECENT PRICE PERFORMANCE (30 days) ===")
-            formatted_data.append(f"Days Available: {hist_data.get('days_available', 'N/A')}")
-            formatted_data.append(f"Latest Close: ₹{hist_data.get('latest_close', 'N/A')}")
-            formatted_data.append(f"30-Day High: ₹{hist_data.get('thirty_day_high', 'N/A')}")
-            formatted_data.append(f"30-Day Low: ₹{hist_data.get('thirty_day_low', 'N/A')}")
-            formatted_data.append(f"30-Day Change: {hist_data.get('thirty_day_change_pct', 'N/A')}%")
-            formatted_data.append(f"Average Volume: {hist_data.get('average_volume', 'N/A'):,.0f}" if hist_data.get('average_volume') else "Average Volume: N/A")
-            formatted_data.append(f"Volume Trend: {hist_data.get('volume_trend', 'N/A')}")
+        formatted_data.append(f"- **Beta:** {format_value(yfinance_data.get('beta'))}")
+        formatted_data.append(f"- **52-Week Range:** {week_52_range}")
+        formatted_data.append(f"- **Previous Close:** {format_value(yfinance_data.get('previous_close'), '₹')}")
+        formatted_data.append(f"- **10-Day Avg Volume:** {format_value(yfinance_data.get('ten_day_avg_volume'))}")
+        formatted_data.append(f"- **Day's Range:** {day_range}")
+        formatted_data.append("---")
         
-        # Financial statements
-        financials = yfinance_data.get('financials', {})
-        if financials and financials.get('quarters_available', 0) > 0:
-            formatted_data.append("\n=== FINANCIAL STATEMENTS ===")
-            formatted_data.append(f"Quarters Available: {financials.get('quarters_available', 'N/A')}")
-            formatted_data.append(f"Latest Quarter: {financials.get('latest_quarter', 'N/A')}")
-            formatted_data.append(f"Total Revenue: ₹{financials.get('total_revenue', 'N/A'):,.0f}" if financials.get('total_revenue') else "Total Revenue: N/A")
-            formatted_data.append(f"Net Income: ₹{financials.get('net_income', 'N/A'):,.0f}" if financials.get('net_income') else "Net Income: N/A")
-            formatted_data.append(f"EBITDA: ₹{financials.get('ebitda', 'N/A'):,.0f}" if financials.get('ebitda') else "EBITDA: N/A")
-            formatted_data.append(f"Operating Income: ₹{financials.get('operating_income', 'N/A'):,.0f}" if financials.get('operating_income') else "Operating Income: N/A")
+        # Recent News Headlines section
+        formatted_data.append("**## Recent News Headlines**")
+        news_headlines = yfinance_data.get('news_headlines', [])
+        if news_headlines:
+            for headline in news_headlines:
+                timestamp = headline.get('timestamp', 'N/A')
+                title = headline.get('headline', 'N/A')
+                publisher = headline.get('publisher', 'N/A')
+                formatted_data.append(f"- **[{timestamp}]:** {title} (Publisher: {publisher})")
+        else:
+            formatted_data.append("- No recent news available")
+        formatted_data.append("---")
         
-        # Balance sheet
-        balance_sheet = yfinance_data.get('balance_sheet', {})
-        if balance_sheet and balance_sheet.get('quarters_available', 0) > 0:
-            formatted_data.append("\n=== BALANCE SHEET ===")
-            formatted_data.append(f"Total Assets: ₹{balance_sheet.get('total_assets', 'N/A'):,.0f}" if balance_sheet.get('total_assets') else "Total Assets: N/A")
-            formatted_data.append(f"Total Debt: ₹{balance_sheet.get('total_debt', 'N/A'):,.0f}" if balance_sheet.get('total_debt') else "Total Debt: N/A")
-            formatted_data.append(f"Common Stock Equity: ₹{balance_sheet.get('common_stock_equity', 'N/A'):,.0f}" if balance_sheet.get('common_stock_equity') else "Common Stock Equity: N/A")
-            formatted_data.append(f"Working Capital: ₹{balance_sheet.get('working_capital', 'N/A'):,.0f}" if balance_sheet.get('working_capital') else "Working Capital: N/A")
-        
-        # Cash flow
-        cash_flow = yfinance_data.get('cash_flow', {})
-        if cash_flow and cash_flow.get('quarters_available', 0) > 0:
-            formatted_data.append("\n=== CASH FLOW ===")
-            formatted_data.append(f"Free Cash Flow: ₹{cash_flow.get('free_cash_flow', 'N/A'):,.0f}" if cash_flow.get('free_cash_flow') else "Free Cash Flow: N/A")
-            formatted_data.append(f"Operating Cash Flow: ₹{cash_flow.get('operating_cash_flow', 'N/A'):,.0f}" if cash_flow.get('operating_cash_flow') else "Operating Cash Flow: N/A")
-            formatted_data.append(f"Capital Expenditure: ₹{cash_flow.get('capital_expenditure', 'N/A'):,.0f}" if cash_flow.get('capital_expenditure') else "Capital Expenditure: N/A")
-        
-        # Corporate events
-        corporate_events = yfinance_data.get('corporate_events', {})
-        if corporate_events:
-            formatted_data.append("\n=== CORPORATE EVENTS ===")
-            formatted_data.append(f"Ex-Dividend Date: {corporate_events.get('ex_dividend_date', 'N/A')}")
-            earnings_dates = corporate_events.get('earnings_dates')
-            if earnings_dates:
-                if isinstance(earnings_dates, list):
-                    formatted_data.append(f"Earnings Dates: {', '.join([str(d) for d in earnings_dates])}")
+        # Price and Volume History section
+        formatted_data.append("**## Price and Volume History (Last 20 Days)**")
+        historical_data = yfinance_data.get('historical_data', [])
+        if historical_data:
+            for day_data in historical_data:
+                date = day_data.get('date', 'N/A')
+                open_price = day_data.get('open', 'N/A')
+                high_price = day_data.get('high', 'N/A')
+                low_price = day_data.get('low', 'N/A')
+                close_price = day_data.get('close', 'N/A')
+                volume = day_data.get('volume', 'N/A')
+                
+                # Format volume with commas
+                if isinstance(volume, int):
+                    volume_str = f"{volume:,}"
+                elif isinstance(volume, float):
+                    volume_str = f"{volume:.2f}"
                 else:
-                    formatted_data.append(f"Earnings Date: {earnings_dates}")
-            formatted_data.append(f"Earnings Estimate (High): {corporate_events.get('earnings_estimate_high', 'N/A')}")
-            formatted_data.append(f"Earnings Estimate (Low): {corporate_events.get('earnings_estimate_low', 'N/A')}")
-            formatted_data.append(f"Earnings Estimate (Average): {corporate_events.get('earnings_estimate_average', 'N/A')}")
-        
-        # Dividends and splits
-        dividends = yfinance_data.get('dividends', {})
-        if dividends and dividends.get('total_dividends', 0) > 0:
-            formatted_data.append("\n=== DIVIDENDS ===")
-            formatted_data.append(f"Total Dividends: {dividends.get('total_dividends', 'N/A')}")
-            formatted_data.append(f"Latest Dividend: ₹{dividends.get('latest_dividend', 'N/A')}")
-            formatted_data.append(f"Latest Dividend Date: {dividends.get('latest_dividend_date', 'N/A')}")
-        
-        splits = yfinance_data.get('splits', {})
-        if splits and splits.get('total_splits', 0) > 0:
-            formatted_data.append("\n=== STOCK SPLITS ===")
-            formatted_data.append(f"Total Splits: {splits.get('total_splits', 'N/A')}")
-            formatted_data.append(f"Latest Split: {splits.get('latest_split', 'N/A')}")
-            formatted_data.append(f"Latest Split Date: {splits.get('latest_split_date', 'N/A')}")
-        
-        # Shareholder information
-        shareholders = yfinance_data.get('shareholders', {})
-        if shareholders:
-            formatted_data.append("\n=== SHAREHOLDER INFORMATION ===")
-            insiders_pct = shareholders.get('insiders_percent_held')
-            institutions_pct = shareholders.get('institutions_percent_held')
-            institutions_count = shareholders.get('institutions_count')
-            
-            if insiders_pct is not None:
-                formatted_data.append(f"Insiders % Held: {insiders_pct:.2f}%")
-            else:
-                formatted_data.append("Insiders % Held: N/A")
+                    volume_str = str(volume)
                 
-            if institutions_pct is not None:
-                formatted_data.append(f"Institutions % Held: {institutions_pct:.2f}%")
-            else:
-                formatted_data.append("Institutions % Held: N/A")
-                
-            if institutions_count is not None:
-                formatted_data.append(f"Institutions Count: {institutions_count}")
-            else:
-                formatted_data.append("Institutions Count: N/A")
+                formatted_data.append(f"- **{date}:** Open: {open_price:.2f}, High: {high_price:.2f}, Low: {low_price:.2f}, Close: {close_price:.2f}, Volume: {volume_str}")
+        else:
+            formatted_data.append("- No historical data available")
         
         return "\n".join(formatted_data)
 
@@ -354,6 +295,11 @@ class StockResearchAgent(BaseAgent):
             # Process each forecast in the result
             forecasts = []
             
+            # Fetch current LTP once for gain calculation
+            ltp = self.yfinance_service.get_stock_ltp(symbol)
+            if ltp is None:
+                logger.warning(f"LTP unavailable for {symbol}; gain will default to 0.0")
+            
             for forecast_data in list_forecast.forecasts:
                 # Validate and parse forecast date
                 forecast_date = self._validate_forecast_date(
@@ -364,25 +310,45 @@ class StockResearchAgent(BaseAgent):
                 # Process sources to resolve URLs
                 processed_sources = await self._process_sources(forecast_data.sources)
                 
+                # Calculate gain using LTP and target price
+                target_price = float(forecast_data.target_price)
+                if ltp is not None and ltp > 0:
+                    computed_gain = ((target_price - float(ltp)) / float(ltp)) * 100.0
+                else:
+                    computed_gain = 0.0
+                
+                # Compare with LLM-provided gain and warn if off by more than 1%
+                try:
+                    if ltp is not None and ltp > 0 and getattr(forecast_data, 'gain', None) is not None:
+                        llm_gain = float(forecast_data.gain)
+                        if abs(computed_gain - llm_gain) > 1.0:
+                            logger.warning(
+                                f"Computed gain differs from LLM gain for {symbol} ({forecast_data.days}d): "
+                                f"computed={computed_gain:.2f}% vs llm={llm_gain:.2f}% | "
+                                f"ltp={ltp}, target={target_price}"
+                            )
+                except Exception as warn_ex:
+                    logger.debug(f"Unable to compare computed gain with LLM gain: {warn_ex}")
+                
                 # Create and store forecast
                 forecast = Forecast(
                     stock_ticker=symbol,
                     invocation_id=invocation_id,
                     forecast_date=forecast_date,
-                    target_price=float(forecast_data.target_price),
+                    target_price=target_price,
                     days=forecast_data.days,
                     reason_summary=forecast_data.reason_summary,
                     sources=processed_sources,
-                    gain=float(forecast_data.gain)
+                    gain=float(computed_gain)
                 )
                 await async_db[COLLECTIONS["forecasts"]].insert_one(forecast.model_dump())
                 
                 forecasts.append({
                     "timeframe": f"{forecast_data.days}d",
-                    "target_price": forecast_data.target_price,
+                    "target_price": target_price,
                     "reasoning": forecast_data.reason_summary,
                     "sources": processed_sources,
-                    "gain": forecast_data.gain,
+                    "gain": computed_gain,
                     "invocation_id": invocation_id
                 })
 
