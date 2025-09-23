@@ -1,0 +1,151 @@
+{
+  "creation_date": "2025-09-23T03:09:30.895144+00:00",
+  "invocation_id": "68d20f59fa3e96f500d6ae75",
+  "stocks_ticker_candidates": [
+    "PTCIL",
+    "JUBLPHARMA",
+    "IOB",
+    "KIRLOSENG",
+    "USHAMART",
+    "WELCORP",
+    "VTL",
+    "CESC",
+    "COHANCE",
+    "RPOWER",
+    "HINDCOPPER",
+    "ANANTRAJ",
+    "CLEAN",
+    "IFCI",
+    "ITI",
+    "FIRSTCRY",
+    "AFCONS",
+    "GRAVITA",
+    "SAMMAANCAP",
+    "PNBHOUSING",
+    "RAYMONDLSL",
+    "GMDCLTD",
+    "ACE",
+    "MANYAVAR",
+    "JWL",
+    "RRKABEL",
+    "GODFRYPHLP",
+    "INOXWIND",
+    "KEC",
+    "PCBL",
+    "ZENTEC",
+    "DBREALTY",
+    "MMTC",
+    "SIGNATURE",
+    "WELSPUNLIV",
+    "TANLA",
+    "SCI",
+    "IRCON",
+    "JBMA",
+    "UCOBANK"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "INOXWIND",
+      "weight": 0.12,
+      "sources": [
+        "https://alphastreet.com",
+        "https://windinsider.com",
+        "https://reglobal.co",
+        "https://researchandmarkets.com",
+        "https://outlookbusiness.com",
+        "https://www.livemint.com",
+        "https://mercomindia.com",
+        "https://www.careratings.com"
+      ]
+    },
+    {
+      "stock_ticker": "WELSPUNLIV",
+      "weight": 0.11,
+      "sources": [
+        "https://scanx.trade/stock-market-news/stocks/welspun-living-shares-surge-9-amid-us-india-trade-talk-optimism/19028148",
+        "https://www.textilesphere.com/2024/11/indian-textile-industry-outlook-2025.html",
+        "https://www.businesstoday.in/markets/stocks/story/kpr-mill-indo-count-welspun-shares-surge-us-india-trade-talks-revival-494165-2025-09-16"
+      ]
+    },
+    {
+      "stock_ticker": "AFCONS",
+      "weight": 0.1,
+      "sources": [
+        "https://www.capitalmarket.com/Company-Information/News/Afcons-Infrastructure-to-announce-Quarterly-Result/1266679"
+      ]
+    },
+    {
+      "stock_ticker": "JUBLPHARMA",
+      "weight": 0.1,
+      "sources": [
+        "https://www.tipranks.com",
+        "https://www.business-standard.com",
+        "https://www.trendlyne.com",
+        "https://www.icicidirect.com",
+        "https://scanx.in"
+      ]
+    },
+    {
+      "stock_ticker": "IOB",
+      "weight": 0.09,
+      "sources": [
+        "https://angelone.in",
+        "https://trendlyne.com",
+        "https://crisil.com"
+      ]
+    },
+    {
+      "stock_ticker": "USHAMART",
+      "weight": 0.09,
+      "sources": [
+        "https://www.projectstoday.com/News/Usha-Martin-plans-steel-capacity-expansion",
+        "https://stockdiscovery.s3.amazonaws.com/insight/india/1909/Earnings%20Release/ER-Aug25.pdf",
+        "https://www.alphaspread.com/security/nse/ushamart/analyst-estimates",
+        "https://www.indmoney.com/stocks/usha-martin-ltd-share-price",
+        "https://www.marketsmojo.com/stocks-analysis/apl-apollo-tubes-361277-0"
+      ]
+    },
+    {
+      "stock_ticker": "WELCORP",
+      "weight": 0.1,
+      "sources": [
+        "https://dailybulls.in",
+        "https://sharekhan.com",
+        "https://business-standard.com"
+      ]
+    },
+    {
+      "stock_ticker": "SCI",
+      "weight": 0.09,
+      "sources": [
+        "https://elitewealth.in",
+        "https://hdfcsky.com",
+        "https://timesofindia.indiatimes.com"
+      ]
+    },
+    {
+      "stock_ticker": "HINDCOPPER",
+      "weight": 0.1,
+      "sources": [
+        "https://www.angelone.in/news/stocks-share-market/hindustan-copper-surges-over-8-after-securing-20-year-rakha-mining-lease-extension",
+        "https://www.share.market/buzz/news/hindustan-copper-secures-key-mining-lease-for-rakha-project/",
+        "https://www.grandviewresearch.com/horizon/outlook/copper-market/india"
+      ]
+    },
+    {
+      "stock_ticker": "RRKABEL",
+      "weight": 0.09,
+      "sources": [
+        "https://www.energetica-india.net/news/indias-cables-and-wires-sector-set-to-exceed-usd-10-billion-by-2033",
+        "https://www.mordorintelligence.com/industry-reports/india-wire-and-cable-market",
+        "https://www.renub.com/india-wires-and-cables-market-p.php",
+        "https://www.projectstoday.com/News/RR-Kabel-plans-capacity-expansion-in-Gujarat-upcoming-units-in-Silvassa",
+        "https://www.manufacturingtodayindia.com/rr-kabel-expand-capacity-in-gujarat",
+        "https://www.rprealtyplus.com/allied/rr-kabels-4qfy25-earnings-surpass-industry-watchers-estimates-119872.html",
+        "https://www.livemint.com/market/market-stats/stocks-r-r-kabel-share-price-nse-bse-s0005539"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio of 10 stocks is constructed to capture short-to-medium term upside potential (7-30 days) while maintaining diversification across sectors and risk profiles. The selection prioritizes stocks with strong, clear catalysts and positive fundamental outlooks, while prudently accounting for identified risks.\n\n**High Conviction (10-12% weight):**\n*   **INOXWIND (12%):** Strong long-term growth potential in renewable energy, robust order book, strengthened financials from merger and rights issue. High gain potential (31.2% in 30 days) with manageable execution risks.\n*   **WELSPUNLIV (11%):** Significant upside potential from resolution of US-India trade tensions (tariffs), strong Q2 FY25 performance, and capacity expansions. The trade deal is a major de-risking event.\n*   **AFCONS (10%):** Robust project pipeline, substantial order book (including international wins), and strong Q1 FY26 net profit growth. Jefferies' 'Buy' rating with a high target reinforces confidence.\n*   **JUBLPHARMA (10%):** Clean USFDA inspection is a major de-risking event, coupled with strategic focus on high-margin segments (Radiopharma, CDMO) and strong Q1 FY26 operational performance.\n*   **WELCORP (10%):** Substantial and growing order book, strong Q1 FY26 financial performance, and strategic diversification (Sintex-BAPL) to reduce cyclicity. Positive analyst outlook and institutional interest.\n*   **HINDCOPPER (10%):** Long-term growth driven by 20-year Rakha mining lease extension, MoU with Oil India, and aggressive capacity expansion plans. Favorable macro environment for copper demand.\n\n**Moderate Conviction (9% weight):**\n*   **IOB (9%):** Sustained financial turnaround, improved asset quality, government recapitalization plans, and FTSE All-World Index inclusion. Valuation is 'expensive' but positive catalysts are strong.\n*   **USHAMART (9%):** Robust Q1 FY26 performance, net debt-free status, strategic capacity expansions, and 'One Usha Martin' transformation. Minor risks from near-term profitability dips.\n*   **SCI (9%):** Strategic MoU with oil PSUs for long-term cargo contracts and government support for maritime sector. Privatization uncertainty is a key risk, but operational tailwinds are strong.\n*   **RRKABEL (9%):** Strong fundamentals in the expanding Indian wires and cables market, ambitious capacity expansion plans, and strong FY24 performance. Risks from raw material volatility and FMEG segment profitability.\n\nThis portfolio aims for a balanced exposure to infrastructure, manufacturing, pharmaceuticals, and financial sectors, with a mix of established players and growth-oriented companies. Weights are adjusted to reflect the clarity and impact of catalysts versus the inherent risks mentioned in the summaries, favoring those with more immediate and less speculative drivers.",
+  "expected_gain_1w": 8.110073857972512
+}
