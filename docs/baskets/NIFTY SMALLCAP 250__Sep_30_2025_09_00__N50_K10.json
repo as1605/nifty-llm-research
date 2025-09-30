@@ -1,0 +1,157 @@
+{
+  "creation_date": "2025-09-30T03:30:56.669555+00:00",
+  "invocation_id": "68db4ede6c82c788474eccda",
+  "stocks_ticker_candidates": [
+    "JUSTDIAL",
+    "SAGILITY",
+    "GODREJAGRO",
+    "NCC",
+    "ACMESOLAR",
+    "UCOBANK",
+    "ELGIEQUIP",
+    "DEEPAKFERT",
+    "SYRMA",
+    "RAILTEL",
+    "CAPLIPOINT",
+    "BEML",
+    "WOCKPHARMA",
+    "PVRINOX",
+    "IOB",
+    "SWSOLAR",
+    "NBCC",
+    "SAREGAMA",
+    "CENTRALBK",
+    "LATENTVIEW",
+    "TECHNOE",
+    "ALIVUS",
+    "RPOWER",
+    "JBMA",
+    "KIRLOSENG",
+    "KAYNES",
+    "TANLA",
+    "PNCINFRA",
+    "GPPL",
+    "MGL",
+    "GRAVITA",
+    "MAPMYINDIA",
+    "PTCIL",
+    "CHOLAHLDNG",
+    "TRIDENT",
+    "AAVAS",
+    "NUVAMA",
+    "ELECON",
+    "SIGNATURE",
+    "KPIL",
+    "ANGELONE",
+    "INOXWIND",
+    "ANANTRAJ",
+    "KARURVYSYA",
+    "LTFOODS",
+    "AEGISLOG",
+    "KEC",
+    "AADHARHFC",
+    "SCI",
+    "CUB"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "ALIVUS",
+      "weight": 0.12,
+      "sources": [
+        "https://www.marketsmojo.com/news/alivus-life-sciences-ltd-1003513",
+        "https://hdfcsky.com/news/alivus-life-science-to-trade-ex-dividend-on-september-1"
+      ]
+    },
+    {
+      "stock_ticker": "CENTRALBK",
+      "weight": 0.11,
+      "sources": [
+        "https://m.economictimes.com/markets/stocks/news/from-laggards-to-leaders-psu-banks-outpace-private-peers-in-loan-growth-after-15-years/articleshow/124191485.cms",
+        "https://scanx.trade/stock-market-news/earnings/central-bank-of-india-reports-robust-q1-performance-with-improved-asset-quality/14460317"
+      ]
+    },
+    {
+      "stock_ticker": "NBCC",
+      "weight": 0.1,
+      "sources": [
+        "https://indianmasterminds.com",
+        "https://trendlyne.com",
+        "https://business-standard.com",
+        "https://growmudra.com"
+      ]
+    },
+    {
+      "stock_ticker": "PTCIL",
+      "weight": 0.1,
+      "sources": [
+        "https://www.business-standard.com",
+        "https://www.livemint.com",
+        "https://www.cnbctv18.com",
+        "https://trendlyne.com"
+      ]
+    },
+    {
+      "stock_ticker": "KARURVYSYA",
+      "weight": 0.09,
+      "sources": [
+        "https://www.sekarreporter.com/karur-vysya-bank-challenges-multiple-it-notices-orders-before-madras-hc-karur-vysya-bank-said-the-matter-is-not-likely-to-have-any-material-impact-on-its-financial-position-or-operations-shares-of-k/"
+      ]
+    },
+    {
+      "stock_ticker": "SIGNATURE",
+      "weight": 0.09,
+      "sources": [
+        "https://m.economictimes.com/industry/services/property-/-cstruction/signature-global-reports-42-year-on-year-growth-in-pre-sales-in-fy25/articleshow/120100648.cms",
+        "https://www.rprealtyplus.com/news-views/signature-global-highest-ever-annual-pre-sales-of-rs-1029-bn-in-fy25-120008.html"
+      ]
+    },
+    {
+      "stock_ticker": "KAYNES",
+      "weight": 0.11,
+      "sources": [
+        "https://etvbharat.com",
+        "https://www.prnewswire.com",
+        "mojopro/search-home?ctalocation=mm_default",
+        "https://www.ndtvprofit.com"
+      ]
+    },
+    {
+      "stock_ticker": "AAVAS",
+      "weight": 0.09,
+      "sources": [
+        "https://www.businessupturn.com/finance/stock-market/why-are-aavas-financiers-shares-up-4-today-explained/"
+      ]
+    },
+    {
+      "stock_ticker": "MGL",
+      "weight": 0.09,
+      "sources": [
+        "https://munafasutra.com",
+        "https://ndtvprofit.com",
+        "https://trendlyne.com",
+        "https://financialexpress.com",
+        "https://equitypandit.com",
+        "https://screener.in",
+        "https://tradingview.com",
+        "https://economictimes.indiatimes.com",
+        "https://scanx.in",
+        "https://business-standard.com",
+        "https://fortuneindia.com",
+        "https://simplywall.st",
+        "https://livemint.com",
+        "https://marketscreener.com"
+      ]
+    },
+    {
+      "stock_ticker": "DEEPAKFERT",
+      "weight": 0.1,
+      "sources": [
+        "https://www.crisilratings.com/mnt/winshare/Ratings/RatingList/RatingDocs/DeepakFertilisersAndPetrochemicalsCorporationLimited_April%2019_%202024_RR_333569.html",
+        "https://www.business-standard.com/markets/news/apollo-tyres-deepak-fert-among-top-stocks-to-buy-today-check-key-levels-125092500113_1.html",
+        "https://fertiliserindia.com/indias-fertiliser-production-outlook-2025-growth-with-shifting-dynamics/"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio of 10 stocks is constructed to capture short-term upside potential (7-14 days, with some extending to 30 days) based on diverse catalysts and a balanced risk-reward profile. We prioritized stocks with clear, recent positive news, strong financial performance, and favorable analyst sentiment, while also considering diversification across sectors to mitigate concentration risk.\n\n**ALIVUS (12% weight):** Driven by a recent 'IND AA' credit rating upgrade and positive Q1 FY26 results, indicating fundamental re-rating and sustained investor interest. The target price is conservative, suggesting a good entry point.\n\n**CENTRALBK (11% weight):** Strong upside potential from the government's privatization agenda (20% stake sale within six months) and robust Q1 FY26 performance, including improved asset quality. This is a high-conviction play on PSB sector turnaround.\n\n**NBCC (10% weight):** Significant new order wins (over \u20b91,700 crore from Goa, \u20b93,700 crore from Rajasthan) provide strong revenue visibility. The stock is poised for upward movement as these contracts are executed.\n\n**PTCIL (10% weight):** Catalyzed by the commissioning of a state-of-the-art VAR furnace for titanium castings (enhancing self-reliance in aerospace/defense) and robust Q4 FY25 results. This offers exposure to advanced manufacturing and defense.\n\n**KARURVYSYA (9% weight):** Supported by a 'Buy' rating from ICICI Securities with a revised target price and strong Q1 FY26 net profit growth. The bank's asset recovery further strengthens its financial health.\n\n**SIGNATURE (9% weight):** Record pre-sales in FY25 and strong Q1 FY26 results, coupled with ambitious FY26 guidance and positive analyst sentiment, position it well in the luxury housing segment.\n\n**KAYNES (11% weight):** Bullish outlook due to its strategic position in India's semiconductor sector, successful first Made-in-India chip rollout, and significant investments/JVs in OSAT facilities. This is a high-growth technology play.\n\n**AAVAS (9% weight):** Driven by a 'Positive' outlook from CARE Ratings, consistent AUM growth, and strategic expansion in affordable housing. Despite some 'overvalued' concerns, strong fundamentals support continued appreciation.\n\n**MGL (9% weight):** Despite recent price correction due to gas price reduction, strong bullish sentiment from analyst reports (Motilal Oswal, ICICI Securities) focusing on long-term benefits of lower input costs and demand growth. This is a contrarian pick with strong analyst backing.\n\n**DEEPAKFERT (10% weight):** 'Positive' outlook from CRISIL Ratings due to strategic capacity expansion in TAN and Nitric Acid, combined with a recent technical breakout on high volumes. This offers exposure to a growing specialty chemicals sector.\n\nThis portfolio balances exposure across banking (CENTRALBK, KARURVYSYA, AAVAS), infrastructure/manufacturing (NBCC, PTCIL, DEEPAKFERT, KAYNES), real estate (SIGNATURE), and consumer services (MGL, ALIVUS). Each stock has specific, recent catalysts supporting its short-term growth, while the diversification aims to mitigate individual stock-specific risks.",
+  "expected_gain_1w": 9.82986031545801
+}

@@ -25,7 +25,7 @@ The system uses a unique approach called "vibe-coding" (stored in the [`prompts/
 Our latest research outputs are available in the following reports:
 
 - **NIFTY 50** (27 July 2025): [Analysis](baskets/NIFTY%2050__Jul_27_2025_22_04__N20_K5). Invest with [smallcase](https://smlc.se/MIRds)
-- **NIFTY SMALLCAP 250** (23 Sep 2025): [Analysis](baskets/NIFTY%20SMALLCAP%20250__Sep_23_2025_08_39__N40_K10). Invest with [smallcase](https://smlc.se/LBkbT)
+- **NIFTY SMALLCAP 250** (30 Sep 2025): [Analysis](baskets/NIFTY%20SMALLCAP%20250__Sep_30_2025_09_00__N50_K10). Invest with [smallcase](https://smlc.se/LBkbT)
 
 
 ## Architecture
