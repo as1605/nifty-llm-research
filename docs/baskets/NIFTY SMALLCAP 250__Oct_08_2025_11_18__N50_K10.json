@@ -1,0 +1,149 @@
+{
+  "creation_date": "2025-10-08T05:48:29.265392+00:00",
+  "invocation_id": "68e5fb1f935fa54aea5a9931",
+  "stocks_ticker_candidates": [
+    "TITAGARH",
+    "DEEPAKFERT",
+    "SOBHA",
+    "FIRSTCRY",
+    "USHAMART",
+    "ALIVUS",
+    "JBMA",
+    "RPOWER",
+    "CHALET",
+    "GRAVITA",
+    "RAYMOND",
+    "ACMESOLAR",
+    "SAILIFE",
+    "AADHARHFC",
+    "JYOTICNC",
+    "INOXWIND",
+    "WOCKPHARMA",
+    "UCOBANK",
+    "INDIAMART",
+    "ELGIEQUIP",
+    "ENGINERSIN",
+    "JMFINANCIL",
+    "CHENNPETRO",
+    "MGL",
+    "JINDALSAW",
+    "KARURVYSYA",
+    "PTCIL",
+    "CESC",
+    "EMCURE",
+    "DELHIVERY",
+    "KIRLOSBROS",
+    "BLS",
+    "BALRAMCHIN",
+    "ABSLAMC",
+    "PEL",
+    "JUSTDIAL",
+    "RAILTEL",
+    "DATAPATTNS",
+    "CAPLIPOINT",
+    "PVRINOX",
+    "PRAJIND",
+    "RBLBANK",
+    "NCC",
+    "SWSOLAR",
+    "JWL",
+    "HONASA",
+    "ANANTRAJ",
+    "ACE",
+    "TEJASNET",
+    "JPPOWER"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "SWSOLAR",
+      "weight": 0.12,
+      "sources": [
+        "https://economictimes.indiatimes.com",
+        "https://taiyangnews.info",
+        "https://alphaspread.com"
+      ]
+    },
+    {
+      "stock_ticker": "ALIVUS",
+      "weight": 0.11,
+      "sources": [
+        "https://www.business-standard.com",
+        "https://www.trendlyne.com",
+        "https://economictimes.indiatimes.com"
+      ]
+    },
+    {
+      "stock_ticker": "TEJASNET",
+      "weight": 0.11,
+      "sources": [
+        "https://Trendlyne.com"
+      ]
+    },
+    {
+      "stock_ticker": "GRAVITA",
+      "weight": 0.1,
+      "sources": [
+        "https://www.trendlyne.com",
+        "https://tradebrains.in",
+        "https://www.investing.com"
+      ]
+    },
+    {
+      "stock_ticker": "PTCIL",
+      "weight": 0.1,
+      "sources": [
+        "https://economictimes.indiatimes.com",
+        "https://marketsmojo.com",
+        "https://business-standard.com"
+      ]
+    },
+    {
+      "stock_ticker": "JWL",
+      "weight": 0.09,
+      "sources": [
+        "https://economictimes.indiatimes.com/markets/stocks/news",
+        "https://sanchaykaro.com/add-jupiter-wagons-ltd-to-your-portfolio-in-2025/",
+        "https://www.marketscreener.com/quote/stock/JUPITER-WAGONS-LIMITED-120067339/consensus/"
+      ]
+    },
+    {
+      "stock_ticker": "JINDALSAW",
+      "weight": 0.09,
+      "sources": [
+        "https://indiainfoline.com",
+        "https://alphaspread.com"
+      ]
+    },
+    {
+      "stock_ticker": "INDIAMART",
+      "weight": 0.09,
+      "sources": [
+        "https://m.economictimes.com/markets/stocks/news/indiamart-shares-get-rs-3800-target-price-stock-jumps-6/articleshow/122060967.cms",
+        "https://www.screener.in/company/INDIAMART/consolidated/",
+        "https://www.equitypandit.com/indiamart-outlook-for-the-week/"
+      ]
+    },
+    {
+      "stock_ticker": "DEEPAKFERT",
+      "weight": 0.09,
+      "sources": [
+        "https://trendlyne.com",
+        "https://www.mediabrief.com",
+        "https://www.financialexpress.com",
+        "https://www.fertiliserindia.com"
+      ]
+    },
+    {
+      "stock_ticker": "BLS",
+      "weight": 0.1,
+      "sources": [
+        "https://ndtvprofit.com",
+        "https://travelpress.com",
+        "https://trendlyne.com",
+        "https://tradebrains.in"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio of 10 stocks is constructed to balance high growth potential with diversified sector exposure and risk mitigation. Stocks like SWSOLAR, ALIVUS, and TEJASNET are assigned higher weights due to strong fundamental catalysts such as robust order books, credit rating upgrades, and significant new contracts, despite some near-term volatility or execution risks. GRAVITA and PTCIL also receive substantial weights for their expansion plans and strong institutional backing, respectively. JWL and JINDALSAW offer exposure to the growing Indian railway and steel pipe sectors with solid order books. INDIAMART and DEEPAKFERT provide stability through market dominance and strategic shifts, while BLS offers diversification through strategic acquisitions and new tech solutions. The portfolio avoids over-concentration in any single sector, spreading risk across solar, pharma, telecom, recycling, manufacturing, real estate, and logistics. Weights are adjusted to reflect the balance between strong catalysts and identified risks, aiming for a robust short-term performance.",
+  "expected_gain_1w": 7.163051259150691
+}
