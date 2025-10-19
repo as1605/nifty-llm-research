@@ -541,10 +541,10 @@ async def main():
                        help="Perform dry run without placing actual orders (default: True)")
     parser.add_argument("--live", action="store_true", 
                        help="Place actual orders (overrides --dry-run)")
-    parser.add_argument("--min-order-value", type=float, default=100.0,
+    parser.add_argument("--min-order-value", type=float, default=10.0,
                        help="Minimum order value in rupees (default: 100)")
     parser.add_argument("--quiet", action="store_true", help="Run in quiet non-interactive mode (auto-select defaults)")
-    parser.add_argument("--target-deficit", type=float, default=1000.0,
+    parser.add_argument("--target-deficit", type=float, default=1.0,
                        help="Target total deficit to reach before stopping (default: 1000)")
     
     args = parser.parse_args()

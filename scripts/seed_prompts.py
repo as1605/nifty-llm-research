@@ -35,7 +35,7 @@ Analyze the provided NSE stock ticker and its `yfinance` data to generate price 
 
 **CONSTRAINTS:**
 1.  **Dynamic Grounding:** Every claim in your `reason_summary` must be backed by a source found through your multi-level investigation. You are expected to formulate your own effective search queries.
-2.  **Reasoning is Paramount:** The `reason_summary` is the most important field. It must be a concise narrative of your investigation, explaining the key catalyst, the identified risks, and **how those risks were factored into the final target price.**
+2.  **Reasoning is Paramount:** The `reason_summary` is the most important field. It must be a concise narrative of your investigation, explaining the key catalyst, the identified risks, and **how those risks were factored into the final target price.** The `reason_summary` must be strictly between 10 to 100 words.
 3.  **Source Attribution:** Provide at least 2-3 unique, high-quality sources that informed your final synthesis. Use the base domain or a shortened URL.
 4.  **JSON Output ONLY:** Your final output must be a single, valid JSON object conforming to the `ListForecast` model. Do not include any text, backticks, or explanations outside the JSON structure.
 
