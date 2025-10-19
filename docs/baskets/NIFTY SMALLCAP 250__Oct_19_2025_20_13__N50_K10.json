@@ -1,0 +1,152 @@
+{
+  "creation_date": "2025-10-19T14:43:34.054368+00:00",
+  "invocation_id": "68f4f90bf2c7aeb8c914202a",
+  "stocks_ticker_candidates": [
+    "EMCURE",
+    "RAINBOW",
+    "ITI",
+    "ENGINERSIN",
+    "MAPMYINDIA",
+    "LEMONTREE",
+    "TBOTEK",
+    "KIRLOSENG",
+    "APTUS",
+    "IOB",
+    "INTELLECT",
+    "PPLPHARMA",
+    "ERIS",
+    "CCL",
+    "INOXWIND",
+    "ACMESOLAR",
+    "PNCINFRA",
+    "SCI",
+    "KNRCON",
+    "JYOTICNC",
+    "KANSAINER",
+    "CANFINHOME",
+    "DATAPATTNS",
+    "TARIL",
+    "GRAVITA",
+    "TANLA",
+    "JSWHL",
+    "SOBHA",
+    "CGCL",
+    "SAGILITY",
+    "LATENTVIEW",
+    "RRKABEL",
+    "AKUMS",
+    "COHANCE",
+    "CAPLIPOINT",
+    "BBTC",
+    "UCOBANK",
+    "PTCIL",
+    "NEWGEN",
+    "IDBI",
+    "HOMEFIRST",
+    "NUVAMA",
+    "KFINTECH",
+    "NBCC",
+    "WHIRLPOOL",
+    "ATUL",
+    "ABREL",
+    "DOMS",
+    "MINDACORP",
+    "ELECON"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "AKUMS",
+      "weight": 0.12,
+      "sources": [
+        "https://investing.com",
+        "https://economictimes.indiatimes.com",
+        "https://trendlyne.com"
+      ]
+    },
+    {
+      "stock_ticker": "BBTC",
+      "weight": 0.11,
+      "sources": [
+        "https://alphaspread.com",
+        "https://simplywall.st",
+        "https://www.mint.com"
+      ]
+    },
+    {
+      "stock_ticker": "DOMS",
+      "weight": 0.11,
+      "sources": [
+        "https://economictimes.indiatimes.com",
+        "https://etnownews.com",
+        "https://trendlyne.com"
+      ]
+    },
+    {
+      "stock_ticker": "ITI",
+      "weight": 0.1,
+      "sources": [
+        "https://www.icra.in/Rating/GetRationalReportFilePdf?id=137044",
+        "https://www.investywise.com/iti-limited-secures-bharatnet-phase-iii-project/",
+        "https://brokerage-free.in/blogs/articles/iti-ltd-navigating-challenges-powering-indias-telecom-and-defense-future",
+        "https://alphastreet.com/india/iti-ltd-q2fy25-313-rise-in-revenue/",
+        "https://www.marketsmojo.com/news/stocks-in-action/iti-ltd-hits-day-high-with-731-surge-outperforming-sector-3625272"
+      ]
+    },
+    {
+      "stock_ticker": "NBCC",
+      "weight": 0.1,
+      "sources": [
+        "https://economictimes.indiatimes.com",
+        "https://www.alphaspread.com",
+        "https://www.indiainfoline.com"
+      ]
+    },
+    {
+      "stock_ticker": "GRAVITA",
+      "weight": 0.09,
+      "sources": [
+        "https://economictimes.indiatimes.com",
+        "https://in.investing.com",
+        "https://scanx.in"
+      ]
+    },
+    {
+      "stock_ticker": "KIRLOSENG",
+      "weight": 0.09,
+      "sources": [
+        "https://www.marketscreener.com/quote/stock/KIRLOSKAR-OIL-ENGINES-LI-9058/news/Kirloskar-Oil-Engines-Limited-Plans-to-Spin-Off-Arka-Fincap-into-A-Separately-Listed-Company-by-2030-45100000/"
+      ]
+    },
+    {
+      "stock_ticker": "TARIL",
+      "weight": 0.09,
+      "sources": [
+        "https://www.venturasecurities.com/blog/diwali-stock-picks-2025-taril-the-next-power-stock-to-watch/",
+        "https://www.marketscreener.com/quote/stock/TRANSFORMERS-AND-RECTIFIE-105516224/consensus/",
+        "https://www.indmoney.com/stocks/transformers-and-rectifiers-india-ltd-share-price/results"
+      ]
+    },
+    {
+      "stock_ticker": "ENGINERSIN",
+      "weight": 0.09,
+      "sources": [
+        "https://marketscreener.com",
+        "https://indianchemicalnews.com",
+        "https://psuwatch.com",
+        "https://livemint.com",
+        "https://trendlyne.com"
+      ]
+    },
+    {
+      "stock_ticker": "DATAPATTNS",
+      "weight": 0.09,
+      "sources": [
+        "https://idrw.org",
+        "https://businesstoday.in",
+        "https://tejimandi.com"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio focuses on short-term opportunities (7-14 day forecasts) with strong catalysts and diversified risk. Akums, BBTC, and DOMS are assigned higher weights due to their significant gain potential and clear positive drivers like strong earnings, strategic expansions, and favorable regulatory changes. ITI and NBCC also receive substantial weights due to robust order books and government backing, despite some inherent execution risks. Gravita, Kirloskar Oil Engines, TARIL, Enginersin, and Data Patterns are included with slightly lower but still meaningful weights, balancing high growth potential from new orders, sector tailwinds, and upcoming results against risks like valuation concerns, market volatility, or operational challenges. The selection avoids over-concentration in any single sector, aiming for a balanced exposure across manufacturing, real estate, infrastructure, and technology, while prioritizing forecasts with clear, near-term catalysts.",
+  "expected_gain_1w": 9.055129951797106
+}
