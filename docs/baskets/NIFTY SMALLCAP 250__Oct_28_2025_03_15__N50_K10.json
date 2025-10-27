@@ -1,0 +1,146 @@
+{
+  "creation_date": "2025-10-27T21:45:01.688431+00:00",
+  "invocation_id": "68ffe7d0baaaa170cb389ef2",
+  "stocks_ticker_candidates": [
+    "APTUS",
+    "HONASA",
+    "CHAMBLFERT",
+    "MAHSEAMLES",
+    "SCI",
+    "JBCHEPHARM",
+    "ABREL",
+    "SWANCORP",
+    "CENTRALBK",
+    "PTCIL",
+    "PVRINOX",
+    "CHENNPETRO",
+    "INOXWIND",
+    "ERIS",
+    "PGEL",
+    "DATAPATTNS",
+    "CHOLAHLDNG",
+    "POONAWALLA",
+    "BLUEDART",
+    "KPIL",
+    "NCC",
+    "UCOBANK",
+    "RRKABEL",
+    "SIGNATURE",
+    "OLECTRA",
+    "RTNINDIA",
+    "LTFOODS",
+    "DBREALTY",
+    "CROMPTON",
+    "KIRLOSENG",
+    "TRIDENT",
+    "BBTC",
+    "DOMS",
+    "NATCOPHARM",
+    "NAVA",
+    "SAGILITY",
+    "GRAVITA",
+    "BLS",
+    "PRAJIND",
+    "ANANTRAJ",
+    "JBMA",
+    "GRSE",
+    "TANLA",
+    "DEEPAKFERT",
+    "PNBHOUSING",
+    "EIHOTEL",
+    "KIRLOSBROS",
+    "CAPLIPOINT",
+    "HFCL",
+    "ROUTE"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "TRIDENT",
+      "weight": 0.12,
+      "sources": [
+        "https://economictimes.indiatimes.com",
+        "https://www.crisil.com",
+        "https://www.careedge.in",
+        "https://www.marketscreener.com"
+      ]
+    },
+    {
+      "stock_ticker": "INOXWIND",
+      "weight": 0.11,
+      "sources": [
+        "https://windinsider.com/2025/04/21/inox-wind-executes-indias-largest-independent-wind-order-from-purvah-green/",
+        "https://www.zeebiz.com/market-news/anil-singhvis-top-2-stock-picks-could-offer-investors-up-to-94-returns-303102"
+      ]
+    },
+    {
+      "stock_ticker": "SIGNATURE",
+      "weight": 0.1,
+      "sources": [
+        "https://business-standard.com",
+        "https://trendlyne.com"
+      ]
+    },
+    {
+      "stock_ticker": "ANANTRAJ",
+      "weight": 0.1,
+      "sources": [
+        "https://economictimes.indiatimes.com",
+        "https://business-standard.com",
+        "https://marketscreener.com"
+      ]
+    },
+    {
+      "stock_ticker": "NCC",
+      "weight": 0.09,
+      "sources": [
+        "https://scanx.in",
+        "https://economictimes.indiatimes.com",
+        "https://hdfcsky.com"
+      ]
+    },
+    {
+      "stock_ticker": "UCOBANK",
+      "weight": 0.09,
+      "sources": [
+        "https://business-standard.com",
+        "https://livemint.com"
+      ]
+    },
+    {
+      "stock_ticker": "CROMPTON",
+      "weight": 0.09,
+      "sources": [
+        "https://www.taiwannews.com.tw/news/6064108",
+        "https://m.economictimes.com/stocksupdate/companyid-61335.cms"
+      ]
+    },
+    {
+      "stock_ticker": "DBREALTY",
+      "weight": 0.1,
+      "sources": [
+        "https://www.livemint.com",
+        "https://economictimes.indiatimes.com"
+      ]
+    },
+    {
+      "stock_ticker": "GRAVITA",
+      "weight": 0.1,
+      "sources": [
+        "https://capitalmarket.com",
+        "https://economictimes.indiatimes.com",
+        "https://trendlyne.com"
+      ]
+    },
+    {
+      "stock_ticker": "RRKABEL",
+      "weight": 0.1,
+      "sources": [
+        "https://investing.com",
+        "https://scanx.in",
+        "https://screener.in"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio of 10 stocks is constructed to achieve diversification across sectors and catalysts while prioritizing strong short-term gain potential (7-day and 14-day forecasts) and mitigating identified risks. \n\n**High-Conviction Picks (Higher Weights):**\n*   **TRIDENT (12%):** Strongest 30-day gain potential (29.28%) driven by India-US trade deal optimism and growth plans. While Q2 FY26 results show conflicting profit figures and US tariffs are a risk, the trade deal catalyst is significant. \n*   **INOXWIND (11%):** Excellent growth prospects from large order wins (990 MW, 3 GW order book), Q1 FY25 profit turnaround, and becoming net debt-free. Favorable government policies for renewable energy provide strong tailwinds. Risks are execution delays and competition, but overall outlook is very positive.\n*   **SIGNATURE (10%):** Driven by new project launches in Gurugram's premium segment and consistent debt reduction. Analyst 'Buy' ratings and positive real estate outlook are strong tailwinds. Execution risk for H2 targets is noted but manageable.\n*   **ANANTRAJ (10%):** Poised for upside from strong Q2 FY25 results anticipation and significant QIP funding for its data center business. Positive real estate sector outlook and analyst 'Buy' ratings support this. Risks from price correction and QIP dilution are factored in.\n\n**Solid Growth & Moderate Risk (Mid Weights):**\n*   **DBREALTY (10%):** Surged on strong Q1 results, major project completions, and new partnerships. Business realignment and promoter buying are positive. Historical financial instability and past SEBI fines are risks, but recent catalysts are strong.\n*   **GRAVITA (10%):** Volume surge driven by anticipation of strong Q2 FY26 results and positive analyst outlook in the recycling sector. Overvaluation is a concern, but long-term growth and investor engagement support upside.\n*   **RRKABEL (10%):** Continued growth from strong financials, capacity expansion, and favorable industry outlook. Anticipatory buying ahead of Q2 FY26 results is a short-term driver. Potential 'buy the rumor, sell the news' is a minor risk.\n\n**Diversifying Bets (Lower Weights):**\n*   **NCC (9%):** Secured a large coal mining contract, boosting its order book and revenue visibility. Upcoming Q2 results are a catalyst. Execution challenges and dependence on government projects are risks, leading to a slightly lower weight.\n*   **UCOBANK (9%):** Strong Q2 FY26 results with asset quality improvement and credit growth. Government plans for FDI cap hike and merger talks provide significant upside. Margin pressures and non-interest income are concerns, but the fundamental turnaround is positive.\n*   **CROMPTON (9%):** Secured a major solar rooftop order, diversifying into renewables. Despite weak Q1 results, analyst ratings are positive. Upcoming Q2 results are a risk, but the significant order provides a cautious recovery path.\n\nThis selection balances high-potential growth stocks with those showing strong fundamental turnarounds or significant new business wins, while ensuring exposure across different sectors like manufacturing, real estate, banking, and infrastructure to mitigate sector-specific risks. The weights reflect the confidence in the catalysts and the perceived risk levels based on the provided summaries.",
+  "expected_gain_1w": 8.308930543093007
+}
