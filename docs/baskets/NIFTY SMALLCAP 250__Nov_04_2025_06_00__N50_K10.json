@@ -1,0 +1,149 @@
+{
+  "creation_date": "2025-11-04T00:30:54.733608+00:00",
+  "invocation_id": "690949307e1bcc861e63ba93",
+  "stocks_ticker_candidates": [
+    "NCC",
+    "IIFL",
+    "KAYNES",
+    "KFINTECH",
+    "CONCORDBIO",
+    "WELCORP",
+    "IKS",
+    "UCOBANK",
+    "ZENTEC",
+    "RCF",
+    "DEEPAKFERT",
+    "HOMEFIRST",
+    "TBOTEK",
+    "TRIDENT",
+    "NEWGEN",
+    "ANANTRAJ",
+    "PPLPHARMA",
+    "AADHARHFC",
+    "INOXWIND",
+    "RITES",
+    "ACE",
+    "NUVAMA",
+    "HFCL",
+    "SWSOLAR",
+    "IGIL",
+    "NAVA",
+    "HINDCOPPER",
+    "MAHSEAMLES",
+    "SCI",
+    "SWANCORP",
+    "HBLENGINE",
+    "SBFC",
+    "GRAVITA",
+    "MASTEK",
+    "MCX",
+    "RRKABEL",
+    "BRIGADE",
+    "CENTRALBK",
+    "USHAMART",
+    "TITAGARH",
+    "POLYMED",
+    "SAREGAMA",
+    "SYRMA",
+    "KEC",
+    "HAPPSTMNDS",
+    "BLS",
+    "OLECTRA",
+    "ERIS",
+    "KPIL",
+    "ACMESOLAR"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "GRAVITA",
+      "weight": 0.12,
+      "sources": [
+        "https://www.livemint.com",
+        "https://www.univest.in",
+        "https://scanx.in"
+      ]
+    },
+    {
+      "stock_ticker": "SWSOLAR",
+      "weight": 0.11,
+      "sources": [
+        "https://taiyangnews.info/business/sterling-wilsons-q2-fy26-revenues-up-profit-down",
+        "https://www.nasdaq.com/articles/sterling-and-wilson-renewable-energy-nsei-swsolar-price-target-decreased-2369-32691"
+      ]
+    },
+    {
+      "stock_ticker": "UCOBANK",
+      "weight": 0.11,
+      "sources": [
+        "https://www.livemint.com/market/stock-market-news/uco-bank-q2-results-net-profit-rises-2-82-yoy-asset-quality-improves-11760699045081.html",
+        "https://tradebrains.in/fdi-hike-in-public-sector-banks-a-potential-game-changer-for-indias-financial-future/",
+        "https://timesofindia.indiatimes.com/city/noida/nclat-rejects-uco-bank-claim-in-bulland-buildtech-insolvency-case/articleshow/124968885.cms"
+      ]
+    },
+    {
+      "stock_ticker": "INOXWIND",
+      "weight": 0.1,
+      "sources": [
+        "https://mercomindia.com",
+        "https://economictimes.indiatimes.com",
+        "https://www.marketscreener.com"
+      ]
+    },
+    {
+      "stock_ticker": "NCC",
+      "weight": 0.1,
+      "sources": [
+        "https://businessupturn.com",
+        "https://trendlyne.com"
+      ]
+    },
+    {
+      "stock_ticker": "SWANCORP",
+      "weight": 0.1,
+      "sources": [
+        "https://marketsmojo.com",
+        "https://smart-investing.in",
+        "https://economictimes.indiatimes.com"
+      ]
+    },
+    {
+      "stock_ticker": "POLYMED",
+      "weight": 0.09,
+      "sources": [
+        "https://www.indmoney.com/stocks/poly-medicure-ltd-share-price",
+        "https://www.thetaxheaven.com/blog/poly-medicure-ltd-share-price-target",
+        "https://www.youtube.com/watch?v=KEDVV0xJKO8"
+      ]
+    },
+    {
+      "stock_ticker": "SAREGAMA",
+      "weight": 0.09,
+      "sources": [
+        "https://trendlyne.com",
+        "https://indmoney.com",
+        "https://business-standard.com"
+      ]
+    },
+    {
+      "stock_ticker": "CENTRALBK",
+      "weight": 0.09,
+      "sources": [
+        "https://plcapital.in",
+        "https://icra.in",
+        "https://business-standard.com",
+        "https://marketsmojo.com"
+      ]
+    },
+    {
+      "stock_ticker": "RCF",
+      "weight": 0.09,
+      "sources": [
+        "https://discoveryalert.com.au/news/india-fertilizer-subsidy-increase-2025-expansion/",
+        "https://in.marketscreener.com/quote/stock/RASHTRIYA-CHEMICALS-AND-F-9059249/calendar/",
+        "https://stockanalysis.com/quote/nse/RCF/"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio is constructed to capture short-term upside from diverse catalysts while maintaining a balanced risk profile. Gravita and SWSOLAR are weighted higher due to strong Q2 results, robust order books, and significant growth in their respective sectors (lithium-ion recycling, renewable energy), despite some inherent risks. UCOBANK benefits from improved asset quality and government policy tailwinds, offering a strong banking sector play. INOXWIND and NCC are included for their substantial order wins and positive profit turnarounds in the renewable and infrastructure sectors, respectively. SWANCORP offers a strategic pivot into defense/energy with strong FY25 results. POLYMED and SAREGAMA are positioned for potential post-earnings rallies, with Polymed benefiting from strategic acquisitions and Saregama from consolidation near lows. CENTRALBK is a PSU bank play with strong Q2 profit growth and privatization potential. RCF is included for increased government subsidies and upcoming positive Q2 results in the fertilizer sector. The portfolio avoids over-concentration by selecting stocks from different industries (renewable energy, recycling, banking, infrastructure, defense, healthcare, music, chemicals) and balances high-growth potential with stocks showing recovery or policy-driven tailwinds. Weights are adjusted to reflect the clarity and magnitude of catalysts versus identified risks, aiming for a diversified basket with a collective positive outlook.",
+  "expected_gain_1w": 9.873490824855445
+}
