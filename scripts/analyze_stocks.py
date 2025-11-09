@@ -172,16 +172,27 @@ async def process_stocks_with_semaphore(stocks: List[str], force_llm: bool, max_
     Returns:
         Dictionary mapping stock symbols to their forecasts
     """
+    # Get API keys to determine distribution
+    api_keys = settings.get_google_api_keys() or [settings.google_api_key]
+    num_keys = len(api_keys)
+    
+    if num_keys > 1:
+        logger.info(f"Distributing {len(stocks)} stocks across {num_keys} API keys evenly")
+    
     semaphore = asyncio.Semaphore(max_workers)
     results = {}
     
-    async def process_with_semaphore(symbol: str) -> None:
+    async def process_with_semaphore(symbol: str, stock_index: int) -> None:
         async with semaphore:
-            forecasts = await analyze_stock(symbol, StockResearchAgent(), force_llm=force_llm)
+            # Assign API key based on stock position for even distribution
+            # Stock at index i uses key at index (i % num_keys)
+            api_key_index = stock_index % num_keys if num_keys > 1 else None
+            agent = StockResearchAgent(api_key_index=api_key_index)
+            forecasts = await analyze_stock(symbol, agent, force_llm=force_llm)
             results[symbol] = forecasts
     
-    # Create tasks for all stocks
-    tasks = [asyncio.create_task(process_with_semaphore(symbol)) for symbol in stocks]
+    # Create tasks for all stocks with their indices
+    tasks = [asyncio.create_task(process_with_semaphore(symbol, idx)) for idx, symbol in enumerate(stocks)]
     
     # Wait for all tasks to complete
     await asyncio.gather(*tasks)
@@ -248,9 +259,15 @@ async def main():
     else:
         # Process stocks sequentially
         logger.info("Processing stocks sequentially")
+        # Get API keys for sequential processing too
+        api_keys = settings.get_google_api_keys() or [settings.google_api_key]
+        num_keys = len(api_keys)
         results = {}
-        for symbol in stocks:
-            forecasts = await analyze_stock(symbol, StockResearchAgent(), force_llm=args.force_llm)
+        for idx, symbol in enumerate(stocks):
+            # Assign API key based on stock position for even distribution
+            api_key_index = idx % num_keys if num_keys > 1 else None
+            agent = StockResearchAgent(api_key_index=api_key_index)
+            forecasts = await analyze_stock(symbol, agent, force_llm=args.force_llm)
             results[symbol] = forecasts
 
     # Log results

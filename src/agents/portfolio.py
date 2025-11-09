@@ -10,6 +10,7 @@ import json
 from src.db.database import COLLECTIONS
 from src.db.database import async_db
 from src.db.models import Basket, BasketStock
+from src.services.yfinance_service import YFinanceService
 
 from .base import BaseAgent
 
@@ -22,6 +23,7 @@ class PortfolioAgent(BaseAgent):
     def __init__(self):
         """Initialize the portfolio agent."""
         super().__init__()
+        self.yfinance_service = YFinanceService()
 
     async def _get_top_stocks(
         self,
@@ -125,12 +127,61 @@ class PortfolioAgent(BaseAgent):
         if not stock_data:
             raise ValueError("No stock data available for portfolio optimization")
 
-        # Clean forecast data by removing MongoDB specific fields
-        cleaned_stock_data = []
-        # Track sources for each stock
-        stock_sources = {}
+        # Get unique tickers to fetch financial data
+        unique_tickers = list(set([forecast['stock_ticker'] for forecast in stock_data]))
         
+        # Fetch LTP and OHLC data for each unique ticker
+        logger.info(f"Fetching LTP and OHLC data for {len(unique_tickers)} stocks")
+        ticker_financial_data = {}
+        for ticker in unique_tickers:
+            try:
+                # Get LTP
+                ltp = self.yfinance_service.get_stock_ltp(ticker)
+                
+                # Get OHLC for last 5 trading days
+                ohlc_data = self.yfinance_service.get_stock_ohlc_last_5_days(ticker)
+                
+                ticker_financial_data[ticker] = {
+                    "ltp": ltp,
+                    "ohlc_last_5_days": ohlc_data
+                }
+            except Exception as e:
+                logger.warning(f"Failed to fetch financial data for {ticker}: {e}")
+                ticker_financial_data[ticker] = {
+                    "ltp": None,
+                    "ohlc_last_5_days": []
+                }
+        
+        # Clean forecast data by removing MongoDB specific fields and add financial data
+        cleaned_stock_data = []
+        
+        # Group forecasts by ticker to get the latest 7-day forecast for each stock
+        ticker_to_latest_forecast = {}
         for forecast in stock_data:
+            ticker = forecast['stock_ticker']
+            # Only keep 7-day forecasts
+            if forecast.get('days') == 7:
+                if ticker not in ticker_to_latest_forecast:
+                    ticker_to_latest_forecast[ticker] = forecast
+                else:
+                    # Keep the most recent forecast based on created_time
+                    current_created = ticker_to_latest_forecast[ticker].get('created_time')
+                    new_created = forecast.get('created_time')
+                    if current_created and new_created:
+                        if new_created > current_created:
+                            ticker_to_latest_forecast[ticker] = forecast
+                    elif new_created:
+                        ticker_to_latest_forecast[ticker] = forecast
+        
+        # Check if we have any 7-day forecasts
+        if not ticker_to_latest_forecast:
+            raise ValueError(
+                f"No 7-day forecasts found for stocks in {index}. "
+                "Ensure that stock analysis has been run and forecasts have been generated."
+            )
+        
+        # Process each unique ticker with its latest 7-day forecast
+        for ticker, forecast in ticker_to_latest_forecast.items():
             cleaned_forecast = forecast.copy()
             # Remove MongoDB specific fields
             cleaned_forecast.pop('_id', None)
@@ -140,13 +191,13 @@ class PortfolioAgent(BaseAgent):
             
             # Convert forecast_date to simple date string
             if 'forecast_date' in cleaned_forecast:
-                cleaned_forecast['forecast_date'] = cleaned_forecast['forecast_date'].strftime('%Y-%m-%d')
+                if isinstance(cleaned_forecast['forecast_date'], datetime):
+                    cleaned_forecast['forecast_date'] = cleaned_forecast['forecast_date'].strftime('%Y-%m-%d')
             
-            # Track sources for each stock
-            ticker = cleaned_forecast['stock_ticker']
-            if ticker not in stock_sources:
-                stock_sources[ticker] = []
-            stock_sources[ticker].extend(cleaned_forecast.get('sources', []))
+            # Add financial data
+            financial_data = ticker_financial_data.get(ticker, {})
+            cleaned_forecast['ltp'] = financial_data.get('ltp')
+            cleaned_forecast['ohlc_last_5_days'] = financial_data.get('ohlc_last_5_days', [])
             
             cleaned_stock_data.append(cleaned_forecast)
 
@@ -180,27 +231,32 @@ class PortfolioAgent(BaseAgent):
                 ticker_to_weight[stock["stock_ticker"]] = stock["weight"]
 
             # Calculate expected_gain_1w as weighted average of 1-week (7d) gains
-            # 1. Gather all 1w (days==7) forecasts for each stock in the basket
-            ticker_to_1w_gains = {ticker: [] for ticker in ticker_to_weight}
-            for forecast in stock_data:
-                ticker = forecast["stock_ticker"]
-                if ticker in ticker_to_1w_gains and forecast.get("days") == 7:
-                    ticker_to_1w_gains[ticker].append(forecast["gain"])
-            # 2. Average the 1w gains for each stock
+            # Use the cleaned stock data which already has the latest 7-day forecasts
+            # Since cleaned_stock_data has one forecast per ticker (latest 7-day), we can directly use it
             ticker_to_avg_1w_gain = {}
-            for ticker, gains in ticker_to_1w_gains.items():
-                if gains:
-                    ticker_to_avg_1w_gain[ticker] = sum(gains) / len(gains)
-                else:
-                    ticker_to_avg_1w_gain[ticker] = 0.0  # or handle missing data as needed
-            # 3. Weighted average
+            for cleaned_forecast in cleaned_stock_data:
+                ticker = cleaned_forecast["stock_ticker"]
+                if ticker in ticker_to_weight and cleaned_forecast.get("days") == 7:
+                    # Use the gain from the latest 7-day forecast
+                    if cleaned_forecast.get("gain") is not None:
+                        ticker_to_avg_1w_gain[ticker] = cleaned_forecast["gain"]
+                    else:
+                        ticker_to_avg_1w_gain[ticker] = 0.0
+            
+            # Set default 0.0 for any tickers in basket that don't have gain data
+            for ticker in ticker_to_weight:
+                if ticker not in ticker_to_avg_1w_gain:
+                    ticker_to_avg_1w_gain[ticker] = 0.0
+                    logger.warning(f"No gain data found for {ticker} in basket, using 0.0")
+            
+            # Weighted average
             expected_gain_1w = sum(
                 ticker_to_avg_1w_gain[ticker] * ticker_to_weight[ticker]
                 for ticker in ticker_to_weight
             )
 
-            # Ensure stocks_ticker_candidates are unique
-            unique_ticker_candidates = list({stock["stock_ticker"] for stock in stock_data})
+            # Ensure stocks_ticker_candidates are unique - use all unique tickers from cleaned_stock_data
+            unique_ticker_candidates = list({stock["stock_ticker"] for stock in cleaned_stock_data})
 
             # Create and store basket
             basket = Basket(

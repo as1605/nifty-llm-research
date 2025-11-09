@@ -22,9 +22,13 @@ logger = logging.getLogger(__name__)
 class StockResearchAgent(BaseAgent):
     """Agent for analyzing stocks and generating price forecasts using Google Gemini models."""
 
-    def __init__(self):
-        """Initialize the stock research agent."""
-        super().__init__()
+    def __init__(self, api_key_index=None):
+        """Initialize the stock research agent.
+        
+        Args:
+            api_key_index: Optional index of the API key to use. If None, uses the first key.
+        """
+        super().__init__(api_key_index=api_key_index)
         self.yfinance_service = YFinanceService()
 
     async def _get_recent_forecasts(self, symbol: str, hours_threshold: int = 12) -> List[Dict[str, Any]]:
@@ -45,32 +49,6 @@ class StockResearchAgent(BaseAgent):
         }).to_list(length=None)
         
         return forecasts
-
-    async def _resolve_vertex_url(self, url: str) -> str:
-        """Resolve Vertex AI Search redirect URLs to their final destination.
-        
-        Args:
-            url: The URL to resolve
-            
-        Returns:
-            The final URL after following redirects
-        """
-        if not url.startswith("https://vertexaisearch.cloud.google.com/grounding-api-redirect"):
-            return url
-            
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, allow_redirects=False) as response:
-                    if response.status == 302:
-                        location = response.headers.get("Location")
-                        if location:
-                            logger.info(f"Resolved Vertex AI URL: {url} -> {location}")
-                            return location
-                    logger.warning(f"Vertex AI URL did not return 302: {url}")
-                    return url
-        except Exception as e:
-            logger.error(f"Error resolving Vertex AI URL {url}: {e}")
-            return url
 
     async def _process_sources(self, sources: List[str]) -> List[str]:
         """Process a list of source URLs, checking response status and following redirects.

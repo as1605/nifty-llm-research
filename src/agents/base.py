@@ -34,12 +34,29 @@ JITTER_FACTOR = 0.1  # 10% jitter
 class BaseAgent:
     """Base class for Gemini-powered agents."""
 
-    def __init__(self):
-        """Initialize the agent."""
+    def __init__(self, api_key_index: Optional[int] = None):
+        """Initialize the agent.
+        
+        Args:
+            api_key_index: Optional index of the API key to use. If None, uses the first key.
+                          If provided, uses the key at this index (modulo number of keys).
+        """
         # Prepare list of API keys (supports comma-separated keys)
         self._api_keys = settings.get_google_api_keys() or [settings.google_api_key]
-        self._api_key_index = 0
+        
+        # Determine which API key to use
+        if api_key_index is not None:
+            # Use the specified index, wrapping around if needed
+            self._api_key_index = api_key_index % len(self._api_keys)
+        else:
+            # Default to first key
+            self._api_key_index = 0
+        
         self.client = genai.Client(api_key=self._api_keys[self._api_key_index])
+        
+        # Log which key is being used if multiple keys are available
+        if len(self._api_keys) > 1:
+            logger.debug(f"Initialized agent with API key index {self._api_key_index} (total keys: {len(self._api_keys)})")
 
     def _parse_json_response(self, response_text: str) -> dict:
         """Parse JSON response with fallback mechanisms.

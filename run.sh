@@ -19,9 +19,9 @@ LOG_DIR="data/logs"
 mkdir -p "$LOG_DIR"
 
 # Configurable parameters
-INDEX="NIFTY SMALLCAP 250"
-FILTER_TOP_N=${FILTER_TOP_N:-50}
-BASKET_SIZE_K=${BASKET_SIZE_K:-10}
+INDEX="NIFTY NEXT 50"
+FILTER_TOP_N=${FILTER_TOP_N:-20}
+BASKET_SIZE_K=${BASKET_SIZE_K:-5}
 WORKERS=${WORKERS:-10}
 PARALLEL=${PARALLEL:-1}    # 1=true, 0=false
 FORCE_NSE=${FORCE_NSE:-0}  # 1 to refetch list from NSE
@@ -68,29 +68,41 @@ fi
 
 # 1st analysis pass
 echo "[1/6] Running stock analysis for: $INDEX (1st pass)" >&2
-python3 scripts/analyze_stocks.py -i "$INDEX" \
+if ! python3 scripts/analyze_stocks.py -i "$INDEX" \
   ${parallel_flag+"${parallel_flag[@]}"} \
   ${force_nse_flag+"${force_nse_flag[@]}"} \
   ${force_llm_flag+"${force_llm_flag[@]}"} \
-  2>&1 | tee "$ANALYZE1_LOG"
+  2>&1 | tee "$ANALYZE1_LOG"; then
+  echo "Error: First analysis pass failed. Check $ANALYZE1_LOG for details." >&2
+  exit 1
+fi
 
 # 2nd analysis pass
 echo "[2/6] Running stock analysis for: $INDEX (2nd pass)" >&2
-python3 scripts/analyze_stocks.py -i "$INDEX" \
+if ! python3 scripts/analyze_stocks.py -i "$INDEX" \
   ${parallel_flag+"${parallel_flag[@]}"} \
   ${force_nse_flag+"${force_nse_flag[@]}"} \
   ${force_llm_flag+"${force_llm_flag[@]}"} \
-  2>&1 | tee "$ANALYZE2_LOG"
+  2>&1 | tee "$ANALYZE2_LOG"; then
+  echo "Error: Second analysis pass failed. Check $ANALYZE2_LOG for details." >&2
+  exit 1
+fi
 
 # Generate portfolio
 echo "[3/6] Generating portfolio for: $INDEX (N=${FILTER_TOP_N}, K=${BASKET_SIZE_K})" >&2
-python3 scripts/generate_portfolio.py -i "$INDEX" -n "$FILTER_TOP_N" -k "$BASKET_SIZE_K" 2>&1 | tee "$GENERATE_LOG"
+if ! python3 scripts/generate_portfolio.py -i "$INDEX" -n "$FILTER_TOP_N" -k "$BASKET_SIZE_K" 2>&1 | tee "$GENERATE_LOG"; then
+  echo "Error: Portfolio generation failed. Check $GENERATE_LOG for details." >&2
+  exit 1
+fi
 
 # Find the latest basket JSON for this index
 echo "Locating latest generated basket..." >&2
-LATEST_JSON=$(find docs/baskets -maxdepth 1 -type f -name "$(printf '%s__*.json' "$INDEX")" -print0 | xargs -0 ls -t | head -n 1 || true)
+LATEST_JSON=$(find docs/baskets -maxdepth 1 -type f -name "${INDEX}__*.json" -print0 | xargs -0 ls -t 2>/dev/null | head -n 1 || true)
 if [[ -z "${LATEST_JSON}" ]]; then
   echo "Error: Could not locate latest basket JSON for index '$INDEX'" >&2
+  echo "Searched for pattern: ${INDEX}__*.json" >&2
+  echo "Available files in docs/baskets:" >&2
+  ls -1 docs/baskets/*.json 2>/dev/null | head -5 || echo "  (no JSON files found)" >&2
   exit 1
 fi
 
@@ -109,11 +121,14 @@ fi
 
 # Rebalance portfolio
 echo "[5/6] Rebalancing portfolio (mode: ${live_flag[*]} | quiet: ${QUIET_REBALANCE})" >&2
-python3 scripts/rebalance_portfolio.py "$LATEST_JSON" \
+if ! python3 scripts/rebalance_portfolio.py "$LATEST_JSON" \
   ${live_flag+"${live_flag[@]}"} \
   ${quiet_flag+"${quiet_flag[@]}"} \
   --min-order-value "$MIN_ORDER_VALUE" \
   --target-deficit "$TARGET_DEFICIT" \
-  2>&1 | tee "$REBALANCE_LOG"
+  2>&1 | tee "$REBALANCE_LOG"; then
+  echo "Error: Portfolio rebalancing failed. Check $REBALANCE_LOG for details." >&2
+  exit 1
+fi
 
 echo "[6/6] Completed end-to-end flow." >&2

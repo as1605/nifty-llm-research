@@ -230,8 +230,8 @@ async def main():
     )
     args = parser.parse_args()
 
-    # Calculate since_time in IST
-    since_time = datetime.now(IST) - timedelta(days=args.since_days)
+    # Calculate since_time in UTC (forecasts are stored in UTC)
+    since_time = datetime.now(timezone.utc) - timedelta(days=args.since_days)
 
     # Initialize agent
     agent = PortfolioAgent()

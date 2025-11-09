@@ -55,13 +55,6 @@ def is_market_open_ist(current: Optional[datetime] = None) -> bool:
     return (t >= MARKET_OPEN) and (t < MARKET_CLOSE)
 
 
-def is_before_market_open_ist(current: Optional[datetime] = None) -> bool:
-    current = current or now_ist()
-    if not is_weekday(current):
-        return True
-    return current.time() < MARKET_OPEN
-
-
 def next_9_14_ist(after: Optional[datetime] = None) -> datetime:
     """Compute the next 9:14 AM IST on a weekday starting from 'after'.
     Special case: if time is between 9:14 and 9:15 on a weekday, return 'after' (immediate, no wait).
