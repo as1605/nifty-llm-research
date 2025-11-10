@@ -22,6 +22,7 @@ The system uses a unique approach called "vibe-coding" (stored in the [`prompts/
 
 ## Latest Research Outputs
 
+- **NIFTY NEXT 50** (10 Nov 2025): [Analysis](baskets/NIFTY%20NEXT%2050__Nov_10_2025_09_49__N20_K5).
 Our latest research outputs are available in the following reports:
 
 - **NIFTY 50** (27 July 2025): [Analysis](baskets/NIFTY%2050__Jul_27_2025_22_04__N20_K5). Invest with [smallcase](https://smlc.se/MIRds)

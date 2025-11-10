@@ -1,0 +1,71 @@
+{
+  "creation_date": "2025-11-10T04:19:55.134551+00:00",
+  "invocation_id": "691167e325d878a26e6b8dda",
+  "stocks_ticker_candidates": [
+    "DLF",
+    "AMBUJACEM",
+    "GAIL",
+    "TVSMOTOR",
+    "TATAPOWER",
+    "ADANIENSOL",
+    "UNITDSPR",
+    "LICI",
+    "ADANIGREEN",
+    "ADANIPOWER",
+    "VBL",
+    "HAVELLS",
+    "LODHA",
+    "CANBK",
+    "LTIM",
+    "HAL",
+    "JINDALSTEL",
+    "GODREJCP",
+    "NAUKRI",
+    "RECLTD"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "LODHA",
+      "weight": 0.25,
+      "sources": [
+        "https://scanx.in/lodha-developers-delivers-strong-q2-fy26-performance-with-7-yoy-growth-in-pre-sales/",
+        "https://www.trendlyne.com/equity/share-prediction/LODHA/Lodha-Developers-Ltd/"
+      ]
+    },
+    {
+      "stock_ticker": "AMBUJACEM",
+      "weight": 0.2,
+      "sources": [
+        "https://businessoutreach.in"
+      ]
+    },
+    {
+      "stock_ticker": "ADANIPOWER",
+      "weight": 0.2,
+      "sources": [
+        "https://economictimes.indiatimes.com/",
+        "https://www.angelone.in/"
+      ]
+    },
+    {
+      "stock_ticker": "RECLTD",
+      "weight": 0.18,
+      "sources": [
+        "https://scanx.com",
+        "https://www.business-standard.com",
+        "https://www.deccanherald.com"
+      ]
+    },
+    {
+      "stock_ticker": "TATAPOWER",
+      "weight": 0.17,
+      "sources": [
+        "https://timesofindia.indiatimes.com",
+        "https://livemint.com",
+        "https://esgnews.com"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio focuses on high-potential short-term gains with a diversified approach across sectors. LODHA leads with the highest projected gain and strong real estate sector tailwinds, supported by robust Q2 results and expansion plans. AMBUJACEM and ADANIPOWER offer solid growth prospects from capacity expansion and strong operational performance in the cement and power sectors, respectively. RECLTD provides exposure to renewable energy funding and a dividend catalyst, while TATAPOWER offers stability through its renewable energy expansion. The selection balances high growth potential with underlying fundamental strength, mitigating risks by avoiding over-concentration in any single sector or company-specific risk.",
+  "expected_gain_1w": 7.540951201160157
+}
