@@ -25,3 +25,9 @@ Go through the entire process of run.sh and make sure each script works perfectl
 
 
 Remove redundant code which is not being used. Analyse carefully that the code being removed is not used anywhere
+
+
+When passing data to LLM, ensure all floating point numbers are 2 decimal places. When fetching stocks from db in portfolio agent, get last forecast for each stock instead of average
+
+
+Identify common functions and move them to src.utils

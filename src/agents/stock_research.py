@@ -12,6 +12,7 @@ from src.db.database import COLLECTIONS
 from src.db.database import async_db
 from src.db.models import Forecast, ListForecast
 from src.services.yfinance_service import YFinanceService
+from src.utils.data_utils import round_floats_to_2_decimals
 
 from .base import BaseAgent
 
@@ -246,6 +247,9 @@ class StockResearchAgent(BaseAgent):
         if "error" in yfinance_data:
             logger.warning(f"Failed to fetch yfinance data for {symbol}: {yfinance_data['error']}")
             yfinance_data = {}  # Use empty dict to avoid errors
+        
+        # Round all floating point numbers to 2 decimal places before formatting
+        yfinance_data = round_floats_to_2_decimals(yfinance_data)
         
         # Format yfinance data for LLM consumption
         yfinance_formatted = self._format_yfinance_data_for_llm(yfinance_data)

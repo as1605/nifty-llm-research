@@ -11,6 +11,7 @@ from src.db.database import COLLECTIONS
 from src.db.database import async_db
 from src.db.models import Basket, BasketStock
 from src.services.yfinance_service import YFinanceService
+from src.utils.data_utils import round_floats_to_2_decimals
 
 from .base import BaseAgent
 
@@ -32,16 +33,16 @@ class PortfolioAgent(BaseAgent):
         filter_top_n: int,
         force_llm: bool = False
     ) -> List[Dict[str, Any]]:
-        """Get top performing stocks based on forecasts.
+        """Get top performing stocks based on latest forecasts.
         
         Args:
             index: Index to filter stocks by
             since_time: Only consider forecasts after this time
             filter_top_n: Number of top stocks to return
-            force_llm: If True, require at least 5 forecasts per stock
+            force_llm: If True, require at least 5 forecasts per stock (unused, kept for compatibility)
             
         Returns:
-            List of all forecasts for the top N stocks by average gain
+            List of latest forecast for the top N stocks by gain of latest forecast
         """
         # First get all stocks in the index
         stocks = await async_db[COLLECTIONS["stocks"]].find(
@@ -53,41 +54,35 @@ class PortfolioAgent(BaseAgent):
             
         tickers = [stock["ticker"] for stock in stocks]
         
-        # Use MongoDB aggregation to get top N stocks by average gain
+        # Use MongoDB aggregation to get the latest 7-day forecast for each stock
         pipeline = [
-            # Match forecasts for stocks in the index after since_time
+            # Match forecasts for stocks in the index after since_time, only 7-day forecasts
             {
                 "$match": {
                     "stock_ticker": {"$in": tickers},
-                    "created_time": {"$gte": since_time}
+                    "created_time": {"$gte": since_time},
+                    "days": 7
                 }
             },
-            # Group by stock_ticker and calculate average gain
+            # Sort by stock_ticker and created_time descending to get latest first
+            {"$sort": {"stock_ticker": 1, "created_time": -1}},
+            # Group by stock_ticker and take the first (latest) forecast
             {
                 "$group": {
                     "_id": "$stock_ticker",
-                    "avg_gain": {"$avg": "$gain"},
-                    "forecast_count": {"$sum": 1},
-                    "forecasts": {"$push": "$$ROOT"}
+                    "latest_forecast": {"$first": "$$ROOT"},
+                    "latest_gain": {"$first": "$gain"}
                 }
             },
-            # Filter stocks with enough forecasts if force_llm is True
-            {
-                "$match": {
-                    "forecast_count": {"$gte": 4 if force_llm else 1}
-                }
-            },
-            # Sort by average gain in descending order
-            {"$sort": {"avg_gain": -1}},
+            # Sort by latest_gain in descending order
+            {"$sort": {"latest_gain": -1}},
             # Limit to top N stocks
             {"$limit": filter_top_n},
-            # Unwind the forecasts array to get all forecasts
-            {"$unwind": "$forecasts"},
             # Project only the forecast data
             {
                 "$project": {
                     "_id": 0,
-                    "forecast": "$forecasts"
+                    "forecast": "$latest_forecast"
                 }
             }
         ]
@@ -152,36 +147,20 @@ class PortfolioAgent(BaseAgent):
                     "ohlc_last_5_days": []
                 }
         
-        # Clean forecast data by removing MongoDB specific fields and add financial data
-        cleaned_stock_data = []
-        
-        # Group forecasts by ticker to get the latest 7-day forecast for each stock
-        ticker_to_latest_forecast = {}
-        for forecast in stock_data:
-            ticker = forecast['stock_ticker']
-            # Only keep 7-day forecasts
-            if forecast.get('days') == 7:
-                if ticker not in ticker_to_latest_forecast:
-                    ticker_to_latest_forecast[ticker] = forecast
-                else:
-                    # Keep the most recent forecast based on created_time
-                    current_created = ticker_to_latest_forecast[ticker].get('created_time')
-                    new_created = forecast.get('created_time')
-                    if current_created and new_created:
-                        if new_created > current_created:
-                            ticker_to_latest_forecast[ticker] = forecast
-                    elif new_created:
-                        ticker_to_latest_forecast[ticker] = forecast
-        
-        # Check if we have any 7-day forecasts
-        if not ticker_to_latest_forecast:
+        # Check if we have any forecasts
+        if not stock_data:
             raise ValueError(
                 f"No 7-day forecasts found for stocks in {index}. "
                 "Ensure that stock analysis has been run and forecasts have been generated."
             )
         
-        # Process each unique ticker with its latest 7-day forecast
-        for ticker, forecast in ticker_to_latest_forecast.items():
+        # Clean forecast data by removing MongoDB specific fields and add financial data
+        cleaned_stock_data = []
+        
+        # stock_data already contains only the latest 7-day forecast for each stock (from MongoDB aggregation)
+        # Process each forecast
+        for forecast in stock_data:
+            ticker = forecast['stock_ticker']
             cleaned_forecast = forecast.copy()
             # Remove MongoDB specific fields
             cleaned_forecast.pop('_id', None)
@@ -200,6 +179,9 @@ class PortfolioAgent(BaseAgent):
             cleaned_forecast['ohlc_last_5_days'] = financial_data.get('ohlc_last_5_days', [])
             
             cleaned_stock_data.append(cleaned_forecast)
+
+        # Round all floating point numbers to 2 decimal places before passing to LLM
+        cleaned_stock_data = round_floats_to_2_decimals(cleaned_stock_data)
 
         # Get prompt config
         prompt_config = await self.get_prompt_config("portfolio_basket")
@@ -233,25 +215,24 @@ class PortfolioAgent(BaseAgent):
             # Calculate expected_gain_1w as weighted average of 1-week (7d) gains
             # Use the cleaned stock data which already has the latest 7-day forecasts
             # Since cleaned_stock_data has one forecast per ticker (latest 7-day), we can directly use it
-            ticker_to_avg_1w_gain = {}
+            ticker_to_gain = {}
             for cleaned_forecast in cleaned_stock_data:
                 ticker = cleaned_forecast["stock_ticker"]
-                if ticker in ticker_to_weight and cleaned_forecast.get("days") == 7:
-                    # Use the gain from the latest 7-day forecast
-                    if cleaned_forecast.get("gain") is not None:
-                        ticker_to_avg_1w_gain[ticker] = cleaned_forecast["gain"]
-                    else:
-                        ticker_to_avg_1w_gain[ticker] = 0.0
+                # All forecasts in cleaned_stock_data are 7-day forecasts
+                if cleaned_forecast.get("gain") is not None:
+                    ticker_to_gain[ticker] = cleaned_forecast["gain"]
+                else:
+                    ticker_to_gain[ticker] = 0.0
             
             # Set default 0.0 for any tickers in basket that don't have gain data
             for ticker in ticker_to_weight:
-                if ticker not in ticker_to_avg_1w_gain:
-                    ticker_to_avg_1w_gain[ticker] = 0.0
+                if ticker not in ticker_to_gain:
+                    ticker_to_gain[ticker] = 0.0
                     logger.warning(f"No gain data found for {ticker} in basket, using 0.0")
             
-            # Weighted average
+            # Weighted average (using latest forecast gain for each stock)
             expected_gain_1w = sum(
-                ticker_to_avg_1w_gain[ticker] * ticker_to_weight[ticker]
+                ticker_to_gain[ticker] * ticker_to_weight[ticker]
                 for ticker in ticker_to_weight
             )
 

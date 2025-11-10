@@ -3,9 +3,7 @@ Base agent class for Google Gemini model interactions.
 """
 
 import asyncio
-import json
 import logging
-import re
 import random
 from typing import Optional, List, Dict, Any, Tuple
 from datetime import datetime, timezone
@@ -18,6 +16,7 @@ from src.db.database import COLLECTIONS
 from src.db.database import async_db
 from src.db.models import Invocation
 from src.db.models import PromptConfig
+from src.utils.json_utils import parse_json_response
 
 from src.config.settings import settings
 
@@ -61,6 +60,9 @@ class BaseAgent:
     def _parse_json_response(self, response_text: str) -> dict:
         """Parse JSON response with fallback mechanisms.
         
+        This is a wrapper around the utility function for backward compatibility.
+        Prefer using parse_json_response from src.utils.json_utils directly.
+        
         Args:
             response_text: The response text from the LLM
             
@@ -70,27 +72,7 @@ class BaseAgent:
         Raises:
             ValueError: If JSON parsing fails after all attempts
         """
-        try:
-            return json.loads(response_text)
-        except json.JSONDecodeError:
-            logger.warning("Initial JSON parsing failed, attempting fallback methods...")
-            # Try to extract JSON from markdown code blocks
-            json_match = re.search(r'```(?:json)?\s*({[\s\S]*?})\s*```', response_text)
-            if json_match:
-                try:
-                    return json.loads(json_match.group(1))
-                except json.JSONDecodeError:
-                    logger.warning("Failed to parse JSON from markdown code block")
-            
-            # Try to find the first valid JSON object
-            json_match = re.search(r'({[\s\S]*})', response_text)
-            if json_match:
-                try:
-                    return json.loads(json_match.group(1))
-                except json.JSONDecodeError:
-                    logger.warning("Failed to parse JSON from text content")
-            
-            raise ValueError("Failed to parse JSON response from LLM")
+        return parse_json_response(response_text)
 
     def _create_messages(
         self,
