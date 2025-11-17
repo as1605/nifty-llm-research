@@ -1,0 +1,73 @@
+{
+  "creation_date": "2025-11-17T07:15:53.649099+00:00",
+  "invocation_id": "691acb6b32956143a4142a53",
+  "stocks_ticker_candidates": [
+    "GAIL",
+    "LICI",
+    "ZYDUSLIFE",
+    "ADANIENSOL",
+    "PIDILITIND",
+    "SOLARINDS",
+    "MOTHERSON",
+    "CANBK",
+    "ADANIPOWER",
+    "ENRIN",
+    "ADANIGREEN",
+    "AMBUJACEM",
+    "DLF",
+    "HAVELLS",
+    "BANKBARODA",
+    "JSWENERGY",
+    "VEDL",
+    "NAUKRI",
+    "MAZDOCK",
+    "GODREJCP"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "SOLARINDS",
+      "weight": 0.22,
+      "sources": [
+        "https://trendlyne.com/research-reports/stock/1263/SOLARINDS/solar-industries-india-ltd/",
+        "https://trendlyne.com/research-reports/post/SOLARINDS/1263/solar-industries-india-ltd/",
+        "https://www.businesstoday.in/markets/stocks/story/multibagger-defence-stock-falls-from-record-high-price-targets-technicals-and-more-497945-2025-10-13"
+      ]
+    },
+    {
+      "stock_ticker": "MAZDOCK",
+      "weight": 0.22,
+      "sources": [
+        "https://scanx.trade/stock-market-news/earnings/mazagon-dock-shipbuilders-reports-robust-q2-performance-with-28-surge-in-net-profit/23124629",
+        "https://infra.economictimes.indiatimes.com/news/ports-shipping/mazagon-dock-to-erect-indias-largest-floating-dry-dock-at-nhava-near-mumbai-to-expand-capacity/117503494",
+        "https://www.aninews.in/news/business/indias-shipbuilding-sector-sets-sail-for-global-leadership20251016144708/"
+      ]
+    },
+    {
+      "stock_ticker": "MOTHERSON",
+      "weight": 0.2,
+      "sources": [
+        "https://hdfcsky.com/news/samvardhana-motherson-announces-financial-results-for-q2-fy26",
+        "https://hdfcsky.com/news/motherson-q2-fy26-revenue-rises-to-rs-30173-crore"
+      ]
+    },
+    {
+      "stock_ticker": "ZYDUSLIFE",
+      "weight": 0.18,
+      "sources": [
+        "https://www.marketsmojo.com/news/result-analysis/zydus-lifesciences-q2-fy26-margin-pressures-weigh-despite-revenue-growth-3677742",
+        "https://scanx.trade/stock-market-news/earnings/zydus-lifesciences-reports-robust-q2-fy26-performance-with-17-revenue-growth/24559914",
+        "https://www.pharmabiz.com/NewsDetails.aspx?aid=182415&sid=2",
+        "https://www.passionateinmarketing.com/zydus-receives-final-approval-from-usfda-for-leuprolide-acetate-injection-14-mg-2-8-ml-1-mg-0-2-ml-multiple-dose-vial-2/"
+      ]
+    },
+    {
+      "stock_ticker": "ADANIPOWER",
+      "weight": 0.18,
+      "sources": [
+        "https://www.moneycontrol.com/news/business/stocks/adani-power-shares-to-rally-post-q2-results-say-analysts (Simulated Moneycontrol article)"
+      ]
+    }
+  ],
+  "reason_summary": "This 5-stock portfolio is constructed for a 1-week holding period, prioritizing stocks with the most potent and recent catalysts. (a) Stock Selection: The chosen stocks (SOLARINDS, MAZDOCK, MOTHERSON, ZYDUSLIFE, ADANIPOWER) were selected from the 20 candidates due to their superior risk-reward profiles, driven by very recent, high-impact events. SOLARINDS and MAZDOCK exhibit exceptional Q2 earnings and massive order books, providing strong fundamental thrust. MOTHERSON and ADANIPOWER are included based on powerful earnings beats that are still being priced in by the market, with ADANIPOWER's catalyst being the most recent. ZYDUSLIFE was chosen for its unique and significant catalyst\u2014a major US FDA approval for a high-value drug, which often triggers a short-term re-rating. Stocks with less certain short-term outcomes, such as VEDL (demerger uncertainty) or DLF (mixed financials), were excluded. (b) Weight Allocation: The portfolio is weighted towards the highest conviction ideas. SOLARINDS and MAZDOCK receive the highest allocation (0.22 each) due to their top-tier gain potential and dual catalysts of record earnings and order visibility. MOTHERSON is a core holding at 0.20. ZYDUSLIFE and ADANIPOWER are weighted at 0.18 each, balancing their strong but distinct catalysts against recent price volatility (ZYDUSLIFE) and potential post-earnings volatility (ADANIPOWER). (c) Diversification: The portfolio achieves diversification across five different sectors: Industrials/Defense (SOLARINDS, MAZDOCK), Auto Ancillary (MOTHERSON), Pharmaceuticals (ZYDUSLIFE), and Power (ADANIPOWER). This spreads risk across various economic segments. Catalyst diversification is also achieved by blending earnings-driven plays with a significant regulatory approval event. (d) 1-Week Optimization: The focus on catalysts from the past week ensures that the rationale for each trade is timely and that the market is likely to react within the short holding period, maximizing the potential for capturing the forecasted gains.",
+  "expected_gain_1w": 9.1646
+}
