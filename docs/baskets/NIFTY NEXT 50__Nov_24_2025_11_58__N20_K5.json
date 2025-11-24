@@ -1,0 +1,67 @@
+{
+  "creation_date": "2025-11-24T06:28:17.184951+00:00",
+  "invocation_id": "6923fad0d30edb5b3bc5f3db",
+  "stocks_ticker_candidates": [
+    "PNB",
+    "CANBK",
+    "PFC",
+    "GODREJCP",
+    "VEDL",
+    "TVSMOTOR",
+    "BANKBARODA",
+    "INDHOTEL",
+    "TATAPOWER",
+    "UNITDSPR",
+    "LICI",
+    "HYUNDAI",
+    "ENRIN",
+    "ADANIENSOL",
+    "VBL",
+    "GAIL",
+    "LODHA",
+    "SOLARINDS",
+    "IRFC",
+    "JINDALSTEL"
+  ],
+  "stocks": [
+    {
+      "stock_ticker": "GAIL",
+      "weight": 0.25,
+      "sources": [
+        "https://www.business-standard.com/companies/news/gail-india-q2-profit-jumps-120-yoy-to-rs-2-405-crore-123110300456_1.html"
+      ]
+    },
+    {
+      "stock_ticker": "TATAPOWER",
+      "weight": 0.25,
+      "sources": [
+        "https://www.etnownews.com/markets/tata-power-share-price-target-2025-rs-13100-cr-deal-for-bhutans-second-largest-hydropower-project-brokerage-says-buy-article-153188373",
+        "https://trendlyne.com/research-reports/stock/1364/TATAPOWER/tata-power-company-ltd/"
+      ]
+    },
+    {
+      "stock_ticker": "LICI",
+      "weight": 0.2,
+      "sources": [
+        "https://www.marketscreener.com/quote/stock/LIFE-INSURANCE-CORPORATION-OF-INDIA-134098909/news/Transcript-Life-Insurance-Corporation-of-India-Q2-2026-Earnings-Call-Nov-06-2025-45367809/"
+      ]
+    },
+    {
+      "stock_ticker": "IRFC",
+      "weight": 0.15,
+      "sources": [
+        "https://www.financialexpress.com/business/industry-irfc-q2-fy26-results-profit-rises-10-per-cent-yoy-declares-interim-dividend-of-rs-1-05-4011457/",
+        "https://www.angelone.in/news/market-updates/irfc-q2-fy26-results-reports-highest-ever-pat-and-record-interim-dividend-share-price-in-focus"
+      ]
+    },
+    {
+      "stock_ticker": "PFC",
+      "weight": 0.15,
+      "sources": [
+        "https://www.goodreturns.in/news/big-dividend-alert-maharatna-psu-near-52-week-low-to-pay-36-dividend-roe-at-41-perfect-buy-opportunity-1378396.html"
+      ]
+    }
+  ],
+  "reason_summary": "This portfolio of 5 stocks is constructed for a 1-week holding period, focusing on companies with strong, time-bound catalysts and a diversified risk profile. The selection prioritizes clear, impactful events expected to materialize shortly over stocks with higher but less certain gains.\n\n(a) Stock Selection: The chosen stocks\u2014GAIL, TATAPOWER, LICI, IRFC, and PFC\u2014were selected for their compelling short-term catalysts. GAIL stands out for its exceptional Q2 earnings beat (120% profit jump). TATAPOWER was chosen due to the very recent announcement of a monumental new hydroelectric project. LICI is included for its powerful and imminent legislative catalyst (Insurance Laws Bill). PFC offers a tactical dividend-capture opportunity with a record date within the holding period, combined with an oversold technical position. IRFC, despite recent price weakness, was selected for its strong fundamental drivers and the highest potential gain, making it an attractive rebound candidate.\n\n(b) Weight Allocation: Weights are assigned based on a risk-reward assessment. GAIL and TATAPOWER receive the highest allocation (25% each) due to the clarity and high impact of their recent positive news and manageable short-term risks. LICI is weighted at 20%, reflecting the significant potential of its legislative catalyst, tempered by the slight uncertainty of parliamentary timelines. IRFC and PFC are assigned lower weights (15% each) to balance their potential. IRFC's weight is moderated by its current bearish technical trend, while PFC's is moderated by the specific, tactical nature of its dividend play.\n\n(c) Diversification Strategy: The portfolio achieves diversification primarily through its mix of catalyst types, reducing dependence on a single market theme. It includes an earnings-driven play (GAIL), a new-contract play (TATAPOWER), a regulatory event (LICI), a dividend-capture play (PFC), and a fundamental rebound play (IRFC). Sector exposure is concentrated in financials and utilities, but the underlying drivers for each stock are distinct, mitigating sector-specific risks.\n\n(d) 1-Week Optimization: The portfolio is explicitly optimized for a 7-day horizon. The catalysts for PFC (dividend record date of Nov 26) and LICI (imminent parliamentary session) are perfectly timed. The market is expected to continue digesting the very recent positive news from GAIL and TATAPOWER, while IRFC's position near support levels makes it ripe for a potential short-term reversal.",
+  "expected_gain_1w": 7.318
+}
