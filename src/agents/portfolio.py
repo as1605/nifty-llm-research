@@ -54,7 +54,7 @@ class PortfolioAgent(BaseAgent):
             
         tickers = [stock["ticker"] for stock in stocks]
         
-        # Use MongoDB aggregation to get the latest 7-day forecast for each stock
+        # Use MongoDB aggregation to get averaged 7-day forecast metrics for each stock
         pipeline = [
             # Match forecasts for stocks in the index after since_time, only 7-day forecasts
             {
@@ -66,23 +66,34 @@ class PortfolioAgent(BaseAgent):
             },
             # Sort by stock_ticker and created_time descending to get latest first
             {"$sort": {"stock_ticker": 1, "created_time": -1}},
-            # Group by stock_ticker and take the first (latest) forecast
+            # Group by stock_ticker, keeping the latest doc but averaging numeric metrics
             {
                 "$group": {
                     "_id": "$stock_ticker",
                     "latest_forecast": {"$first": "$$ROOT"},
-                    "latest_gain": {"$first": "$gain"}
+                    "avg_gain": {"$avg": "$gain"},
+                    "avg_target_price": {"$avg": "$target_price"},
+                    "forecast_count": {"$sum": 1}
                 }
             },
-            # Sort by latest_gain in descending order
-            {"$sort": {"latest_gain": -1}},
+            # Sort by average gain in descending order
+            {"$sort": {"avg_gain": -1}},
             # Limit to top N stocks
             {"$limit": filter_top_n},
             # Project only the forecast data
             {
                 "$project": {
                     "_id": 0,
-                    "forecast": "$latest_forecast"
+                    "forecast": {
+                        "$mergeObjects": [
+                            "$latest_forecast",
+                            {
+                                "gain": "$avg_gain",
+                                "target_price": "$avg_target_price",
+                                "forecast_count": "$forecast_count"
+                            }
+                        ]
+                    }
                 }
             }
         ]
@@ -157,7 +168,7 @@ class PortfolioAgent(BaseAgent):
         # Clean forecast data by removing MongoDB specific fields and add financial data
         cleaned_stock_data = []
         
-        # stock_data already contains only the latest 7-day forecast for each stock (from MongoDB aggregation)
+        # stock_data already contains one 7-day forecast per stock with averaged metrics (from MongoDB aggregation)
         # Process each forecast
         for forecast in stock_data:
             ticker = forecast['stock_ticker']
@@ -213,8 +224,8 @@ class PortfolioAgent(BaseAgent):
                 ticker_to_weight[stock["stock_ticker"]] = stock["weight"]
 
             # Calculate expected_gain_1w as weighted average of 1-week (7d) gains
-            # Use the cleaned stock data which already has the latest 7-day forecasts
-            # Since cleaned_stock_data has one forecast per ticker (latest 7-day), we can directly use it
+            # Use the cleaned stock data which already has averaged 7-day forecasts
+            # Since cleaned_stock_data has one forecast per ticker (averaged), we can directly use it
             ticker_to_gain = {}
             for cleaned_forecast in cleaned_stock_data:
                 ticker = cleaned_forecast["stock_ticker"]

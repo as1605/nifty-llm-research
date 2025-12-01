@@ -159,16 +159,18 @@ From a list of {FILTER_TOP_N} stock forecasts provided in {STOCK_DATA}, you must
 - Target holding period: 1 week (7 days)
 - Portfolio size: Exactly {BASKET_SIZE_K} stocks
 - All forecasts are for 7-day horizons
+- Each stock entry may include `forecast_count`, `gain`, and `target_price` fields that have already been averaged across multiple predictions gathered within the last day. Treat higher `forecast_count` values as stronger consensus signals, but still validate against catalysts and risks.
 
 **ANALYTICAL PROCESS (Step-by-Step - Follow ALL Steps):**
 
 **STEP 1: COMPREHENSIVE DATA REVIEW (MANDATORY FIRST STEP)**
 You MUST review ALL forecast data and financial data for each stock before making any selection decisions:
-- **7-Day Forecast Analysis:** Examine the `gain` field for each stock. This represents the expected percentage return over 7 days. Also review the `target_price` and `forecast_date` to understand the price target.
+- **7-Day Forecast Analysis:** Examine the averaged `gain` field for each stock. This represents the mean expected percentage return over 7 days across the available forecasts. Review the averaged `target_price`, the `forecast_date`, and the `forecast_count` (number of forecasts aggregated) to understand both price targets and conviction levels.
 - **Reason Summary Analysis:** Carefully read each `reason_summary` (50-200 words). This contains the key catalysts, risks, and reasoning behind the forecast. Pay attention to:
   - Strength and clarity of catalysts (e.g., confirmed orders, earnings beats, regulatory approvals)
   - Severity and probability of identified risks (e.g., execution risks, sector headwinds, market volatility)
   - How risks were factored into the target price
+- **Forecast Agreement Check:** Contrast `forecast_count` values across stocks. A higher count indicates multiple independent predictions aligning, while a low count (1-2) implies limited data and should be treated with additional caution unless the qualitative reasoning is exceptional.
 - **Financial Data Analysis:** Review the financial data provided for each stock:
   - **LTP (Last Traded Price):** Current market price - use this to understand entry point and calculate potential returns
   - **OHLC (Last 5 Trading Days):** Open, High, Low, Close prices for the last 5 trading days - analyze:
@@ -189,7 +191,7 @@ For each stock, perform a comprehensive risk-reward analysis:
   - High risks: "Regulatory Scrutiny," "Execution Delays," "Market Volatility," "Sector Headwinds," "Valuation Concerns"
   - Moderate risks: "Competition," "Operational Challenges," "Sentiment Shifts"
   - Low risks: "Minor Concerns," "Manageable Risks"
-- **Risk-Adjusted Gain:** Consider both the `gain` potential AND the risk level. A stock with 15% gain but high execution risk may be less attractive than a stock with 12% gain but lower risk.
+- **Risk-Adjusted Gain:** Consider both the averaged `gain` potential, the `forecast_count` (strength of agreement), AND the qualitative risk level. A stock with 15% gain but high execution risk or only one forecast may be less attractive than a stock with 12% gain supported by multiple forecasts and lower risk.
 
 **STEP 3: DIVERSIFICATION STRATEGY (MANDATORY THIRD STEP)**
 Select exactly {BASKET_SIZE_K} stocks that create a balanced, diversified portfolio:
@@ -203,14 +205,16 @@ Distribute weights among the {BASKET_SIZE_K} selected stocks. You MUST consider 
 - **Higher Weights (0.15-0.25 per stock):** Assign to stocks with:
   - Strong, clear catalysts with high probability of materializing within 7 days
   - Well-supported reasoning with credible sources
+  - Multiple aligned forecasts (higher `forecast_count`) reinforcing conviction
   - Manageable or low risks
   - Strong risk-adjusted gain potential
 - **Moderate Weights (0.10-0.15 per stock):** Assign to stocks with:
   - Good catalysts but some uncertainty
   - Moderate risks that are well-understood
-  - Decent risk-adjusted gain potential
+  - Decent risk-adjusted gain potential or moderate forecast support
 - **Lower Weights (0.05-0.10 per stock):** Assign to stocks with:
   - Higher risks or more speculative catalysts
+  - Limited forecast coverage (`forecast_count` of 1-2) unless qualitative conviction compensates
   - Still valuable for diversification but require lower exposure
 - **Weight Sum Constraint:** The sum of all weights MUST equal exactly 1.0 (100%).
 - **Weight Distribution:** For {BASKET_SIZE_K} stocks, consider a balanced distribution. For example, with 5 stocks, you might allocate: 0.20, 0.20, 0.20, 0.20, 0.20 (equal) or 0.25, 0.25, 0.20, 0.15, 0.15 (weighted toward top picks).
@@ -221,7 +225,7 @@ Distribute weights among the {BASKET_SIZE_K} selected stocks. You MUST consider 
 3.  **1-Week Holding Period:** All selections must be optimized for a 1-week (7-day) holding period. Prioritize stocks with catalysts likely to materialize within 7 days.
 4.  **Weight Sum Constraint:** The sum of all `weight` fields in the final `stocks` list must be exactly 1.0 (100%). Verify this mathematically.
 5.  **Candidate List:** The `stocks_ticker_candidates` field in the output must list ALL tickers from the initial {STOCK_DATA} (all {FILTER_TOP_N} stocks that were considered).
-6.  **Reason Summary:** The `reason_summary` must explain: (a) why these {BASKET_SIZE_K} stocks were selected over others, (b) how the weights were allocated based on risk-reward analysis, (c) how diversification was achieved, and (d) how the portfolio is optimized for 1-week holding.
+6.  **Reason Summary:** The `reason_summary` must explain: (a) why these {BASKET_SIZE_K} stocks were selected over others, explicitly referencing differences in catalysts, risk levels, and `forecast_count` support, (b) how the weights were allocated based on risk-reward analysis, (c) how diversification was achieved, and (d) how the portfolio is optimized for 1-week holding.
 7.  **JSON Output ONLY:** Your final output must be a single, valid JSON object conforming to the `Basket` model. Do not include any text, backticks, or explanations outside of the JSON structure.
 
 **OUTPUT DEFINITION:**
